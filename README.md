@@ -1,6 +1,6 @@
 # Summernote::Rails
 
-To gemify Super Simple WYSIWYG Editor on Bootstrap for Ruby on Rails version 4.0
+To gemify Super Simple WYSIWYG Editor on Bootstrap for Ruby on Rails version >= 3.1
 
 Website of Summernote, https://github.com/hackerwins/summernote
 
@@ -10,7 +10,11 @@ The version of summernote-rails is matched for the summernote editor.
 
 Add the following gems to your application's Gemfile:
 
+    # for Rails 4.0
     gem 'simple_form', github: 'plataformatec/simple_form', tag: 'v3.0.0.beta1'
+    # for Rails 3.x
+    gem 'simple_form'
+    
     gem 'bootstrap-sass'
     gem 'font-awesome-rails'
     gem 'summernote-rails', github: 'rorlab/summernote-rails'
