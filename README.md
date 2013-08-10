@@ -14,10 +14,10 @@ Add the following gems to your application's Gemfile:
     gem 'simple_form', github: 'plataformatec/simple_form', tag: 'v3.0.0.beta1'
     # for Rails 3.x
     gem 'simple_form'
-    
+
     gem 'bootstrap-sass'
     gem 'font-awesome-rails'
-    gem 'summernote-rails', github: 'rorlab/summernote-rails'
+    gem 'summernote-rails'
 
 And then execute:
 
