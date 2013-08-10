@@ -6,6 +6,8 @@ Website of Summernote, https://github.com/hackerwins/summernote
 
 The version of summernote-rails is matched for the summernote editor.
 
+[![Gem Version](https://badge.fury.io/rb/summernote-rails.png)](http://badge.fury.io/rb/summernote-rails)
+
 ## Installation
 
 Add the following gems to your application's Gemfile:
