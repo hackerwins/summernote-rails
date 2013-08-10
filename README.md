@@ -85,6 +85,16 @@ In app/views/posts/_form.html.erb, you should add 'summernote' class name to the
 
 That's it. 
 
+
+## Changelogs
+
+ - v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor
+              Added summernote.js 
+ - v0.2.1.1 : available for Rails >= 3.1
+ - v0.2.1   : bugfixed file uploading
+ - v0.2.0   : available for Rails v4.0
+
+
 ## Contributing
 
 1. Fork it
