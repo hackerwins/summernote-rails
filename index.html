@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Summernote-rails by rorlab</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Summernote-rails</h1>
+        <p>To gemify the summernote WYSIWYG editor for Rails &gt;= 3.1</p>
+
+        <p class="view"><a href="https://github.com/rorlab/summernote-rails">View the Project on GitHub <small>rorlab/summernote-rails</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/rorlab/summernote-rails/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/rorlab/summernote-rails/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/rorlab/summernote-rails">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="summernoterails" class="anchor" href="#summernoterails"><span class="octicon octicon-link"></span></a>Summernote::Rails</h1>
+
+<p>To gemify Super Simple WYSIWYG Editor on Bootstrap for Ruby on Rails version &gt;= 3.1</p>
+
+<p>Website of Summernote, <a href="https://github.com/hackerwins/summernote">https://github.com/hackerwins/summernote</a></p>
+
+<p>The version of summernote-rails is matched for the summernote editor.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Add the following gems to your application's Gemfile:</p>
+
+<pre><code># for Rails 4.0
+gem 'simple_form', github: 'plataformatec/simple_form', tag: 'v3.0.0.beta1'
+# for Rails 3.x
+gem 'simple_form'
+
+gem 'bootstrap-sass'
+gem 'font-awesome-rails'
+gem 'summernote-rails'
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>First of all, the summernote editor works on Bootstrap and so it is assumed that you have already set it up.</p>
+
+<p>In app/assets/javascripts/application.js, you should added the following:</p>
+
+<pre><code>//= require summernote.min
+</code></pre>
+
+<p>In app/assets/stylesheets/application.css, you should added the following:</p>
+
+<pre><code>*= require font-awesome
+*= require summernote
+</code></pre>
+
+<p>For example, if you have a post form, in app/assets/javascripts/posts.js.coffee, you should add the following code:</p>
+
+<pre><code>$ -&gt;
+
+  # to set summernote object
+  # You should change '#post_content' to your textarea input id
+  summer_note = $('#post_content')
+
+  # to call summernote editor
+  summer_note.summernote
+    # to set options
+    height:300  
+
+  # to set code for summernote
+  summer_note.code summer_note.val()
+
+  # to get code for summernote
+  summer_note.closest('form').submit -&gt;
+    # alert $('#post_content').code()[0]
+    summer_note.val summer_note.code()[0]
+    true
+</code></pre>
+
+<p>In app/views/posts/_form.html.erb, you should add 'summernote' class name to the textarea input as the following:</p>
+
+<pre><code>&lt;%= simple_form_for(@post) do |f| %&gt;
+  &lt;%= f.error_notification %&gt;
+
+  &lt;div class="form-inputs"&gt;
+    &lt;%= f.input :title %&gt;
+    &lt;%= f.input :content, class:'summernote' %&gt;
+  &lt;/div&gt;
+
+  &lt;div class="form-actions"&gt;
+    &lt;%= f.button :submit %&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<p>That's it. </p>
+
+<h2>
+<a name="changelogs" class="anchor" href="#changelogs"><span class="octicon octicon-link"></span></a>Changelogs</h2>
+
+<ul>
+<li>v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor
+          Added summernote.js </li>
+<li>v0.2.1.1 : available for Rails &gt;= 3.1</li>
+<li>v0.2.1   : bugfixed file uploading</li>
+<li>v0.2.0   : available for Rails v4.0</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/rorlab">rorlab</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
