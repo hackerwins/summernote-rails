@@ -2,7 +2,9 @@
 
 This gem was built to gemify the assets used in Summernote, the Super Simple WYSIWYG Editor on Bootstrap, for Ruby on Rails version >= 3.1.
 
-If you want to get the detailed information of how to use summernote editor, please click the website of Summernote, https://github.com/hackerwins/summernote.
+If you want to get the detailed information on how to use summernote editor, please click URL link to the website of Summernote.
+
+https://github.com/hackerwins/summernote.
 
 The version of summernote-rails is matched with that of summernote editor.
 
@@ -17,9 +19,11 @@ Add the following gems to your application's Gemfile:
     # for Rails 3.x
     gem 'simple_form'
 
-    # You'll need to include the following dependencies.
+    # You'll need to include the following dependencies of Summernote
     gem 'bootstrap-sass'
     gem 'font-awesome-rails'
+
+    # This is the right gem to use summernote editor in Rails projects.
     gem 'summernote-rails'
 
 And then execute:
@@ -30,7 +34,7 @@ And then execute:
 
 First of all, the summernote editor works on Bootstrap and so it is assumed that you have already set it up.
 
-Note that when using font-awesome-rails with bootstrap-sass, both FontAwesome & Glyphicon icons show up, overlapping. So if you have bootstrap_and_override.css.scss file, please add the following two code lines related with bootstrap's glyphicon:
+> Note that when using font-awesome-rails with bootstrap-sass, both FontAwesome & Glyphicon icons show up, overlapping. So if you have bootstrap_and_override.css.scss file, please add the following two code lines related with the Bootstrap's glyphicon:
 
 In app/assets/stylesheets/bootstrap_and_override.css.scss, 
 
@@ -51,14 +55,33 @@ or
 //= require summernote  # if you want to require the uncompressed one
 ```
 
-In app/assets/stylesheets/application.css, you should add the following:
+And also, in app/assets/stylesheets/application.css, you should add the following:
 
 ```
 *= require font-awesome
 *= require summernote
 ```
 
-For example, if you have a post form, in app/assets/javascripts/posts.js.coffee, you should add the following:
+For example, if you made a `Post` model using `scaffold generator` of Rails, you would see the `post` form view template in app/views/posts/_form.html.erb. 
+
+In that template file, you should add 'summernote' class to the textarea input as the following:
+
+```
+<%= simple_form_for(@post) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :title %>
+    <%= f.input :content, class:'summernote' %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>
+```
+
+And then, in `post`-dedicated coffeescript file, app/assets/javascripts/posts.js.coffee, you should add the following:
 
 ```
 $ ->
@@ -82,27 +105,10 @@ $ ->
     true
 ```
 
-In app/views/posts/_form.html.erb, you should add 'summernote' class to the textarea input as the following:
-
-```
-<%= simple_form_for(@post) do |f| %>
-  <%= f.error_notification %>
-
-  <div class="form-inputs">
-    <%= f.input :title %>
-    <%= f.input :content, class:'summernote' %>
-  </div>
-
-  <div class="form-actions">
-    <%= f.button :submit %>
-  </div>
-<% end %>
-```
-
 That's it. 
 
 
-## Examples projects 
+## Sample projects 
 
  - Rails 3.2.14 : http://github.com/rorlab/summernote-test-r3
  - Rails 4.0 : http://github.com/rorlab/summernote-test
