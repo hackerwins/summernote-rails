@@ -30,6 +30,20 @@ And then execute:
 
 First of all, the summernote editor works on Bootstrap and so it is assumed that you have already set it up.
 
+Note that when using font-awesome-rails with bootstrap-sass, both FontAwesome & Glyphicon icons show up, overlapping. So if you have bootstrap_and_override.css.scss file, please add the following two code lines related with bootstrap's glyphicon:
+
+In app/assets/stylesheets/bootstrap_and_override.css.scss, 
+
+```
+// When using font-awesome-rails with bootstrap-sass, both FontAwesome & Glyphicon icons show up. So you should add the following to hide Glyphicon icons of Bootstrap.
+$iconSpritePath: '';
+$iconWhiteSpritePath: '';
+
+@import 'bootstrap';
+body {padding-top:3em;}
+@import 'bootstrap-responsive';
+```
+
 In app/assets/javascripts/application.js, you should add the following:
 
 ```
@@ -88,6 +102,11 @@ In app/views/posts/_form.html.erb, you should add 'summernote' class to the text
 
 That's it. 
 
+
+## Examples projects 
+
+ - Rails 3.2.14 : http://github.com/rorlab/summernote-test-r3
+ - Rails 4.0 : http://github.com/rorlab/summernote-test
 
 ## Changelogs
 
