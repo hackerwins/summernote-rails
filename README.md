@@ -34,6 +34,10 @@ In app/assets/javascripts/application.js, you should add the following:
 
 ```
 //= require summernote.min
+
+or
+
+//= require summernote  # if you want to require the uncompressed one
 ```
 
 In app/assets/stylesheets/application.css, you should add the following:
