@@ -64,7 +64,7 @@ And also, in app/assets/stylesheets/application.css, you should add the followin
 
 For example, if you made a `Post` model using `scaffold generator` of Rails, you would see the `post` form view template in app/views/posts/_form.html.erb. 
 
-In that template file, you should add 'summernote' class to the textarea input as the following:
+In that template file, you should add `summernote` class to the textarea input as the following:
 
 ```
 <%= simple_form_for(@post) do |f| %>
