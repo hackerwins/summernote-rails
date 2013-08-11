@@ -1,10 +1,10 @@
 # Summernote::Rails
 
-To gemify Super Simple WYSIWYG Editor on Bootstrap for Ruby on Rails version >= 3.1
+This gem was built to gemify the assets used in Summernote, the Super Simple WYSIWYG Editor on Bootstrap, for Ruby on Rails version >= 3.1.
 
-Website of Summernote, https://github.com/hackerwins/summernote
+If you want to get the detailed information of how to use summernote editor, please click the website of Summernote, https://github.com/hackerwins/summernote.
 
-The version of summernote-rails is matched for the summernote editor.
+The version of summernote-rails is matched with that of summernote editor.
 
 [![Gem Version](https://badge.fury.io/rb/summernote-rails.png)](http://badge.fury.io/rb/summernote-rails)
 
@@ -17,6 +17,7 @@ Add the following gems to your application's Gemfile:
     # for Rails 3.x
     gem 'simple_form'
 
+    # You'll need to include the following dependencies.
     gem 'bootstrap-sass'
     gem 'font-awesome-rails'
     gem 'summernote-rails'
@@ -29,20 +30,20 @@ And then execute:
 
 First of all, the summernote editor works on Bootstrap and so it is assumed that you have already set it up.
 
-In app/assets/javascripts/application.js, you should added the following:
+In app/assets/javascripts/application.js, you should add the following:
 
 ```
 //= require summernote.min
 ```
 
-In app/assets/stylesheets/application.css, you should added the following:
+In app/assets/stylesheets/application.css, you should add the following:
 
 ```
 *= require font-awesome
 *= require summernote
 ```
 
-For example, if you have a post form, in app/assets/javascripts/posts.js.coffee, you should add the following code:
+For example, if you have a post form, in app/assets/javascripts/posts.js.coffee, you should add the following:
 
 ```
 $ ->
@@ -66,7 +67,7 @@ $ ->
     true
 ```
 
-In app/views/posts/_form.html.erb, you should add 'summernote' class name to the textarea input as the following:
+In app/views/posts/_form.html.erb, you should add 'summernote' class to the textarea input as the following:
 
 ```
 <%= simple_form_for(@post) do |f| %>
@@ -88,11 +89,11 @@ That's it.
 
 ## Changelogs
 
- - v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor
+ - v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor / 
               Added summernote.js 
- - v0.2.1.1 : available for Rails >= 3.1
- - v0.2.1   : bugfixed file uploading
- - v0.2.0   : available for Rails v4.0
+ - v0.2.1.1 : Available for Rails >= 3.1
+ - v0.2.1   : Bugfixed file uploading
+ - v0.2.0   : Available for Rails v4.0
 
 
 ## Contributing
