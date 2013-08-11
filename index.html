@@ -65,6 +65,18 @@ gem 'summernote-rails'
 
 <p>First of all, the summernote editor works on Bootstrap and so it is assumed that you have already set it up.</p>
 
+<p>Note that when using font-awesome-rails with bootstrap-sass, both FontAwesome &amp; Glyphicon icons show up, overlapping. So if you have bootstrap_and_override.css.scss file, please add the following two code lines related with bootstrap's glyphicon:</p>
+
+<p>In app/assets/stylesheets/bootstrap_and_override.css.scss, </p>
+
+<pre><code>$iconSpritePath: '';
+$iconWhiteSpritePath: '';
+
+@import 'bootstrap';
+body {padding-top:3em;}
+@import 'bootstrap-responsive';
+</code></pre>
+
 <p>In app/assets/javascripts/application.js, you should add the following:</p>
 
 <pre><code>//= require summernote.min
@@ -120,6 +132,14 @@ or
 <p>That's it. </p>
 
 <h2>
+<a name="examples-projects" class="anchor" href="#examples-projects"><span class="octicon octicon-link"></span></a>Examples projects</h2>
+
+<ul>
+<li>Rails 3.2.14 : <a href="http://github.com/rorlab/summernote-test-r3">http://github.com/rorlab/summernote-test-r3</a>
+</li>
+<li>Rails 4.0 : <a href="http://github.com/rorlab/summernote-test">http://github.com/rorlab/summernote-test</a>
+</li>
+</ul><h2>
 <a name="changelogs" class="anchor" href="#changelogs"><span class="octicon octicon-link"></span></a>Changelogs</h2>
 
 <ul>
