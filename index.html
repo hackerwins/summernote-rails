@@ -31,9 +31,13 @@
         <h1>
 <a name="mannual-of-summernote-rails-gem" class="anchor" href="#mannual-of-summernote-rails-gem"><span class="octicon octicon-link"></span></a>Mannual of Summernote-rails gem</h1>
 
-<p>The Official website of Summernote WYSIWYG Editor is <a href="https://github.com/hackerwins/summernote">https://github.com/hackerwins/summernote</a></p>
+<p>This gem was built to gemify the assets used in Summernote, the Super Simple WYSIWYG Editor on Bootstrap, for Ruby on Rails version &gt;= 3.1.</p>
 
-<p>The version of summernote-rails is matched for the summernote editor.</p>
+<p>If you want to get the detailed information of how to use summernote editor, please click the website of Summernote, <a href="https://github.com/hackerwins/summernote">https://github.com/hackerwins/summernote</a>.</p>
+
+<p>The version of summernote-rails is matched with that of summernote editor.</p>
+
+<p><a href="http://badge.fury.io/rb/summernote-rails"><img src="https://badge.fury.io/rb/summernote-rails.png" alt="Gem Version"></a></p>
 
 <h2>
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
@@ -45,6 +49,7 @@ gem 'simple_form', github: 'plataformatec/simple_form', tag: 'v3.0.0.beta1'
 # for Rails 3.x
 gem 'simple_form'
 
+# You'll need to include the following dependencies.
 gem 'bootstrap-sass'
 gem 'font-awesome-rails'
 gem 'summernote-rails'
@@ -60,20 +65,21 @@ gem 'summernote-rails'
 
 <p>First of all, the summernote editor works on Bootstrap and so it is assumed that you have already set it up.</p>
 
-<p>In app/assets/javascripts/application.js, you should added the following:</p>
+<p>In app/assets/javascripts/application.js, you should add the following:</p>
 
 <pre><code>//= require summernote.min
 </code></pre>
 
-<p>In app/assets/stylesheets/application.css, you should added the following:</p>
+<p>In app/assets/stylesheets/application.css, you should add the following:</p>
 
 <pre><code>*= require font-awesome
 *= require summernote
 </code></pre>
 
-<p>For example, if you have a post form, in app/assets/javascripts/posts.js.coffee, you should add the following code:</p>
+<p>For example, if you have a post form, in app/assets/javascripts/posts.js.coffee, you should add the following:</p>
 
 <pre><code>$ -&gt;
+
   # to set summernote object
   # You should change '#post_content' to your textarea input id
   summer_note = $('#post_content')
@@ -93,7 +99,7 @@ gem 'summernote-rails'
     true
 </code></pre>
 
-<p>In app/views/posts/_form.html.erb, you should add 'summernote' class name to the textarea input as the following:</p>
+<p>In app/views/posts/_form.html.erb, you should add 'summernote' class to the textarea input as the following:</p>
 
 <pre><code>&lt;%= simple_form_for(@post) do |f| %&gt;
   &lt;%= f.error_notification %&gt;
@@ -115,12 +121,21 @@ gem 'summernote-rails'
 <a name="changelogs" class="anchor" href="#changelogs"><span class="octicon octicon-link"></span></a>Changelogs</h2>
 
 <ul>
-<li>v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor
+<li>v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor / 
           Added summernote.js </li>
-<li>v0.2.1.1 : available for Rails &gt;= 3.1</li>
-<li>v0.2.1   : bugfixed file uploading</li>
-<li>v0.2.0   : available for Rails v4.0</li>
-</ul>
+<li>v0.2.1.1 : Available for Rails &gt;= 3.1</li>
+<li>v0.2.1   : Bugfixed file uploading</li>
+<li>v0.2.0   : Available for Rails v4.0</li>
+</ul><h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/rorlab">rorlab</a></p>
