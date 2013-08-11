@@ -35,7 +35,6 @@ Note that when using font-awesome-rails with bootstrap-sass, both FontAwesome & 
 In app/assets/stylesheets/bootstrap_and_override.css.scss, 
 
 ```
-// When using font-awesome-rails with bootstrap-sass, both FontAwesome & Glyphicon icons show up. So you should add the following to hide Glyphicon icons of Bootstrap.
 $iconSpritePath: '';
 $iconWhiteSpritePath: '';
 
