@@ -115,7 +115,7 @@ That's it.
 
 ## Changelogs
 
- - v0.2.2.3 : Added Help button in editor toolbox to popup Hot Key Table
+ - v0.2.1.3 : Added Help button in editor toolbox to popup Hot Key Table
  - v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor / 
               Added summernote.js 
  - v0.2.1.1 : Available for Rails >= 3.1
