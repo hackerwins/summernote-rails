@@ -94,6 +94,17 @@ $ ->
   summer_note.summernote
     # to set options
     height:300  
+    toolbar: [
+                # ['insert', ['picture', 'link']], // no insert buttons
+                ["table", ["table"]], 
+                ["style", ["style"]], 
+                ["fontsize", ["fontsize"]], 
+                ["color", ["color"]], 
+                ["style", ["bold", "italic", "underline", "clear"]], 
+                ["para", ["ul", "ol", "paragraph"]], 
+                ["height", ["height"]], 
+                ["help", ["help"]]
+             ]
 
   # to set code for summernote
   summer_note.code summer_note.val()
@@ -115,6 +126,7 @@ That's it.
 
 ## Changelogs
 
+ - v0.2.1.4 : Enable to customize Toolbar Collection 
  - v0.2.1.3 : Added Help button in editor toolbox to popup Hot Key Table
  - v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor / 
               Added summernote.js 
