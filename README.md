@@ -126,6 +126,13 @@ That's it.
 
 ## Changelogs
 
+ - v0.3.0   : Added the resizing bar at the bottom of editor.
+    * Updated with `v0.3 Summernote, 2013-09-01` as the followings:     
+      * `FIXED` bugs(image upload, fontsize, tab, recent color, ...)
+      * `ADDED` help dialog(keyboard shortcut)
+      * `ADDED` init options(event callbacks, custom toolbar)
+      * `ADDED` resize bar
+      * `ADDED` support IE8 Beta(some range bugs, can't insert Image)
  - v0.2.1.4 : Enable to customize Toolbar Collection 
  - v0.2.1.3 : Added Help button in editor toolbox to popup Hot Key Table
  - v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor / 
