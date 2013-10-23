@@ -3,9 +3,7 @@
  * (c) 2013~ Alan Hong
  * summernote may be freely distributed under the MIT license./
  */
-(function($) {
-  "use strict";
-
+(function($) { "use strict";
   //Check Platform/Agent
   var bMac = navigator.appVersion.indexOf('Mac') > -1; 
   var bMSIE = navigator.userAgent.indexOf('MSIE') > -1;
@@ -139,7 +137,7 @@
         if (bStart && !bEnd) { aNode.push(node) } // between
         if (node === nodeB) { bEnd = true; return; } // end point
 
-        for (var idx = 0, sz=node.childNodes.length; idx < sz; idx++) {
+        for (var idx = 0, sz = node.childNodes.length; idx < sz; idx++) {
           fnWalk(node.childNodes[idx]);
         }
       }
@@ -251,6 +249,33 @@
         return clone;
       });
     };
+
+    // remove: remove node, (bRemoveChild: remove child or not)
+    var remove = function(node, bRemoveChild) {
+      if (!node || !node.parentNode) { return; }
+      if (node.removeNode) { return node.removeNode(bRemoveChild); }
+
+      var elParent = node.parentNode;
+      if (!bRemoveChild) {
+        var aNode = [];
+        for (var i = 0, sz = node.childNodes.length; i < sz; i++) {
+          aNode.push(node.childNodes[i]);
+        }
+
+        for (var i = 0, sz = aNode.length; i < sz; i++) {
+          elParent.insertBefore(aNode[i], node);
+        }
+      }
+
+      elParent.removeChild(node);
+    };
+
+    var unescape = function(str) {
+      return $("<div/>").html(str).text();
+    };
+    var html = function($node) {
+      return dom.isTextarea($node[0]) ? unescape($node.val()) : $node.html();
+    };
     
     return {
       isText: isText,
@@ -260,209 +285,217 @@
       isDiv: makePredByNodeName('DIV'), isSpan: makePredByNodeName('SPAN'),
       isB: makePredByNodeName('B'), isU: makePredByNodeName('U'),
       isS: makePredByNodeName('S'), isI: makePredByNodeName('I'),
-      isImg: makePredByNodeName('IMG'),
+      isImg: makePredByNodeName('IMG'), isTextarea: makePredByNodeName('TEXTAREA'),
       ancestor: ancestor, listAncestor: listAncestor,
       listNext: listNext, listPrev: listPrev,
       commonAncestor: commonAncestor, listBetween: listBetween,
       insertAfter: insertAfter, position: position,
       makeOffsetPath: makeOffsetPath, fromOffsetPath: fromOffsetPath,
-      split: split
+      split: split, remove: remove, html: html
     };
   }();
 
   /**
-   * Range
-   * {startContainer, startOffset, endContainer, endOffset}
-   * create Range Object From arguments or Browser Selection
+   * range module
    */
-  var bW3CRangeSupport = !!document.createRange;
+  var range = function() {
+    var bW3CRangeSupport = !!document.createRange;
 
-  // return boundary point from TextRange(ie8)
-  // inspired by Andy Na's HuskyRange.js
-  var textRange2bp = function(textRange, bStart) {
-    var elCont = textRange.parentElement(), nOffset;
+    // return boundaryPoint from TextRange, inspired by Andy Na's HuskyRange.js
+    var textRange2bp = function(textRange, bStart) {
+      var elCont = textRange.parentElement(), nOffset;
 
-    var tester = document.body.createTextRange(), elPrevCont;
-    var aChild = list.from(elCont.childNodes);
-    for (nOffset = 0; nOffset < aChild.length; nOffset++) {
-      if (dom.isText(aChild[nOffset])) { continue; }
-      tester.moveToElementText(aChild[nOffset]);
-      if (tester.compareEndPoints("StartToStart", textRange) >= 0) { break; }
-      elPrevCont = aChild[nOffset];
-    }
-
-    if (nOffset != 0 && dom.isText(aChild[nOffset - 1])) {
-      var textRangeStart = document.body.createTextRange(), elCurText = null;
-      textRangeStart.moveToElementText(elPrevCont || elCont);
-      textRangeStart.collapse(!elPrevCont);
-      elCurText = elPrevCont ? elPrevCont.nextSibling : elCont.firstChild;
-
-      var pointTester = textRange.duplicate();
-      pointTester.setEndPoint("StartToStart", textRangeStart);
-      var nTextCount = pointTester.text.replace(/[\r\n]/g, "").length;
-
-      while (nTextCount > elCurText.nodeValue.length && elCurText.nextSibling) {
-        nTextCount -= elCurText.nodeValue.length;
-        elCurText = elCurText.nextSibling;
-      }
-      var sDummy = elCurText.nodeValue; //enforce IE to re-reference elCurText
-
-      if (bStart && elCurText.nextSibling && dom.isText(elCurText.nextSibling) &&
-          nTextCount == elCurText.nodeValue.length) {
-        nTextCount -= elCurText.nodeValue.length;
-        elCurText = elCurText.nextSibling;
+      var tester = document.body.createTextRange(), elPrevCont;
+      var aChild = list.from(elCont.childNodes);
+      for (nOffset = 0; nOffset < aChild.length; nOffset++) {
+        if (dom.isText(aChild[nOffset])) { continue; }
+        tester.moveToElementText(aChild[nOffset]);
+        if (tester.compareEndPoints('StartToStart', textRange) >= 0) { break; }
+        elPrevCont = aChild[nOffset];
       }
 
-      elCont = elCurText;
-      nOffset = nTextCount;
-    }
+      if (nOffset != 0 && dom.isText(aChild[nOffset - 1])) {
+        var textRangeStart = document.body.createTextRange(), elCurText = null;
+        textRangeStart.moveToElementText(elPrevCont || elCont);
+        textRangeStart.collapse(!elPrevCont);
+        elCurText = elPrevCont ? elPrevCont.nextSibling : elCont.firstChild;
 
-    return {cont: elCont, offset: nOffset};
-  };
+        var pointTester = textRange.duplicate();
+        pointTester.setEndPoint('StartToStart', textRangeStart);
+        var nTextCount = pointTester.text.replace(/[\r\n]/g, '').length;
 
-  // return TextRange(ie8) from boundary point
-  // (inspired by google closure-library)
-  var bp2textRange = function(bp) {
-    var textRangeInfo = function(elCont, nOffset) {
-      var elNode, bCollapseToStart;
+        while (nTextCount > elCurText.nodeValue.length && elCurText.nextSibling) {
+          nTextCount -= elCurText.nodeValue.length;
+          elCurText = elCurText.nextSibling;
+        }
+        var sDummy = elCurText.nodeValue; //enforce IE to re-reference elCurText
 
-      if (dom.isText(elCont)) {
-        var aPrevText = dom.listPrev(elCont, func.not(dom.isText));
-        var elPrevCont = list.last(aPrevText).previousSibling;
-        elNode =  elPrevCont || elCont.parentNode;
-        nOffset += list.sum(list.tail(aPrevText), dom.length);
-        bCollapseToStart = !elPrevCont;
-      } else {
-        elNode = elCont.childNodes[nOffset] || elCont;
-        if (dom.isText(elNode)) {
-          return textRangeInfo(elNode, nOffset);
+        if (bStart && elCurText.nextSibling && dom.isText(elCurText.nextSibling) &&
+            nTextCount == elCurText.nodeValue.length) {
+          nTextCount -= elCurText.nodeValue.length;
+        elCurText = elCurText.nextSibling;
         }
 
-        nOffset = 0;
-        bCollapseToStart = false;
+        elCont = elCurText;
+        nOffset = nTextCount;
       }
 
-      return {cont: elNode, collapseToStart: bCollapseToStart, offset: nOffset};
-    }
+      return {cont: elCont, offset: nOffset};
+    };
 
-    var textRange = document.body.createTextRange();
-    var info = textRangeInfo(bp.cont, bp.offset);
+    // return TextRange from boundary point (inspired by google closure-library)
+    var bp2textRange = function(bp) {
+      var textRangeInfo = function(elCont, nOffset) {
+        var elNode, bCollapseToStart;
 
-    textRange.moveToElementText(info.cont);
-    textRange.collapse(info.collapseToStart);
-    textRange.moveStart("character", info.offset);
-    return textRange;
-  };
+        if (dom.isText(elCont)) {
+          var aPrevText = dom.listPrev(elCont, func.not(dom.isText));
+          var elPrevCont = list.last(aPrevText).previousSibling;
+          elNode =  elPrevCont || elCont.parentNode;
+          nOffset += list.sum(list.tail(aPrevText), dom.length);
+          bCollapseToStart = !elPrevCont;
+        } else {
+          elNode = elCont.childNodes[nOffset] || elCont;
+          if (dom.isText(elNode)) {
+            return textRangeInfo(elNode, nOffset);
+          }
 
-  var Range = function(sc, so, ec, eo) {
-    if (arguments.length === 0) { // from Browser Selection
-      if (bW3CRangeSupport) { // webkit, firefox
-        var nativeRng = document.getSelection().getRangeAt(0);
-        sc = nativeRng.startContainer, so = nativeRng.startOffset,
-        ec = nativeRng.endContainer, eo = nativeRng.endOffset;
-      } else { //TextRange
-        var textRange = document.selection.createRange();
-        var textRangeEnd = textRange.duplicate(); textRangeEnd.collapse(false);
-        var textRangeStart = textRange; textRangeStart.collapse(true);
+          nOffset = 0;
+          bCollapseToStart = false;
+        }
 
-        var bpStart = textRange2bp(textRangeStart, true),
-            bpEnd = textRange2bp(textRangeEnd, false);
-
-        sc = bpStart.cont, so = bpStart.offset;
-        ec = bpEnd.cont, eo = bpEnd.offset;
+        return {cont: elNode, collapseToStart: bCollapseToStart, offset: nOffset};
       }
-    }
-    
-    this.sc = sc; this.so = so;
-    this.ec = ec; this.eo = eo;
 
-    // nativeRange: get nativeRange from sc, so, ec, eo
-    var nativeRange = function() {
-      if (bW3CRangeSupport) {
-        var range = document.createRange();
-        range.setStart(sc, so);
-        range.setEnd(ec, eo);
-        return range;
-      } else {
-        var textRange = bp2textRange({cont:sc, offset:so});
-        textRange.setEndPoint('EndToEnd', bp2textRange({cont:ec, offset:eo}));
-        return textRange;
-      }
-    };
- 
-    // select: update visible range
-    this.select = function() {
-      var nativeRng = nativeRange();
-      if (bW3CRangeSupport) {
-        var selection = document.getSelection();
-        if (selection.rangeCount > 0) { selection.removeAllRanges(); }
-        selection.addRange(nativeRng);
-      } else {
-        nativeRng.select();
-      }
-    };
-    
-    // listPara: listing paragraphs on range
-    this.listPara = function() {
-      var aNode = dom.listBetween(sc, ec);
-      var aPara = list.compact($.map(aNode, function(node) {
-        return dom.ancestor(node, dom.isPara);
-      }));
-      return $.map(list.clusterBy(aPara, func.eq2), list.head);
-    };
-    
-    // isOnList: judge whether range is on list node or not
-    this.isOnList = function() {
-      var elStart = dom.ancestor(sc, dom.isList),
-          elEnd = dom.ancestor(ec, dom.isList);
-      return elStart && (elStart === elEnd);
+      var textRange = document.body.createTextRange();
+      var info = textRangeInfo(bp.cont, bp.offset);
+
+      textRange.moveToElementText(info.cont);
+      textRange.collapse(info.collapseToStart);
+      textRange.moveStart('character', info.offset);
+      return textRange;
     };
 
-    // isOnAnchor: judge whether range is on anchor node or not
-    this.isOnAnchor = function() {
-      var elStart = dom.ancestor(sc, dom.isAnchor),
-          elEnd = dom.ancestor(ec, dom.isAnchor);
-      return elStart && (elStart === elEnd);
-    };
+    // {startContainer, startOffset, endContainer, endOffset}
+    var WrappedRange = function(sc, so, ec, eo) {
+      this.sc = sc; this.so = so;
+      this.ec = ec; this.eo = eo;
 
-    // isCollapsed: judge whether range was collapsed
-    this.isCollapsed = function() { return sc === ec && so === eo; };
-    
-    // insertNode
-    this.insertNode = function(node) {
-      var nativeRng = nativeRange();
-      if (bW3CRangeSupport) {
-        nativeRng.insertNode(node);
-      } else {
-        nativeRng.pasteHTML(node.outerHTML); // NOTE: missing node reference.
-      }
-    };
+      // nativeRange: get nativeRange from sc, so, ec, eo
+      var nativeRange = function() {
+        if (bW3CRangeSupport) {
+          var w3cRange = document.createRange();
+          w3cRange.setStart(sc, so);
+          w3cRange.setEnd(ec, eo);
+          return w3cRange;
+        } else {
+          var textRange = bp2textRange({cont:sc, offset:so});
+          textRange.setEndPoint('EndToEnd', bp2textRange({cont:ec, offset:eo}));
+          return textRange;
+        }
+      };
 
-    this.toString = function() {
-      var nativeRng = nativeRange();
-      if (bW3CRangeSupport) {
-        return nativeRng.toString();
-      } else {
-        return nativeRng.text;
-      }
-    };
+      // select: update visible range
+      this.select = function() {
+        var nativeRng = nativeRange();
+        if (bW3CRangeSupport) {
+          var selection = document.getSelection();
+          if (selection.rangeCount > 0) { selection.removeAllRanges(); }
+          selection.addRange(nativeRng);
+        } else {
+          nativeRng.select();
+        }
+      };
 
-    //bookmark: offsetPath bookmark
-    this.bookmark = function(elEditable) {
-      return {
-        s: { path: dom.makeOffsetPath(elEditable, sc), offset: so },
-        e: { path: dom.makeOffsetPath(elEditable, ec), offset: eo }
+      // listPara: listing paragraphs on range
+      this.listPara = function() {
+        var aNode = dom.listBetween(sc, ec);
+        var aPara = list.compact($.map(aNode, function(node) {
+          return dom.ancestor(node, dom.isPara);
+        }));
+        return $.map(list.clusterBy(aPara, func.eq2), list.head);
+      };
+
+      // makeIsOn: return isOn(pred) function
+      var makeIsOn = function(pred) {
+        return function() {
+          var elAncestor = dom.ancestor(sc, pred);
+          return elAncestor && (elAncestor === dom.ancestor(ec, pred));
+        };
+      };
+
+      // isOnEditable: judge whether range is on editable or not
+      this.isOnEditable = makeIsOn(dom.isEditable);
+      // isOnList: judge whether range is on list node or not
+      this.isOnList = makeIsOn(dom.isList);
+      // isOnAnchor: judge whether range is on anchor node or not
+      this.isOnAnchor = makeIsOn(dom.isAnchor);
+
+      // isCollapsed: judge whether range was collapsed
+      this.isCollapsed = function() { return sc === ec && so === eo; };
+
+      // insertNode
+      this.insertNode = function(node) {
+        var nativeRng = nativeRange();
+        if (bW3CRangeSupport) {
+          nativeRng.insertNode(node);
+        } else {
+          nativeRng.pasteHTML(node.outerHTML); // NOTE: missing node reference.
+        }
+      };
+
+      this.toString = function() {
+        var nativeRng = nativeRange();
+        if (bW3CRangeSupport) {
+          return nativeRng.toString();
+        } else {
+          return nativeRng.text;
+        }
+      };
+
+      //bookmark: offsetPath bookmark
+      this.bookmark = function(elEditable) {
+        return {
+          s: { path: dom.makeOffsetPath(elEditable, sc), offset: so },
+          e: { path: dom.makeOffsetPath(elEditable, ec), offset: eo }
+        };
       };
     };
-  };
 
-  // createRangeFromBookmark
-  var createRangeFromBookmark = function(elEditable, bookmark) {
-    return new Range(dom.fromOffsetPath(elEditable, bookmark.s.path),
-                     bookmark.s.offset,
-                     dom.fromOffsetPath(elEditable, bookmark.e.path),
-                     bookmark.e.offset);
-  };
+    return { // Range Object
+      // create Range Object From arguments or Browser Selection
+      create : function(sc, so, ec, eo) {
+        if (arguments.length === 0) { // from Browser Selection
+          if (bW3CRangeSupport) { // webkit, firefox
+            var nativeRng = document.getSelection().getRangeAt(0);
+            sc = nativeRng.startContainer, so = nativeRng.startOffset,
+            ec = nativeRng.endContainer, eo = nativeRng.endOffset;
+          } else { // IE8: TextRange
+            var textRange = document.selection.createRange();
+            var textRangeEnd = textRange.duplicate(); textRangeEnd.collapse(false);
+            var textRangeStart = textRange; textRangeStart.collapse(true);
+
+            var bpStart = textRange2bp(textRangeStart, true),
+            bpEnd = textRange2bp(textRangeEnd, false);
+
+            sc = bpStart.cont, so = bpStart.offset;
+            ec = bpEnd.cont, eo = bpEnd.offset;
+          }
+        } else if (arguments.length === 2) { //collapsed
+          ec = sc; eo = so;
+        }
+        return new WrappedRange(sc, so, ec, eo);
+      },
+      // createFromBookmark
+      createFromBookmark : function(elEditable, bookmark) {
+        var sc = dom.fromOffsetPath(elEditable, bookmark.s.path);
+        var so = bookmark.s.offset;
+        var ec = dom.fromOffsetPath(elEditable, bookmark.e.path);
+        var eo = bookmark.e.offset;
+        return new WrappedRange(sc, so, ec, eo);
+      }
+    };
+  }();
   
   /**
    * Style
@@ -523,7 +556,7 @@
     var aUndo = [], aRedo = [];
 
     var makeSnap = function(welEditable) {
-      var elEditable = welEditable[0], rng = new Range();
+      var elEditable = welEditable[0], rng = range.create();
       return {
         contents: welEditable.html(), bookmark: rng.bookmark(elEditable),
         scrollTop: welEditable.scrollTop()
@@ -532,7 +565,7 @@
 
     var applySnap = function(welEditable, oSnap) {
       welEditable.html(oSnap.contents).scrollTop(oSnap.scrollTop);
-      createRangeFromBookmark(welEditable[0], oSnap.bookmark).select();
+      range.createFromBookmark(welEditable[0], oSnap.bookmark).select();
     };
 
     this.undo = function(welEditable) {
@@ -559,8 +592,19 @@
     //currentStyle
     var style = new Style();
     this.currentStyle = function(elTarget) {
-      if (document.getSelection && document.getSelection().rangeCount == 0) { return null; }
-      return style.current((new Range()), elTarget);
+      var rng = range.create();
+      return rng.isOnEditable() && style.current(rng, elTarget);
+    };
+
+    this.tab = function(welEditable) {
+      recordUndo(welEditable);
+      var rng = range.create();
+      var sNbsp = new Array(welEditable.data('tabsize') + 1).join('&nbsp;')
+      rng.insertNode($('<span id="noteTab">' + sNbsp + '</span>')[0]);
+      var welTab = $('#noteTab').removeAttr('id');
+      rng = range.create(welTab[0], 1);
+      rng.select();
+      dom.remove(welTab[0]);
     };
 
     // undo
@@ -595,8 +639,8 @@
     }
 
     this.formatBlock = function(welEditable, sValue) {
-      sValue = bMSIE ? "<" + sValue + ">" : sValue;
-      document.execCommand("FormatBlock", false, sValue);
+      sValue = bMSIE ? '<' + sValue + '>' : sValue;
+      document.execCommand('FormatBlock', false, sValue);
     };
 
     this.fontSize = function(welEditable, sValue) {
@@ -609,42 +653,42 @@
     
     this.lineHeight = function(welEditable, sValue) {
       recordUndo(welEditable);
-      style.stylePara(new Range(), {lineHeight: sValue});
+      style.stylePara(range.create(), {lineHeight: sValue});
     };
 
     this.unlink = function(welEditable) {
-      var rng = new Range();
+      var rng = range.create();
       if (rng.isOnAnchor()) {
         recordUndo(welEditable);
         var elAnchor = dom.ancestor(rng.sc, dom.isAnchor);
-        rng = new Range(elAnchor, 0, elAnchor, 1);
+        rng = range.create(elAnchor, 0, elAnchor, 1);
         rng.select();
         document.execCommand('unlink');
       }
     };
 
     this.setLinkDialog = function(welEditable, fnShowDialog) {
-      var rng = new Range();
+      var rng = range.create();
       if (rng.isOnAnchor()) {
         var elAnchor = dom.ancestor(rng.sc, dom.isAnchor);
-        rng = new Range(elAnchor, 0, elAnchor, 1);
+        rng = range.create(elAnchor, 0, elAnchor, 1);
       }
       fnShowDialog({
         range: rng,
         text: rng.toString(),
-        url: rng.isOnAnchor() ? dom.ancestor(rng.sc, dom.isAnchor).href : ""
+        url: rng.isOnAnchor() ? dom.ancestor(rng.sc, dom.isAnchor).href : ''
       }, function(sLinkUrl) {
         rng.select(); recordUndo(welEditable);
 
-        var bProtocol = sLinkUrl.toLowerCase().indexOf("://") !== -1;
-        var sLinkUrlWithProtocol = bProtocol ? sLinkUrl : "http://" + sLinkUrl;
+        var bProtocol = sLinkUrl.toLowerCase().indexOf('://') !== -1;
+        var sLinkUrlWithProtocol = bProtocol ? sLinkUrl : 'http://' + sLinkUrl;
 
         //IE: createLink when range collapsed.
         if (bMSIE && rng.isCollapsed()) {
           rng.insertNode($('<A id="linkAnchor">' + sLinkUrl + '</A>')[0]);
-          var welAnchor = $('#linkAnchor').removeAttr("id")
+          var welAnchor = $('#linkAnchor').removeAttr('id')
                                           .attr('href', sLinkUrlWithProtocol);
-          rng = new Range(welAnchor[0], 0, welAnchor[0], 1);
+          rng = range.create(welAnchor[0], 0, welAnchor[0], 1);
           rng.select();
         } else {
           document.execCommand('createlink', false, sLinkUrlWithProtocol);
@@ -654,10 +698,11 @@
     
     this.color = function(welEditable, sObjColor) {
       var oColor = JSON.parse(sObjColor);
+      var foreColor = oColor.foreColor, backColor = oColor.backColor;
 
       recordUndo(welEditable);
-      document.execCommand('foreColor', false, oColor.foreColor);
-      document.execCommand('backColor', false, oColor.backColor);
+      if (foreColor) { document.execCommand('foreColor', false, foreColor); }
+      if (backColor) { document.execCommand('backColor', false, backColor); }
     };
     
     this.insertTable = function(welEditable, sDim) {
@@ -678,7 +723,7 @@
       }
       sTR = aTR.join('');
       var sTable = '<table class="table table-bordered">' + sTR + '</table>';
-      (new Range()).insertNode($(sTable)[0]);
+      range.create().insertNode($(sTable)[0]);
     };
 
     this.float = function(welEditable, sValue, elTarget) {
@@ -689,12 +734,17 @@
     this.resize = function(welEditable, sValue, elTarget) {
       recordUndo(welEditable);
       elTarget.style.width = welEditable.width() * sValue + 'px';
-      elTarget.style.height = "";
+      elTarget.style.height = '';
     };
 
-    this.resizeTo = function(pos, elTarget) {
-      elTarget.style.width = pos.x + 'px';
-      elTarget.style.height = pos.y + 'px';
+    this.resizeTo = function(pos, welTarget) {
+      var newRatio = pos.y / pos.x;
+      var ratio = welTarget.data('ratio');
+
+      welTarget.css({
+        width: ratio > newRatio ? pos.x : pos.y / ratio,
+        height: ratio > newRatio ? pos.x * ratio : pos.y
+      });
     };
   };
 
@@ -759,8 +809,25 @@
       var oColor = JSON.parse(welRecentColor.attr('data-value'));
       oColor[sEvent] = sValue;
       welRecentColor.attr('data-value', JSON.stringify(oColor));
-      var sKey = sEvent === "backColor" ? 'background-color' : 'color';
+      var sKey = sEvent === 'backColor' ? 'background-color' : 'color';
       welRecentColor.find('i').css(sKey, sValue);
+    };
+
+    this.updateFullscreen = function(welToolbar, bFullscreen) {
+      var welBtn = welToolbar.find('button[data-event="fullscreen"]');
+      welBtn[bFullscreen ? 'addClass' : 'removeClass']('active');
+    };
+    this.updateCodeview = function(welToolbar, bCodeview) {
+      var welBtn = welToolbar.find('button[data-event="codeview"]');
+      welBtn[bCodeview ? 'addClass' : 'removeClass']('active');
+    };
+
+    this.enable = function(welToolbar) {
+      welToolbar.find('button').not('button[data-event="codeview"]').removeClass('disabled');
+    };
+
+    this.disable = function(welToolbar) {
+      welToolbar.find('button').not('button[data-event="codeview"]').addClass('disabled');
     };
   };
   
@@ -768,30 +835,29 @@
    * Popover
    */
   var Popover = function() {
+    var showPopover = function(welPopover, elPlaceholder) {
+      var welPlaceHolder = $(elPlaceholder);
+      var pos = welPlaceHolder.position(), height = welPlaceHolder.height();
+      welPopover.css({
+        display: 'block',
+        left: pos.left,
+        top: pos.top + height
+      });
+    };
+
     this.update = function(welPopover, oStyle) {
       var welLinkPopover = welPopover.find('.note-link-popover'),
           welImagePopover = welPopover.find('.note-image-popover');
       if (oStyle.anchor) {
         var welAnchor = welLinkPopover.find('a');
         welAnchor.attr('href', oStyle.anchor.href).html(oStyle.anchor.href);
-        
-        var rect = oStyle.anchor.getBoundingClientRect();
-        welLinkPopover.css({
-          display: 'block',
-          left: rect.left,
-          top: $(document).scrollTop() + rect.bottom
-        });
+        showPopover(welLinkPopover, oStyle.anchor);
       } else {
         welLinkPopover.hide();
       }
 
       if (oStyle.image) {
-        var rect = oStyle.image.getBoundingClientRect();
-        welImagePopover.css({
-          display: 'block',
-          left: rect.left,
-          top: $(document).scrollTop() + rect.bottom
-        });
+        showPopover(welImagePopover, oStyle.image);
       } else {
         welImagePopover.hide();
       }
@@ -809,15 +875,15 @@
     this.update = function(welHandle, oStyle) {
       var welSelection = welHandle.find('.note-control-selection');
       if (oStyle.image) {
-        var rect = oStyle.image.getBoundingClientRect();
+        var welImage = $(oStyle.image);
+        var pos = welImage.position();
+        var szImage = {w: welImage.width(), h: welImage.height()};
         welSelection.css({
           display: 'block',
-          left: rect.left + 'px',
-          top: $(document).scrollTop() + rect.top + 'px',
-          width: rect.width + 'px',
-          height: rect.height + 'px'
+          left: pos.left, top: pos.top,
+          width: szImage.w, height: szImage.h
         }).data('target', oStyle.image); // save current image element.
-        var sSizing = rect.width + 'x' + rect.height;
+        var sSizing = szImage.w + 'x' + szImage.h;
         welSelection.find('.note-control-selection-info').text(sSizing);
       } else {
         welSelection.hide();
@@ -843,13 +909,14 @@
         welDropzone.on('drop', function(e) {
           hDropImage(e); welImageDialog.modal('hide');
         });
-        welImageInput.on('change', function() {
+        welImageInput.on('change', function(event) {
           fnInsertImages(this.files); $(this).val('');
           welImageDialog.modal('hide');
         });
       }).on('hidden.bs.modal', function(e) {
         welDropzone.off('dragenter dragover dragleave drop');
         welImageInput.off('change');
+        welImageDialog.off('shown.bs.modal hidden.bs.modal');
       }).modal('show');
     };
 
@@ -877,8 +944,8 @@
         });
       }).on('hidden.bs.modal', function(e) {
         welLinkUrl.off('keyup');
-        welLinkDialog.off('shown.bs.modal hidden.bs.modal');
         welLinkBtn.off('click');
+        welLinkDialog.off('shown.bs.modal hidden.bs.modal');
       }).modal('show');
     };
 
@@ -910,6 +977,7 @@
         editor: function() { return welEditor; },
         toolbar: function() { return welEditor.find('.note-toolbar'); },
         editable: function() { return welEditor.find('.note-editable'); },
+        codeable: function() { return welEditor.find('.note-codeable'); },
         statusbar: function() { return welEditor.find('.note-statusbar'); },
         popover: function() { return welEditor.find('.note-popover'); },
         handle: function() { return welEditor.find('.note-handle'); },
@@ -925,7 +993,9 @@
       var bExecCmd = (bCmd || bShift || keyCode === key.TAB);
       var oLayoutInfo = (bExecCmd) ? makeLayoutInfo(event.target) : null;
 
-      if (bCmd && ((bShift && keyCode === key.Z) || keyCode === key.Y)) {
+      if (keyCode === key.TAB && oLayoutInfo.editable().data('tabsize')) {
+        editor.tab(oLayoutInfo.editable());
+      } else if (bCmd && ((bShift && keyCode === key.Z) || keyCode === key.Y)) {
         editor.redo(oLayoutInfo.editable());
       } else if (bCmd && keyCode === key.Z) {
         editor.undo(oLayoutInfo.editable());
@@ -1006,7 +1076,6 @@
     
     var hToolbarAndPopoverUpdate = function(event) {
       var oLayoutInfo = makeLayoutInfo(event.currentTarget || event.target);
-      
       var oStyle = editor.currentStyle(event.target);
       if (!oStyle) { return; }
       toolbar.update(oLayoutInfo.toolbar(), oStyle);
@@ -1027,18 +1096,24 @@
             welHandle = oLayoutInfo.handle(), welPopover = oLayoutInfo.popover(),
             welEditable = oLayoutInfo.editable(), welEditor = oLayoutInfo.editor();
 
-        var elTarget = welHandle.find('.note-control-selection').data('target');
-        var posStart = $(elTarget).offset(),
+        var elTarget = welHandle.find('.note-control-selection').data('target'),
+            welTarget = $(elTarget);
+        var posStart = welTarget.offset(),
             scrollTop = $(document).scrollTop(), posDistance;
+
         welEditor.on('mousemove', function(event) {
           posDistance = {x: event.clientX - posStart.left,
                          y: event.clientY - (posStart.top - scrollTop)};
-          editor.resizeTo(posDistance, elTarget);
+          editor.resizeTo(posDistance, welTarget);
           handle.update(welHandle, {image: elTarget});
           popover.update(welPopover, {image: elTarget});
         }).on('mouseup', function() {
           welEditor.off('mousemove').off('mouseup');
         });
+
+        if (!welTarget.data('ratio')) { // original ratio.
+          welTarget.data('ratio', welTarget.height() / welTarget.width());
+        }
 
         editor.recordUndo(welEditable);
         event.stopPropagation(); event.preventDefault();
@@ -1060,7 +1135,8 @@
 
         var oLayoutInfo = makeLayoutInfo(event.target);
         var welDialog = oLayoutInfo.dialog(),
-            welEditable = oLayoutInfo.editable();
+            welEditable = oLayoutInfo.editable(),
+            welCodeable = oLayoutInfo.codeable();
 
         // before command
         var elTarget;
@@ -1076,18 +1152,57 @@
         }
         
         // after command
-        if ($.inArray(sEvent, ["backColor", "foreColor"]) !== -1) {
+        if ($.inArray(sEvent, ['backColor', 'foreColor']) !== -1) {
           toolbar.updateRecentColor(welBtn[0], sEvent, sValue);
-        } else if (sEvent === "showLinkDialog") { // popover to dialog
+        } else if (sEvent === 'showLinkDialog') { // popover to dialog
           editor.setLinkDialog(welEditable, function(linkInfo, cb) {
             dialog.showLinkDialog(welDialog, linkInfo, cb);
           });
-        } else if (sEvent === "showImageDialog") {
+        } else if (sEvent === 'showImageDialog') {
           dialog.showImageDialog(welDialog, hDropImage, function(files) {
             insertImages(welEditable, files);
           });
-        } else if (sEvent === "showHelpDialog") {
+        } else if (sEvent === 'showHelpDialog') {
           dialog.showHelpDialog(welDialog);
+        } else if (sEvent === 'fullscreen') {
+          var welEditor = oLayoutInfo.editor();
+          welEditor.toggleClass('fullscreen');
+
+          var welToolbar = oLayoutInfo.toolbar();
+          var hResizeFullscreen = function() {
+            var nHeight = $(window).height() - welToolbar.outerHeight();
+            welEditable.css('height', nHeight);
+          }
+
+          var bFullscreen = welEditor.hasClass('fullscreen');
+          if (bFullscreen) {
+            welEditable.data('orgHeight', welEditable.css('height'));
+            $(window).resize(hResizeFullscreen).trigger('resize');
+          } else {
+            welEditable.css('height', welEditable.data('orgHeight'));
+            $(window).off('resize');
+          }
+
+          toolbar.updateFullscreen(welToolbar, bFullscreen);
+        } else if (sEvent === 'codeview') {
+          var welEditor = oLayoutInfo.editor(),
+              welToolbar = oLayoutInfo.toolbar();
+          welEditor.toggleClass('codeview');
+
+          var bCodeview = welEditor.hasClass('codeview')
+          if (bCodeview) {
+            welCodeable.val(welEditable.html());
+            welCodeable.height(welEditable.height());
+            toolbar.disable(welToolbar);
+            welCodeable.focus();
+          } else {
+            welEditable.html(welCodeable.val());
+            welEditable.height(welCodeable.height());
+            toolbar.enable(welToolbar);
+            welEditable.focus();
+          }
+
+          toolbar.updateCodeview(oLayoutInfo.toolbar(), bCodeview);
         }
 
         hToolbarAndPopoverUpdate(event);
@@ -1097,7 +1212,9 @@
     var EDITABLE_PADDING = 24;
     var hStatusbarMousedown = function(event) {
       var welDocument = $(document);
-      var welEditable = makeLayoutInfo(event.target).editable();
+      var oLayoutInfo = makeLayoutInfo(event.target);
+      var welEditable = oLayoutInfo.editable(),
+          welCodeable = oLayoutInfo.codeable();
 
       var nEditableTop = welEditable.offset().top - welDocument.scrollTop();
       var hMousemove = function(event) {
@@ -1177,8 +1294,8 @@
       }
       if (options.onfocus) { oLayoutInfo.editable.focus(options.onfocus); }
       if (options.onblur) { oLayoutInfo.editable.blur(options.onblur); }
-      if (options.onkeyup) { oLayoutInfo.editable.blur(options.onkeyup); }
-      if (options.onkeydown) { oLayoutInfo.editable.blur(options.onkeydown); }
+      if (options.onkeyup) { oLayoutInfo.editable.keyup(options.onkeyup); }
+      if (options.onkeydown) { oLayoutInfo.editable.keydown(options.onkeydown); }
 
       // TODO: callback for advanced features
       // autosave, impageUpload, imageUploadError, fileUpload, fileUploadError
@@ -1240,7 +1357,7 @@
         '<li><a data-event="fontSize" data-value="36"><i class="icon-ok"></i> 36</a></li>' +
         '</ul>',
       color:
-        '<button type="button" class="btn btn-default btn-sm btn-small note-recent-color" title="Recent Color" data-event="color" data-value=\'{"foreColor":"black","backColor":"yellow"}\' tabindex="-1"><i class="icon-font" style="color:black;background-color:yellow;"></i></button>' +
+        '<button type="button" class="btn btn-default btn-sm btn-small note-recent-color" title="Recent Color" data-event="color" data-value=\'{"backColor":"yellow"}\' tabindex="-1"><i class="icon-font" style="color:black;background-color:yellow;"></i></button>' +
         '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" title="More Color" data-toggle="dropdown" tabindex="-1">' +
         '<span class="caret"></span>' +
         '</button>' +
@@ -1248,10 +1365,12 @@
         '<li>' +
         '<div class="btn-group">' +
         '<div class="note-palette-title">BackColor</div>' +
+        '<div class="note-color-reset" data-event="backColor" data-value="inherit" title="Transparent">Set transparent</div>' +
         '<div class="note-color-palette" data-target-event="backColor"></div>' +
         '</div>' +
         '<div class="btn-group">' +
         '<div class="note-palette-title">FontColor</div>' +
+        '<div class="note-color-reset" data-event="foreColor" data-value="inherit" title="Reset">Reset to default</div>' +
         '<div class="note-color-palette" data-target-event="foreColor"></div>' +
         '</div>' +
         '</li>' +
@@ -1298,10 +1417,14 @@
         '<li><a data-event="lineHeight" data-value="3.0"><i class="icon-ok"></i> 3.0</a></li>' +
         '</ul>',
       help:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Help" data-shortcut="Ctrl+/" data-mac-shortcut="⌘+/" data-event="showHelpDialog" tabindex="-1"><i class="icon-question"></i></button>'
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Help" data-shortcut="Ctrl+/" data-mac-shortcut="⌘+/" data-event="showHelpDialog" tabindex="-1"><i class="icon-question"></i></button>',
+      fullscreen:
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Full Screen" data-event="fullscreen" tabindex="-1"><i class="icon-fullscreen"></i></button>',
+      codeview:
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Code View" data-event="codeview" tabindex="-1"><i class="icon-code"></i></button>'
     };
     var sPopover = '<div class="note-popover">' +
-                     '<div class="note-link-popover popover fade bottom in" style="display: none;">' +
+                     '<div class="note-link-popover popover bottom in" style="display: none;">' +
                        '<div class="arrow"></div>' +
                        '<div class="popover-content note-link-content">' +
                          '<a href="http://www.google.com" target="_blank">www.google.com</a>&nbsp;&nbsp;' +
@@ -1311,7 +1434,7 @@
                          '</div>' +
                        '</div>' +
                      '</div>' +
-                     '<div class="note-image-popover popover fade bottom in" style="display: none;">' +
+                     '<div class="note-image-popover popover bottom in" style="display: none;">' +
                        '<div class="arrow"></div>' +
                        '<div class="popover-content note-image-content">' +
                          '<div class="btn-group">' +
@@ -1409,7 +1532,7 @@
                       '<div class="modal-dialog">' +
                         '<div class="modal-content">' +
                           '<div class="modal-header">' +
-                            '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" tabindex="-1">×</button>' +
+                            '<button type="button" class="close" aria-hidden="true" tabindex="-1">×</button>' +
                             '<h4>Insert Image</h4>' +
                           '</div>' +
                           '<div class="modal-body">' +
@@ -1426,7 +1549,7 @@
                       '<div class="modal-dialog">' +
                         '<div class="modal-content">' +
                           '<div class="modal-header">' +
-                            '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" tabindex="-1">×</button>' +
+                            '<button type="button" class="close" aria-hidden="true" tabindex="-1">×</button>' +
                             '<h4>Edit Link</h4>' +
                           '</div>' +
                           '<div class="modal-body">' +
@@ -1443,17 +1566,17 @@
                             '</div>' +
                           '</div>' +
                           '<div class="modal-footer">' +
-                            '<a href="#" class="btn disabled note-link-btn" disabled="disabled">Link</a>' +
+                            '<button href="#" class="btn btn-primary note-link-btn disabled" disabled="disabled">Link</button>' +
                           '</div>' +
                         '</div>' +
                       '</div>' +
                     '</div>' +
-                    '<div class="note-help-dialog modal fade" aria-hidden="false">' +
+                    '<div class="note-help-dialog modal" aria-hidden="false">' +
                       '<div class="modal-dialog">' +
                         '<div class="modal-content">' +
                           '<div class="modal-body">' +
                             '<div class="modal-background">' +
-                            '<a class="modal-close pull-right" data-dismiss="modal" aria-hidden="true" tabindex="-1">Close</a>' +
+                            '<a class="modal-close pull-right" aria-hidden="true" tabindex="-1">Close</a>' +
                             '<div class="title">Keyboard shortcuts</div>' +
                             sShortcutTable +
                             '<p class="text-center"><a href="//hackerwins.github.io/summernote/" target="_blank">Summernote v0.3</a> · <a href="//github.com/HackerWins/summernote" target="_blank">Project</a> · <a href="//github.com/HackerWins/summernote/issues" target="_blank">Issues</a></p>' +
@@ -1510,7 +1633,7 @@
     };
     
     // createLayout
-    var createLayout = this.createLayout = function(welHolder, nHeight, nTabIndex, aToolbarSetting) {
+    var createLayout = this.createLayout = function(welHolder, nHeight, nTabsize, aToolbarSetting) {
       //already created
       if (welHolder.next().hasClass('note-editor')) { return; }
       
@@ -1524,11 +1647,21 @@
 
       //03. create Editable
       var welEditable = $('<div class="note-editable" contentEditable="true"></div>').prependTo(welEditor);
-      if (nTabIndex) { welEditable.attr('tabIndex', nTabIndex); }
       if (nHeight) { welEditable.height(nHeight); }
+      if (nTabsize) {
+        welEditable.data('tabsize', nTabsize);
+      }
 
-      welEditable.html(welHolder.html());
+      welEditable.html(dom.html(welHolder));
       welEditable.data('NoteHistory', new History());
+
+      //031. create Codeable
+      var welCodeable = $('<textarea class="note-codeable"></textarea>').prependTo(welEditor);
+
+      //032. set styleWithCSS for backColor / foreColor clearing with 'inherit'.
+      setTimeout(function() { // protect FF Error: NS_ERROR_FAILURE: Failure
+        document.execCommand('styleWithCSS', 0, true);
+      });
       
       //04. create Toolbar
       var sToolbar = '';
@@ -1555,8 +1688,11 @@
       $(sHandle).prependTo(welEditor);
       
       //07. create Dialog
-      $(sDialog).prependTo(welEditor);
-      
+      var welDialog = $(sDialog).prependTo(welEditor);
+      welDialog.find('button.close, a.modal-close').click(function(event) {
+        $(this).closest('.modal').modal('hide');
+      });
+
       //08. Editor/Holder switch
       welEditor.insertAfter(welHolder);
       welHolder.hide();
@@ -1608,6 +1744,7 @@
           ['height', ['height']],
           ['table', ['table']],
           ['insert', ['link', 'picture']],
+          ['view', ['fullscreen', 'codeview']],
           ['help', ['help']]
         ]
       }, options );
@@ -1616,7 +1753,7 @@
         var welHolder = $(elHolder);
 
         // createLayout with options
-        renderer.createLayout(welHolder, options.height, options.tabIndex, options.toolbar);
+        renderer.createLayout(welHolder, options.height, options.tabsize, options.toolbar);
 
         var info = renderer.layoutInfoFromHolder(welHolder);
         eventHandler.attach(info, options);
@@ -1634,11 +1771,11 @@
     code: function(sHTML) {
       //get the HTML contents
       if (sHTML === undefined) {
-        return this.map(function(idx, elHolder) {
-          var info = renderer.layoutInfoFromHolder($(elHolder));
-          var bEditable = !!(info && info.editable);
-          return  bEditable ? info.editable.html() : $(elHolder).html();
-        });
+        var welHolder = this.first();
+        if (welHolder.length == 0) { return; }
+        var info = renderer.layoutInfoFromHolder(welHolder);
+        var bEditable = !!(info && info.editable);
+        return  bEditable ? info.editable.html() : welHolder.html();
       }
 
       // set the HTML contents
@@ -1660,13 +1797,13 @@
     },
     // inner object for test
     summernoteInner: function() {
-      return { dom: dom, list: list, func: func, Range: Range };
+      return { dom: dom, list: list, func: func, range: range };
     }
   });
-})(jQuery); // jQuery
+})(window.jQuery); // jQuery
 
-//Array.prototype.reduce fallback
-//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
+// Array.prototype.reduce fallback
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
 if ('function' !== typeof Array.prototype.reduce) {
   Array.prototype.reduce = function(callback, opt_initialValue) {
     'use strict';
