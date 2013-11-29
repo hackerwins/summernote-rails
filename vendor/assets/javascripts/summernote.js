@@ -3,12 +3,15 @@
  * (c) 2013~ Alan Hong
  * summernote may be freely distributed under the MIT license./
  */
-(function($) {
-  "use strict";
-
-  //Check Platform/Agent
-  var bMac = navigator.appVersion.indexOf('Mac') > -1; 
-  var bMSIE = navigator.userAgent.indexOf('MSIE') > -1;
+(function($) { "use strict";
+  /**
+   * object which check platform/agent
+   */
+  var agent = {
+    bMac: navigator.appVersion.indexOf('Mac') > -1,
+    bMSIE: navigator.userAgent.indexOf('MSIE') > -1,
+    bFF: navigator.userAgent.indexOf('Firefox') > -1
+  };
   
   /**
    * func utils (for high-order func's arg)
@@ -17,8 +20,8 @@
     var eq = function(elA) { return function(elB) { return elA === elB; }; };
     var eq2 = function(elA, elB) { return elA === elB; };
     var fail = function() { return false; };
-    var not = function(f) { return function() { return !f.apply(f, arguments); }};
-    var self = function(a) { return a; }
+    var not = function(f) { return function() { return !f.apply(f, arguments); }; };
+    var self = function(a) { return a; };
     return { eq: eq, eq2: eq2, fail: fail, not: not, self: self };
   }();
   
@@ -31,6 +34,11 @@
     var initial = function(array) { return array.slice(0, array.length - 1); };
     var tail = function(array) { return array.slice(1); };
 
+    /**
+     * get sum from a list
+     * @param {array} array - array
+     * @param {function} fn - iterator
+     */
     var sum = function(array, fn) {
       fn = fn || func.self;
       return array.reduce(function(memo, v) {
@@ -38,6 +46,10 @@
       }, 0);
     };
 
+    /**
+     * returns a copy of the collection with array type.
+     * @param {collection} collection - collection eg) node.childNodes, ...
+     */
     var from = function(collection) {
       var result = [], idx = -1, length = collection.length;
       while (++idx < length) {
@@ -46,6 +58,11 @@
       return result;
     };
     
+    /**
+     * cluster item by second function
+     * @param {array} array - array
+     * @param {function} fn - predicate function for cluster rule
+     */
     var clusterBy = function(array, fn) {
       if (array.length === 0) { return []; }
       var aTail = tail(array);
@@ -60,25 +77,81 @@
       }, [[head(array)]]);
     };
 
+    /**
+     * returns a copy of the array with all falsy values removed
+     * @param {array} array - array
+     * @param {function} fn - predicate function for cluster rule
+     */
     var compact = function(array) {
       var aResult = [];
       for (var idx = 0, sz = array.length; idx < sz; idx ++) {
-        if (array[idx]) { aResult.push(array[idx]); };
-      };
+        if (array[idx]) { aResult.push(array[idx]); }
+      }
       return aResult;
     };
 
     return { head: head, last: last, initial: initial, tail: tail, 
              sum: sum, from: from, compact: compact, clusterBy: clusterBy };
   }();
+
+  /**
+   * aysnc functions which returns deferred object
+   */
+  var async = function() {
+    /**
+     * readFile
+     * @param {file} file - file object
+     */
+    var readFile = function(file) {
+      return $.Deferred(function(deferred) {
+        var reader = new FileReader();
+        reader.onload = function(e) { deferred.resolve(e.target.result); }
+        reader.onerror = function(e) { deferred.reject(this); }
+        reader.readAsDataURL(file);
+      }).promise();
+    };
+
+    /**
+     * loadImage
+     * @param {string} sUrl
+     */
+    var loadImage = function(sUrl) {
+      return $.Deferred(function(deferred) {
+        var image = new Image();
+        image.onload = loaded;
+        image.onerror = errored; // URL returns 404, etc
+        image.onabort = errored; // IE may call this if user clicks "Stop"
+        image.src = sUrl;
+         
+        function loaded() {
+          unbindEvents(); deferred.resolve(image);
+        }
+        function errored() {
+          unbindEvents(); deferred.reject(image);
+        }
+        function unbindEvents() {
+          image.onload = null;
+          image.onerror = null;
+          image.onabort = null;
+        }
+      }).promise();
+    };
+
+    return { readFile: readFile, loadImage: loadImage };
+  }();
   
   /**
    * dom utils
    */
   var dom = function() {
+    /**
+     * returns predicate which judge whether nodeName is same
+     */
     var makePredByNodeName = function(sNodeName) {
       // nodeName of element is always uppercase.
-      return function(node) { return node && node.nodeName === sNodeName; };
+      return function(node) {
+        return node && node.nodeName === sNodeName;
+      };
     };
     
     var isPara = function(node) {
@@ -97,7 +170,11 @@
       return node && $(node).hasClass('note-control-sizing');
     };
 
-    // ancestor: find nearest ancestor predicate hit
+    /**
+     * find nearest ancestor predicate hit
+     * @param {element} node
+     * @param {function} pred - predicate function
+     */
     var ancestor = function(node, pred) {
       while (node) {
         if (pred(node)) { return node; }
@@ -106,7 +183,11 @@
       return null;
     };
     
-    // listAncestor: listing ancestor nodes (until predicate hit: optional)
+    /**
+     * returns new array of ancestor nodes (until predicate hit).
+     * @param {element} node
+     * @param {function} [optional] pred - predicate function
+     */
     var listAncestor = function(node, pred) {
       pred = pred || func.fail;      
       
@@ -118,7 +199,11 @@
       return aAncestor;
     };
     
-    // commonAncestor: find commonAncestor
+    /**
+     * returns common ancestor node between two nodes.
+     * @param {element} nodeA
+     * @param {element} nodeB
+     */
     var commonAncestor = function(nodeA, nodeB) {
       var aAncestor = listAncestor(nodeA);
       for (var n = nodeB; n; n = n.parentNode) {
@@ -127,8 +212,12 @@
       return null; // difference document area
     };
 
-    // listBetween: listing all Nodes between nodeA and nodeB
-    // FIXME: nodeA and nodeB must be sorted, use comparePoints later.
+    /**
+     * listing all Nodes between two nodes.
+     * FIXME: nodeA and nodeB must be sorted, use comparePoints later.
+     * @param {element} nodeA
+     * @param {element} nodeB
+     */
     var listBetween = function(nodeA, nodeB) {
       var aNode = [];
 
@@ -136,19 +225,23 @@
       var fnWalk = function(node) {
         if (!node) { return; } // traverse fisnish
         if (node === nodeA) { bStart = true; } // start point
-        if (bStart && !bEnd) { aNode.push(node) } // between
+        if (bStart && !bEnd) { aNode.push(node); } // between
         if (node === nodeB) { bEnd = true; return; } // end point
 
-        for (var idx = 0, sz=node.childNodes.length; idx < sz; idx++) {
+        for (var idx = 0, sz = node.childNodes.length; idx < sz; idx++) {
           fnWalk(node.childNodes[idx]);
         }
-      }
+      };
 
       fnWalk(commonAncestor(nodeA, nodeB)); // DFS with commonAcestor.
       return aNode;
     };
 
-    // listPrev: listing prevSiblings (until predicate hit: optional)
+    /**
+     * listing all prevSiblings (until predicate hit).
+     * @param {element} node
+     * @param {function} [optional] pred - predicate function
+     */
     var listPrev = function(node, pred) {
       pred = pred || func.fail;      
 
@@ -157,11 +250,15 @@
         aNext.push(node);
         if (pred(node)) { break; }
         node = node.previousSibling;
-      };
+      }
       return aNext;
     };
     
-    // listNext: listing nextSiblings (until predicate hit: optional)
+    /**
+     * listing nextSiblings (until predicate hit).
+     * @param {element} node
+     * @param {function} pred [optional] - predicate function
+     */
     var listNext = function(node, pred) {
       pred = pred || func.fail;      
 
@@ -170,11 +267,15 @@
         aNext.push(node);
         if (pred(node)) { break; }
         node = node.nextSibling;
-      };
+      }
       return aNext;
     };
     
-    // insertAfter: insert node after preceding
+    /**
+     * insert node after preceding
+     * @param {element} node
+     * @param {element} preceding - predicate function
+     */
     var insertAfter = function(node, preceding) {
       var next = preceding.nextSibling, parent = preceding.parentNode;
       if (next) {
@@ -185,7 +286,11 @@
       return node;
     };
 
-    // appends: append children
+    /**
+     * append children
+     * @param {element} node
+     * @param {collection} aChild
+     */
     var appends = function(node, aChild) {
       $.each(aChild, function(idx, child) {
         node.appendChild(child);
@@ -195,26 +300,40 @@
     
     var isText = makePredByNodeName('#text');
 
-    // length: size of element.
+    /**
+     * returns #text's text size or element's childNodes size
+     * @param {element} node
+     */
     var length = function(node) {
       if (isText(node)) { return node.nodeValue.length; }
       return node.childNodes.length;
     };
 
-    // position: offset from parent.
+    /**
+     * returns offset from parent.
+     * @param {element} node
+     */
     var position = function(node) {
       var offset = 0;
       while (node = node.previousSibling) { offset += 1; }
       return offset;
     };
 
-    // makeOffsetPath: return offsetPath(offset list) from ancestor
+    /**
+     * return offsetPath(array of offset) from ancestor
+     * @param {element} ancestor - ancestor node
+     * @param {element} node
+     */
     var makeOffsetPath = function(ancestor, node) {
       var aAncestor = list.initial(listAncestor(node, func.eq(ancestor)));
       return $.map(aAncestor, position).reverse();
     };
 
-    // fromtOffsetPath: return element from offsetPath(offset list)
+    /**
+     * return element from offsetPath(array of offset)
+     * @param {element} ancestor - ancestor node
+     * @param {array} aOffset - offsetPath
+     */
     var fromOffsetPath = function(ancestor, aOffset) {
       var current = ancestor;
       for (var i = 0, sz = aOffset.length; i < sz; i++) {
@@ -223,7 +342,11 @@
       return current;
     };
 
-    // splitData: split element or #text
+    /**
+     * split element or #text
+     * @param {element} node
+     * @param {number} offset
+     */
     var splitData = function(node, offset) {
       if (offset === 0) { return node; }
       if (offset >= length(node)) { return node.nextSibling; }
@@ -237,7 +360,12 @@
       return appends(node, listNext(child));
     };
     
-    // split: split dom tree by boundaryPoint(pivot and offset)
+    /**
+     * split dom tree by boundaryPoint(pivot and offset)
+     * @param {element} root
+     * @param {element} pivot - this will be boundaryPoint's node
+     * @param {number} offset - this will be boundaryPoint's offset
+     */
     var split = function(root, pivot, offset) {
       var aAncestor = listAncestor(pivot, func.eq(root));
       if (aAncestor.length === 1) { return splitData(pivot, offset); }
@@ -251,6 +379,37 @@
         return clone;
       });
     };
+
+    /**
+     * remove node, (bRemoveChild: remove child or not)
+     * @param {element} node
+     * @param {boolean} bRemoveChild
+     */
+    var remove = function(node, bRemoveChild) {
+      if (!node || !node.parentNode) { return; }
+      if (node.removeNode) { return node.removeNode(bRemoveChild); }
+
+      var elParent = node.parentNode;
+      if (!bRemoveChild) {
+        var aNode = [];
+        for (var i = 0, sz = node.childNodes.length; i < sz; i++) {
+          aNode.push(node.childNodes[i]);
+        }
+
+        for (var i = 0, sz = aNode.length; i < sz; i++) {
+          elParent.insertBefore(aNode[i], node);
+        }
+      }
+
+      elParent.removeChild(node);
+    };
+
+    var unescape = function(str) {
+      return $("<div/>").html(str).text();
+    };
+    var html = function($node) {
+      return dom.isTextarea($node[0]) ? unescape($node.val()) : $node.html();
+    };
     
     return {
       isText: isText,
@@ -260,209 +419,215 @@
       isDiv: makePredByNodeName('DIV'), isSpan: makePredByNodeName('SPAN'),
       isB: makePredByNodeName('B'), isU: makePredByNodeName('U'),
       isS: makePredByNodeName('S'), isI: makePredByNodeName('I'),
-      isImg: makePredByNodeName('IMG'),
+      isImg: makePredByNodeName('IMG'), isTextarea: makePredByNodeName('TEXTAREA'),
       ancestor: ancestor, listAncestor: listAncestor,
       listNext: listNext, listPrev: listPrev,
       commonAncestor: commonAncestor, listBetween: listBetween,
       insertAfter: insertAfter, position: position,
       makeOffsetPath: makeOffsetPath, fromOffsetPath: fromOffsetPath,
-      split: split
+      split: split, remove: remove, html: html
     };
   }();
 
   /**
-   * Range
-   * {startContainer, startOffset, endContainer, endOffset}
-   * create Range Object From arguments or Browser Selection
+   * range module
    */
-  var bW3CRangeSupport = !!document.createRange;
+  var range = function() {
+    var bW3CRangeSupport = !!document.createRange;
 
-  // return boundary point from TextRange(ie8)
-  // inspired by Andy Na's HuskyRange.js
-  var textRange2bp = function(textRange, bStart) {
-    var elCont = textRange.parentElement(), nOffset;
+    // return boundaryPoint from TextRange, inspired by Andy Na's HuskyRange.js
+    var textRange2bp = function(textRange, bStart) {
+      var elCont = textRange.parentElement(), nOffset;
 
-    var tester = document.body.createTextRange(), elPrevCont;
-    var aChild = list.from(elCont.childNodes);
-    for (nOffset = 0; nOffset < aChild.length; nOffset++) {
-      if (dom.isText(aChild[nOffset])) { continue; }
-      tester.moveToElementText(aChild[nOffset]);
-      if (tester.compareEndPoints("StartToStart", textRange) >= 0) { break; }
-      elPrevCont = aChild[nOffset];
-    }
-
-    if (nOffset != 0 && dom.isText(aChild[nOffset - 1])) {
-      var textRangeStart = document.body.createTextRange(), elCurText = null;
-      textRangeStart.moveToElementText(elPrevCont || elCont);
-      textRangeStart.collapse(!elPrevCont);
-      elCurText = elPrevCont ? elPrevCont.nextSibling : elCont.firstChild;
-
-      var pointTester = textRange.duplicate();
-      pointTester.setEndPoint("StartToStart", textRangeStart);
-      var nTextCount = pointTester.text.replace(/[\r\n]/g, "").length;
-
-      while (nTextCount > elCurText.nodeValue.length && elCurText.nextSibling) {
-        nTextCount -= elCurText.nodeValue.length;
-        elCurText = elCurText.nextSibling;
-      }
-      var sDummy = elCurText.nodeValue; //enforce IE to re-reference elCurText
-
-      if (bStart && elCurText.nextSibling && dom.isText(elCurText.nextSibling) &&
-          nTextCount == elCurText.nodeValue.length) {
-        nTextCount -= elCurText.nodeValue.length;
-        elCurText = elCurText.nextSibling;
+      var tester = document.body.createTextRange(), elPrevCont;
+      var aChild = list.from(elCont.childNodes);
+      for (nOffset = 0; nOffset < aChild.length; nOffset++) {
+        if (dom.isText(aChild[nOffset])) { continue; }
+        tester.moveToElementText(aChild[nOffset]);
+        if (tester.compareEndPoints('StartToStart', textRange) >= 0) { break; }
+        elPrevCont = aChild[nOffset];
       }
 
-      elCont = elCurText;
-      nOffset = nTextCount;
-    }
+      if (nOffset !== 0 && dom.isText(aChild[nOffset - 1])) {
+        var textRangeStart = document.body.createTextRange(), elCurText = null;
+        textRangeStart.moveToElementText(elPrevCont || elCont);
+        textRangeStart.collapse(!elPrevCont);
+        elCurText = elPrevCont ? elPrevCont.nextSibling : elCont.firstChild;
 
-    return {cont: elCont, offset: nOffset};
-  };
+        var pointTester = textRange.duplicate();
+        pointTester.setEndPoint('StartToStart', textRangeStart);
+        var nTextCount = pointTester.text.replace(/[\r\n]/g, '').length;
 
-  // return TextRange(ie8) from boundary point
-  // (inspired by google closure-library)
-  var bp2textRange = function(bp) {
-    var textRangeInfo = function(elCont, nOffset) {
-      var elNode, bCollapseToStart;
+        while (nTextCount > elCurText.nodeValue.length && elCurText.nextSibling) {
+          nTextCount -= elCurText.nodeValue.length;
+          elCurText = elCurText.nextSibling;
+        }
+        var sDummy = elCurText.nodeValue; //enforce IE to re-reference elCurText
 
-      if (dom.isText(elCont)) {
-        var aPrevText = dom.listPrev(elCont, func.not(dom.isText));
-        var elPrevCont = list.last(aPrevText).previousSibling;
-        elNode =  elPrevCont || elCont.parentNode;
-        nOffset += list.sum(list.tail(aPrevText), dom.length);
-        bCollapseToStart = !elPrevCont;
-      } else {
-        elNode = elCont.childNodes[nOffset] || elCont;
-        if (dom.isText(elNode)) {
-          return textRangeInfo(elNode, nOffset);
+        if (bStart && elCurText.nextSibling && dom.isText(elCurText.nextSibling) &&
+            nTextCount == elCurText.nodeValue.length) {
+          nTextCount -= elCurText.nodeValue.length;
+        elCurText = elCurText.nextSibling;
         }
 
-        nOffset = 0;
-        bCollapseToStart = false;
+        elCont = elCurText;
+        nOffset = nTextCount;
       }
 
-      return {cont: elNode, collapseToStart: bCollapseToStart, offset: nOffset};
-    }
-
-    var textRange = document.body.createTextRange();
-    var info = textRangeInfo(bp.cont, bp.offset);
-
-    textRange.moveToElementText(info.cont);
-    textRange.collapse(info.collapseToStart);
-    textRange.moveStart("character", info.offset);
-    return textRange;
-  };
-
-  var Range = function(sc, so, ec, eo) {
-    if (arguments.length === 0) { // from Browser Selection
-      if (bW3CRangeSupport) { // webkit, firefox
-        var nativeRng = document.getSelection().getRangeAt(0);
-        sc = nativeRng.startContainer, so = nativeRng.startOffset,
-        ec = nativeRng.endContainer, eo = nativeRng.endOffset;
-      } else { //TextRange
-        var textRange = document.selection.createRange();
-        var textRangeEnd = textRange.duplicate(); textRangeEnd.collapse(false);
-        var textRangeStart = textRange; textRangeStart.collapse(true);
-
-        var bpStart = textRange2bp(textRangeStart, true),
-            bpEnd = textRange2bp(textRangeEnd, false);
-
-        sc = bpStart.cont, so = bpStart.offset;
-        ec = bpEnd.cont, eo = bpEnd.offset;
-      }
-    }
-    
-    this.sc = sc; this.so = so;
-    this.ec = ec; this.eo = eo;
-
-    // nativeRange: get nativeRange from sc, so, ec, eo
-    var nativeRange = function() {
-      if (bW3CRangeSupport) {
-        var range = document.createRange();
-        range.setStart(sc, so);
-        range.setEnd(ec, eo);
-        return range;
-      } else {
-        var textRange = bp2textRange({cont:sc, offset:so});
-        textRange.setEndPoint('EndToEnd', bp2textRange({cont:ec, offset:eo}));
-        return textRange;
-      }
-    };
- 
-    // select: update visible range
-    this.select = function() {
-      var nativeRng = nativeRange();
-      if (bW3CRangeSupport) {
-        var selection = document.getSelection();
-        if (selection.rangeCount > 0) { selection.removeAllRanges(); }
-        selection.addRange(nativeRng);
-      } else {
-        nativeRng.select();
-      }
-    };
-    
-    // listPara: listing paragraphs on range
-    this.listPara = function() {
-      var aNode = dom.listBetween(sc, ec);
-      var aPara = list.compact($.map(aNode, function(node) {
-        return dom.ancestor(node, dom.isPara);
-      }));
-      return $.map(list.clusterBy(aPara, func.eq2), list.head);
-    };
-    
-    // isOnList: judge whether range is on list node or not
-    this.isOnList = function() {
-      var elStart = dom.ancestor(sc, dom.isList),
-          elEnd = dom.ancestor(ec, dom.isList);
-      return elStart && (elStart === elEnd);
+      return {cont: elCont, offset: nOffset};
     };
 
-    // isOnAnchor: judge whether range is on anchor node or not
-    this.isOnAnchor = function() {
-      var elStart = dom.ancestor(sc, dom.isAnchor),
-          elEnd = dom.ancestor(ec, dom.isAnchor);
-      return elStart && (elStart === elEnd);
+    // return TextRange from boundary point (inspired by google closure-library)
+    var bp2textRange = function(bp) {
+      var textRangeInfo = function(elCont, nOffset) {
+        var elNode, bCollapseToStart;
+
+        if (dom.isText(elCont)) {
+          var aPrevText = dom.listPrev(elCont, func.not(dom.isText));
+          var elPrevCont = list.last(aPrevText).previousSibling;
+          elNode =  elPrevCont || elCont.parentNode;
+          nOffset += list.sum(list.tail(aPrevText), dom.length);
+          bCollapseToStart = !elPrevCont;
+        } else {
+          elNode = elCont.childNodes[nOffset] || elCont;
+          if (dom.isText(elNode)) {
+            return textRangeInfo(elNode, nOffset);
+          }
+
+          nOffset = 0;
+          bCollapseToStart = false;
+        }
+
+        return {cont: elNode, collapseToStart: bCollapseToStart, offset: nOffset};
+      };
+
+      var textRange = document.body.createTextRange();
+      var info = textRangeInfo(bp.cont, bp.offset);
+
+      textRange.moveToElementText(info.cont);
+      textRange.collapse(info.collapseToStart);
+      textRange.moveStart('character', info.offset);
+      return textRange;
     };
 
-    // isCollapsed: judge whether range was collapsed
-    this.isCollapsed = function() { return sc === ec && so === eo; };
-    
-    // insertNode
-    this.insertNode = function(node) {
-      var nativeRng = nativeRange();
-      if (bW3CRangeSupport) {
-        nativeRng.insertNode(node);
-      } else {
-        nativeRng.pasteHTML(node.outerHTML); // NOTE: missing node reference.
-      }
-    };
+    // {startContainer, startOffset, endContainer, endOffset}
+    var WrappedRange = function(sc, so, ec, eo) {
+      this.sc = sc; this.so = so;
+      this.ec = ec; this.eo = eo;
 
-    this.toString = function() {
-      var nativeRng = nativeRange();
-      if (bW3CRangeSupport) {
-        return nativeRng.toString();
-      } else {
-        return nativeRng.text;
-      }
-    };
+      // nativeRange: get nativeRange from sc, so, ec, eo
+      var nativeRange = function() {
+        if (bW3CRangeSupport) {
+          var w3cRange = document.createRange();
+          w3cRange.setStart(sc, so);
+          w3cRange.setEnd(ec, eo);
+          return w3cRange;
+        } else {
+          var textRange = bp2textRange({cont:sc, offset:so});
+          textRange.setEndPoint('EndToEnd', bp2textRange({cont:ec, offset:eo}));
+          return textRange;
+        }
+      };
 
-    //bookmark: offsetPath bookmark
-    this.bookmark = function(elEditable) {
-      return {
-        s: { path: dom.makeOffsetPath(elEditable, sc), offset: so },
-        e: { path: dom.makeOffsetPath(elEditable, ec), offset: eo }
+      // select: update visible range
+      this.select = function() {
+        var nativeRng = nativeRange();
+        if (bW3CRangeSupport) {
+          var selection = document.getSelection();
+          if (selection.rangeCount > 0) { selection.removeAllRanges(); }
+          selection.addRange(nativeRng);
+        } else {
+          nativeRng.select();
+        }
+      };
+
+      // listPara: listing paragraphs on range
+      this.listPara = function() {
+        var aNode = dom.listBetween(sc, ec);
+        var aPara = list.compact($.map(aNode, function(node) {
+          return dom.ancestor(node, dom.isPara);
+        }));
+        return $.map(list.clusterBy(aPara, func.eq2), list.head);
+      };
+
+      // makeIsOn: return isOn(pred) function
+      var makeIsOn = function(pred) {
+        return function() {
+          var elAncestor = dom.ancestor(sc, pred);
+          return elAncestor && (elAncestor === dom.ancestor(ec, pred));
+        };
+      };
+
+      // isOnEditable: judge whether range is on editable or not
+      this.isOnEditable = makeIsOn(dom.isEditable);
+      // isOnList: judge whether range is on list node or not
+      this.isOnList = makeIsOn(dom.isList);
+      // isOnAnchor: judge whether range is on anchor node or not
+      this.isOnAnchor = makeIsOn(dom.isAnchor);
+      // isCollapsed: judge whether range was collapsed
+      this.isCollapsed = function() { return sc === ec && so === eo; };
+
+      // insertNode
+      this.insertNode = function(node) {
+        var nativeRng = nativeRange();
+        if (bW3CRangeSupport) {
+          nativeRng.insertNode(node);
+        } else {
+          nativeRng.pasteHTML(node.outerHTML); // NOTE: missing node reference.
+        }
+      };
+
+      this.toString = function() {
+        var nativeRng = nativeRange();
+        return bW3CRangeSupport ? nativeRng.toString() : nativeRng.text;
+      };
+
+      //bookmark: offsetPath bookmark
+      this.bookmark = function(elEditable) {
+        return {
+          s: { path: dom.makeOffsetPath(elEditable, sc), offset: so },
+          e: { path: dom.makeOffsetPath(elEditable, ec), offset: eo }
+        };
       };
     };
-  };
 
-  // createRangeFromBookmark
-  var createRangeFromBookmark = function(elEditable, bookmark) {
-    return new Range(dom.fromOffsetPath(elEditable, bookmark.s.path),
-                     bookmark.s.offset,
-                     dom.fromOffsetPath(elEditable, bookmark.e.path),
-                     bookmark.e.offset);
-  };
+    return { // Range Object
+      // create Range Object From arguments or Browser Selection
+      create : function(sc, so, ec, eo) {
+        if (arguments.length === 0) { // from Browser Selection
+          if (bW3CRangeSupport) { // webkit, firefox
+            var selection = document.getSelection();
+            if (selection.rangeCount === 0) { return null; }
+
+            var nativeRng = selection.getRangeAt(0);
+            sc = nativeRng.startContainer, so = nativeRng.startOffset,
+            ec = nativeRng.endContainer, eo = nativeRng.endOffset;
+          } else { // IE8: TextRange
+            var textRange = document.selection.createRange();
+            var textRangeEnd = textRange.duplicate(); textRangeEnd.collapse(false);
+            var textRangeStart = textRange; textRangeStart.collapse(true);
+
+            var bpStart = textRange2bp(textRangeStart, true),
+            bpEnd = textRange2bp(textRangeEnd, false);
+
+            sc = bpStart.cont, so = bpStart.offset;
+            ec = bpEnd.cont, eo = bpEnd.offset;
+          }
+        } else if (arguments.length === 2) { //collapsed
+          ec = sc; eo = so;
+        }
+        return new WrappedRange(sc, so, ec, eo);
+      },
+      // createFromBookmark
+      createFromBookmark : function(elEditable, bookmark) {
+        var sc = dom.fromOffsetPath(elEditable, bookmark.s.path);
+        var so = bookmark.s.offset;
+        var ec = dom.fromOffsetPath(elEditable, bookmark.e.path);
+        var eo = bookmark.e.offset;
+        return new WrappedRange(sc, so, ec, eo);
+      }
+    };
+  }();
   
   /**
    * Style
@@ -513,7 +678,7 @@
       oStyle.aAncestor = dom.listAncestor(rng.sc, dom.isEditable);
 
       return oStyle;
-    }
+    };
   };
 
   /**
@@ -523,7 +688,7 @@
     var aUndo = [], aRedo = [];
 
     var makeSnap = function(welEditable) {
-      var elEditable = welEditable[0], rng = new Range();
+      var elEditable = welEditable[0], rng = range.create();
       return {
         contents: welEditable.html(), bookmark: rng.bookmark(elEditable),
         scrollTop: welEditable.scrollTop()
@@ -532,7 +697,7 @@
 
     var applySnap = function(welEditable, oSnap) {
       welEditable.html(oSnap.contents).scrollTop(oSnap.scrollTop);
-      createRangeFromBookmark(welEditable[0], oSnap.bookmark).select();
+      range.createFromBookmark(welEditable[0], oSnap.bookmark).select();
     };
 
     this.undo = function(welEditable) {
@@ -556,11 +721,33 @@
    * Editor
    */
   var Editor = function() {
+    // save current range
+    this.saveRange = function(welEditable) {
+      welEditable.data('range', range.create());
+    }
+
+    // restore lately range
+    this.restoreRange = function(welEditable) {
+      var rng = welEditable.data('range');
+      if (rng) { rng.select(); }
+    }
+
     //currentStyle
     var style = new Style();
     this.currentStyle = function(elTarget) {
-      if (document.getSelection && document.getSelection().rangeCount == 0) { return null; }
-      return style.current((new Range()), elTarget);
+      var rng = range.create();
+      return rng.isOnEditable() && style.current(rng, elTarget);
+    };
+
+    this.tab = function(welEditable) {
+      recordUndo(welEditable);
+      var rng = range.create();
+      var sNbsp = new Array(welEditable.data('tabsize') + 1).join('&nbsp;');
+      rng.insertNode($('<span id="noteTab">' + sNbsp + '</span>')[0]);
+      var welTab = $('#noteTab').removeAttr('id');
+      rng = range.create(welTab[0], 1);
+      rng.select();
+      dom.remove(welTab[0]);
     };
 
     // undo
@@ -583,7 +770,7 @@
                 'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull',
                 'insertOrderedList', 'insertUnorderedList',
                 'indent', 'outdent', 'formatBlock', 'removeFormat',
-                'backColor', 'foreColor', 'insertImage', 'insertHorizontalRule'];
+                'backColor', 'foreColor', 'insertHorizontalRule'];
     
     for (var idx = 0, len=aCmd.length; idx < len; idx ++) {
       this[aCmd[idx]] = function(sCmd) {
@@ -594,57 +781,78 @@
       }(aCmd[idx]);
     }
 
+    this.insertImage = function(welEditable, sUrl) {
+      async.loadImage(sUrl).done(function(image) {
+        recordUndo(welEditable);
+        var welImage = $('<img>').attr('src', sUrl);
+        welImage.css('width', Math.min(welEditable.width(), image.width));
+        range.create().insertNode(welImage[0]);
+      }).fail(function(image) { 
+        var callbacks = welEditable.data('callbacks');
+        if (callbacks.onImageUploadError) {
+          callbacks.onImageUploadError();
+        }
+      });
+    };
+
     this.formatBlock = function(welEditable, sValue) {
-      sValue = bMSIE ? "<" + sValue + ">" : sValue;
-      document.execCommand("FormatBlock", false, sValue);
+      recordUndo(welEditable);
+      sValue = agent.bMSIE ? '<' + sValue + '>' : sValue;
+      document.execCommand('FormatBlock', false, sValue);
     };
 
     this.fontSize = function(welEditable, sValue) {
       recordUndo(welEditable);
       document.execCommand('fontSize', false, 3);
-      // <font size='3'> to <font style='font-size={sValue}px;'>
-      var welFont = welEditable.find('font[size=3]');
-      welFont.removeAttr('size').css('font-size', sValue + 'px');
+      if (agent.bFF) {
+        // firefox: <font size="3"> to <span style='font-size={sValue}px;'>, buggy
+        welEditable.find('font[size=3]').removeAttr('size').css('font-size', sValue + 'px');
+      } else {
+        // chrome: <span style="font-size: medium"> to <span style='font-size={sValue}px;'>
+        welEditable.find('span').filter(function() {
+          return this.style.fontSize == 'medium';
+        }).css('font-size', sValue + 'px');
+      }
     };
     
     this.lineHeight = function(welEditable, sValue) {
       recordUndo(welEditable);
-      style.stylePara(new Range(), {lineHeight: sValue});
+      style.stylePara(range.create(), {lineHeight: sValue});
     };
 
     this.unlink = function(welEditable) {
-      var rng = new Range();
+      var rng = range.create();
       if (rng.isOnAnchor()) {
         recordUndo(welEditable);
         var elAnchor = dom.ancestor(rng.sc, dom.isAnchor);
-        rng = new Range(elAnchor, 0, elAnchor, 1);
+        rng = range.create(elAnchor, 0, elAnchor, 1);
         rng.select();
         document.execCommand('unlink');
       }
     };
 
     this.setLinkDialog = function(welEditable, fnShowDialog) {
-      var rng = new Range();
+      var rng = range.create();
       if (rng.isOnAnchor()) {
         var elAnchor = dom.ancestor(rng.sc, dom.isAnchor);
-        rng = new Range(elAnchor, 0, elAnchor, 1);
+        rng = range.create(elAnchor, 0, elAnchor, 1);
       }
       fnShowDialog({
         range: rng,
         text: rng.toString(),
-        url: rng.isOnAnchor() ? dom.ancestor(rng.sc, dom.isAnchor).href : ""
+        url: rng.isOnAnchor() ? dom.ancestor(rng.sc, dom.isAnchor).href : ''
       }, function(sLinkUrl) {
         rng.select(); recordUndo(welEditable);
 
-        var bProtocol = sLinkUrl.toLowerCase().indexOf("://") !== -1;
-        var sLinkUrlWithProtocol = bProtocol ? sLinkUrl : "http://" + sLinkUrl;
+        var bProtocol = sLinkUrl.toLowerCase().indexOf('://') !== -1;
+        var sLinkUrlWithProtocol = bProtocol ? sLinkUrl : 'http://' + sLinkUrl;
 
         //IE: createLink when range collapsed.
-        if (bMSIE && rng.isCollapsed()) {
+        if (agent.bMSIE && rng.isCollapsed()) {
           rng.insertNode($('<A id="linkAnchor">' + sLinkUrl + '</A>')[0]);
-          var welAnchor = $('#linkAnchor').removeAttr("id")
+          var welAnchor = $('#linkAnchor').removeAttr('id')
                                           .attr('href', sLinkUrlWithProtocol);
-          rng = new Range(welAnchor[0], 0, welAnchor[0], 1);
+          rng = range.create(welAnchor[0], 0, welAnchor[0], 1);
           rng.select();
         } else {
           document.execCommand('createlink', false, sLinkUrlWithProtocol);
@@ -654,10 +862,11 @@
     
     this.color = function(welEditable, sObjColor) {
       var oColor = JSON.parse(sObjColor);
+      var foreColor = oColor.foreColor, backColor = oColor.backColor;
 
       recordUndo(welEditable);
-      document.execCommand('foreColor', false, oColor.foreColor);
-      document.execCommand('backColor', false, oColor.backColor);
+      if (foreColor) { document.execCommand('foreColor', false, foreColor); }
+      if (backColor) { document.execCommand('backColor', false, backColor); }
     };
     
     this.insertTable = function(welEditable, sDim) {
@@ -666,7 +875,7 @@
       var nCol = aDim[0], nRow = aDim[1];
       
       var aTD = [], sTD;
-      var sWhitespace = bMSIE ? '&nbsp;' : '<br/>';
+      var sWhitespace = agent.bMSIE ? '&nbsp;' : '<br/>';
       for (var idxCol = 0; idxCol < nCol; idxCol++) {
         aTD.push('<td>' + sWhitespace + '</td>');
       }
@@ -678,10 +887,10 @@
       }
       sTR = aTR.join('');
       var sTable = '<table class="table table-bordered">' + sTR + '</table>';
-      (new Range()).insertNode($(sTable)[0]);
+      range.create().insertNode($(sTable)[0]);
     };
 
-    this.float = function(welEditable, sValue, elTarget) {
+    this.floatMe = function(welEditable, sValue, elTarget) {
       recordUndo(welEditable);
       elTarget.style.cssFloat = sValue;
     };
@@ -689,12 +898,17 @@
     this.resize = function(welEditable, sValue, elTarget) {
       recordUndo(welEditable);
       elTarget.style.width = welEditable.width() * sValue + 'px';
-      elTarget.style.height = "";
+      elTarget.style.height = '';
     };
 
-    this.resizeTo = function(pos, elTarget) {
-      elTarget.style.width = pos.x + 'px';
-      elTarget.style.height = pos.y + 'px';
+    this.resizeTo = function(pos, welTarget) {
+      var newRatio = pos.y / pos.x;
+      var ratio = welTarget.data('ratio');
+
+      welTarget.css({
+        width: ratio > newRatio ? pos.x : pos.y / ratio,
+        height: ratio > newRatio ? pos.x * ratio : pos.y
+      });
     };
   };
 
@@ -759,39 +973,55 @@
       var oColor = JSON.parse(welRecentColor.attr('data-value'));
       oColor[sEvent] = sValue;
       welRecentColor.attr('data-value', JSON.stringify(oColor));
-      var sKey = sEvent === "backColor" ? 'background-color' : 'color';
+      var sKey = sEvent === 'backColor' ? 'background-color' : 'color';
       welRecentColor.find('i').css(sKey, sValue);
+    };
+
+    this.updateFullscreen = function(welToolbar, bFullscreen) {
+      var welBtn = welToolbar.find('button[data-event="fullscreen"]');
+      welBtn[bFullscreen ? 'addClass' : 'removeClass']('active');
+    };
+    this.updateCodeview = function(welToolbar, bCodeview) {
+      var welBtn = welToolbar.find('button[data-event="codeview"]');
+      welBtn[bCodeview ? 'addClass' : 'removeClass']('active');
+    };
+
+    this.enable = function(welToolbar) {
+      welToolbar.find('button').not('button[data-event="codeview"]').removeClass('disabled');
+    };
+
+    this.disable = function(welToolbar) {
+      welToolbar.find('button').not('button[data-event="codeview"]').addClass('disabled');
     };
   };
   
   /**
-   * Popover
+   * Popover (http://getbootstrap.com/javascript/#popovers)
    */
   var Popover = function() {
+    var showPopover = function(welPopover, elPlaceholder) {
+      var welPlaceHolder = $(elPlaceholder);
+      var pos = welPlaceHolder.position(), height = welPlaceHolder.height();
+      welPopover.css({
+        display: 'block',
+        left: pos.left,
+        top: pos.top + height
+      });
+    };
+
     this.update = function(welPopover, oStyle) {
       var welLinkPopover = welPopover.find('.note-link-popover'),
           welImagePopover = welPopover.find('.note-image-popover');
       if (oStyle.anchor) {
         var welAnchor = welLinkPopover.find('a');
         welAnchor.attr('href', oStyle.anchor.href).html(oStyle.anchor.href);
-        
-        var rect = oStyle.anchor.getBoundingClientRect();
-        welLinkPopover.css({
-          display: 'block',
-          left: rect.left,
-          top: $(document).scrollTop() + rect.bottom
-        });
+        showPopover(welLinkPopover, oStyle.anchor);
       } else {
         welLinkPopover.hide();
       }
 
       if (oStyle.image) {
-        var rect = oStyle.image.getBoundingClientRect();
-        welImagePopover.css({
-          display: 'block',
-          left: rect.left,
-          top: $(document).scrollTop() + rect.bottom
-        });
+        showPopover(welImagePopover, oStyle.image);
       } else {
         welImagePopover.hide();
       }
@@ -809,15 +1039,15 @@
     this.update = function(welHandle, oStyle) {
       var welSelection = welHandle.find('.note-control-selection');
       if (oStyle.image) {
-        var rect = oStyle.image.getBoundingClientRect();
+        var welImage = $(oStyle.image);
+        var pos = welImage.position();
+        var szImage = {w: welImage.width(), h: welImage.height()};
         welSelection.css({
           display: 'block',
-          left: rect.left + 'px',
-          top: $(document).scrollTop() + rect.top + 'px',
-          width: rect.width + 'px',
-          height: rect.height + 'px'
+          left: pos.left, top: pos.top,
+          width: szImage.w, height: szImage.h
         }).data('target', oStyle.image); // save current image element.
-        var sSizing = rect.width + 'x' + rect.height;
+        var sSizing = szImage.w + 'x' + szImage.h;
         welSelection.find('.note-control-selection-info').text(sSizing);
       } else {
         welSelection.hide();
@@ -833,23 +1063,40 @@
    * Dialog
    */
   var Dialog = function() {
-    this.showImageDialog = function(welDialog, hDropImage, fnInsertImages) {
+    this.showImageDialog = function(welDialog, hDropImage, fnInsertImages, fnInsertImage) {
       var welImageDialog = welDialog.find('.note-image-dialog');
       var welDropzone = welDialog.find('.note-dropzone'),
-          welImageInput = welDialog.find('.note-image-input');
+          welImageInput = welDialog.find('.note-image-input'),
+          welImageUrl = welDialog.find('.note-image-url'),
+          welImageBtn = welDialog.find('.note-image-btn');
 
       welImageDialog.on('shown.bs.modal', function(e) {
         welDropzone.on('dragenter dragover dragleave', false);
         welDropzone.on('drop', function(e) {
           hDropImage(e); welImageDialog.modal('hide');
         });
-        welImageInput.on('change', function() {
+        welImageInput.on('change', function(event) {
           fnInsertImages(this.files); $(this).val('');
           welImageDialog.modal('hide');
+        });
+        welImageUrl.val('').keyup(function(event) {
+          if (welImageUrl.val()) {
+            welImageBtn.removeClass('disabled').attr('disabled', false);
+          } else {
+            welImageBtn.addClass('disabled').attr('disabled', true);
+          }
+        }).trigger('focus');
+        welImageBtn.click(function(event) {
+          welImageDialog.modal('hide');
+          fnInsertImage(welImageUrl.val());
+          event.preventDefault();
         });
       }).on('hidden.bs.modal', function(e) {
         welDropzone.off('dragenter dragover dragleave drop');
         welImageInput.off('change');
+        welImageDialog.off('shown.bs.modal hidden.bs.modal');
+        welImageUrl.off('keyup');
+        welImageBtn.off('click');
       }).modal('show');
     };
 
@@ -868,7 +1115,7 @@
             welLinkBtn.addClass('disabled').attr('disabled', true);
           }
 
-          if (!linkInfo.text) { welLinkText.html(welLinkUrl.val()); };
+          if (!linkInfo.text) { welLinkText.html(welLinkUrl.val()); }
         }).trigger('focus');
         welLinkBtn.click(function(event) {
           welLinkDialog.modal('hide'); //hide and createLink (ie9+)
@@ -877,8 +1124,8 @@
         });
       }).on('hidden.bs.modal', function(e) {
         welLinkUrl.off('keyup');
-        welLinkDialog.off('shown.bs.modal hidden.bs.modal');
         welLinkBtn.off('click');
+        welLinkDialog.off('shown.bs.modal hidden.bs.modal');
       }).modal('show');
     };
 
@@ -910,6 +1157,7 @@
         editor: function() { return welEditor; },
         toolbar: function() { return welEditor.find('.note-toolbar'); },
         editable: function() { return welEditor.find('.note-editable'); },
+        codable: function() { return welEditor.find('.note-codable'); },
         statusbar: function() { return welEditor.find('.note-statusbar'); },
         popover: function() { return welEditor.find('.note-popover'); },
         handle: function() { return welEditor.find('.note-handle'); },
@@ -918,14 +1166,16 @@
     };
 
     var hKeydown = function(event) {
-      var bCmd = bMac ? event.metaKey : event.ctrlKey,
+      var bCmd = agent.bMac ? event.metaKey : event.ctrlKey,
           bShift = event.shiftKey, keyCode = event.keyCode;
 
       // optimize
       var bExecCmd = (bCmd || bShift || keyCode === key.TAB);
       var oLayoutInfo = (bExecCmd) ? makeLayoutInfo(event.target) : null;
 
-      if (bCmd && ((bShift && keyCode === key.Z) || keyCode === key.Y)) {
+      if (keyCode === key.TAB && oLayoutInfo.editable().data('tabsize')) {
+        editor.tab(oLayoutInfo.editable());
+      } else if (bCmd && ((bShift && keyCode === key.Z) || keyCode === key.Y)) {
         editor.redo(oLayoutInfo.editable());
       } else if (bCmd && keyCode === key.Z) {
         editor.undo(oLayoutInfo.editable());
@@ -940,6 +1190,7 @@
       } else if (bCmd && keyCode === key.BACKSLACH) {
         editor.removeFormat(oLayoutInfo.editable());
       } else if (bCmd && keyCode === key.K) {
+        oLayoutInfo.editable();
         editor.setLinkDialog(oLayoutInfo.editable(), function(linkInfo, cb) {
           dialog.showLinkDialog(oLayoutInfo.dialog(), linkInfo, cb);
         });
@@ -979,14 +1230,21 @@
     };
 
     var insertImages = function(welEditable, files) {
-      welEditable.trigger('focus');
-      $.each(files, function(idx, file) {
-        var fileReader = new FileReader;
-        fileReader.onload = function(event) {
-          editor.insertImage(welEditable, event.target.result); // sURL
-        };
-        fileReader.readAsDataURL(file);
-      });
+      var callbacks = welEditable.data('callbacks');
+      editor.restoreRange(welEditable);
+      if (callbacks.onImageUpload) { // call custom handler
+          callbacks.onImageUpload(files, editor, welEditable);
+      } else {
+        $.each(files, function(idx, file) {
+          async.readFile(file).done(function(sURL) {
+            editor.insertImage(welEditable, sURL);
+          }).fail(function() {
+            if (callbacks.onImageUploadError) {
+                callbacks.onImageUploadError();
+            }  
+          });
+        });
+      }
     };
 
     var hDropImage = function(event) {
@@ -1001,12 +1259,11 @@
 
     var hMousedown = function(event) {
       //preventDefault Selection for FF, IE8+
-      if (dom.isImg(event.target)) { event.preventDefault(); };
+      if (dom.isImg(event.target)) { event.preventDefault(); }
     };
     
     var hToolbarAndPopoverUpdate = function(event) {
       var oLayoutInfo = makeLayoutInfo(event.currentTarget || event.target);
-      
       var oStyle = editor.currentStyle(event.target);
       if (!oStyle) { return; }
       toolbar.update(oLayoutInfo.toolbar(), oStyle);
@@ -1027,18 +1284,24 @@
             welHandle = oLayoutInfo.handle(), welPopover = oLayoutInfo.popover(),
             welEditable = oLayoutInfo.editable(), welEditor = oLayoutInfo.editor();
 
-        var elTarget = welHandle.find('.note-control-selection').data('target');
-        var posStart = $(elTarget).offset(),
+        var elTarget = welHandle.find('.note-control-selection').data('target'),
+            welTarget = $(elTarget);
+        var posStart = welTarget.offset(),
             scrollTop = $(document).scrollTop(), posDistance;
+
         welEditor.on('mousemove', function(event) {
           posDistance = {x: event.clientX - posStart.left,
                          y: event.clientY - (posStart.top - scrollTop)};
-          editor.resizeTo(posDistance, elTarget);
+          editor.resizeTo(posDistance, welTarget);
           handle.update(welHandle, {image: elTarget});
           popover.update(welPopover, {image: elTarget});
         }).on('mouseup', function() {
           welEditor.off('mousemove').off('mouseup');
         });
+
+        if (!welTarget.data('ratio')) { // original ratio.
+          welTarget.data('ratio', welTarget.height() / welTarget.width());
+        }
 
         editor.recordUndo(welEditable);
         event.stopPropagation(); event.preventDefault();
@@ -1060,11 +1323,12 @@
 
         var oLayoutInfo = makeLayoutInfo(event.target);
         var welDialog = oLayoutInfo.dialog(),
-            welEditable = oLayoutInfo.editable();
+            welEditable = oLayoutInfo.editable(),
+            welCodable = oLayoutInfo.codable();
 
         // before command
         var elTarget;
-        if ($.inArray(sEvent, ['resize', 'float']) !== -1) {
+        if ($.inArray(sEvent, ['resize', 'floatMe']) !== -1) {
           var welHandle = oLayoutInfo.handle();
           var welSelection = welHandle.find('.note-control-selection');
           elTarget = welSelection.data('target');
@@ -1076,18 +1340,62 @@
         }
         
         // after command
-        if ($.inArray(sEvent, ["backColor", "foreColor"]) !== -1) {
+        if ($.inArray(sEvent, ['backColor', 'foreColor']) !== -1) {
           toolbar.updateRecentColor(welBtn[0], sEvent, sValue);
-        } else if (sEvent === "showLinkDialog") { // popover to dialog
+        } else if (sEvent === 'showLinkDialog') { // popover to dialog
+          welEditable.focus();
           editor.setLinkDialog(welEditable, function(linkInfo, cb) {
             dialog.showLinkDialog(welDialog, linkInfo, cb);
           });
-        } else if (sEvent === "showImageDialog") {
+        } else if (sEvent === 'showImageDialog') {
+          welEditable.focus();
           dialog.showImageDialog(welDialog, hDropImage, function(files) {
             insertImages(welEditable, files);
+          }, function(sUrl) {
+            editor.restoreRange(welEditable);
+            editor.insertImage(welEditable, sUrl);
           });
-        } else if (sEvent === "showHelpDialog") {
+        } else if (sEvent === 'showHelpDialog') {
           dialog.showHelpDialog(welDialog);
+        } else if (sEvent === 'fullscreen') {
+          var welEditor = oLayoutInfo.editor();
+          welEditor.toggleClass('fullscreen');
+
+          var welToolbar = oLayoutInfo.toolbar();
+          var hResizeFullscreen = function() {
+            var nHeight = $(window).height() - welToolbar.outerHeight();
+            welEditable.css('height', nHeight);
+          };
+
+          var bFullscreen = welEditor.hasClass('fullscreen');
+          if (bFullscreen) {
+            welEditable.data('orgHeight', welEditable.css('height'));
+            $(window).resize(hResizeFullscreen).trigger('resize');
+          } else {
+            welEditable.css('height', welEditable.data('orgHeight'));
+            $(window).off('resize');
+          }
+
+          toolbar.updateFullscreen(welToolbar, bFullscreen);
+        } else if (sEvent === 'codeview') {
+          var welEditor = oLayoutInfo.editor(),
+              welToolbar = oLayoutInfo.toolbar();
+          welEditor.toggleClass('codeview');
+
+          var bCodeview = welEditor.hasClass('codeview');
+          if (bCodeview) {
+            welCodable.val(welEditable.html());
+            welCodable.height(welEditable.height());
+            toolbar.disable(welToolbar);
+            welCodable.focus();
+          } else {
+            welEditable.html(welCodable.val());
+            welEditable.height(welCodable.height());
+            toolbar.enable(welToolbar);
+            welEditable.focus();
+          }
+
+          toolbar.updateCodeview(oLayoutInfo.toolbar(), bCodeview);
         }
 
         hToolbarAndPopoverUpdate(event);
@@ -1097,7 +1405,9 @@
     var EDITABLE_PADDING = 24;
     var hStatusbarMousedown = function(event) {
       var welDocument = $(document);
-      var welEditable = makeLayoutInfo(event.target).editable();
+      var oLayoutInfo = makeLayoutInfo(event.target);
+      var welEditable = oLayoutInfo.editable(),
+          welCodable = oLayoutInfo.codable();
 
       var nEditableTop = welEditable.offset().top - welDocument.scrollTop();
       var hMousemove = function(event) {
@@ -1106,7 +1416,7 @@
       var hMouseup = function() {
         welDocument.unbind('mousemove', hMousemove)
                    .unbind('mouseup', hMouseup);
-      }
+      };
       welDocument.mousemove(hMousemove).mouseup(hMouseup);
       event.stopPropagation(); event.preventDefault();
     };
@@ -1145,6 +1455,12 @@
       welDimensionDisplay.html(dim.c + ' x ' + dim.r);
     };
 
+    /**
+     * Attach eventhandler
+     * @param {object} oLayoutInfo - layout Informations
+     * @param {object} options - user options include custom event handlers
+     * @param {function} options.enter - enter key handler
+     */
     this.attach = function(oLayoutInfo, options) {
       oLayoutInfo.editable.on('keydown', hKeydown);
       oLayoutInfo.editable.on('mousedown', hMousedown);
@@ -1168,8 +1484,13 @@
       var welCatcher = welToolbar.find('.note-dimension-picker-mousecatcher');
       welCatcher.on('mousemove', hDimensionPickerMove);
 
-      // callback
-      // init, enter, !change, !pasteBefore, !pasteAfter, focus, blur, keyup, keydown
+      // save selection when focusout
+      oLayoutInfo.editable.on('blur', function() {
+        editor.saveRange(oLayoutInfo.editable);
+      });
+
+      // basic event callbacks (lowercase)
+      // enter, focus, blur, keyup, keydown
       if (options.onenter) {
         oLayoutInfo.editable.keypress(function(event) {
           if (event.keyCode === key.ENTER) { options.onenter(event);}
@@ -1177,11 +1498,18 @@
       }
       if (options.onfocus) { oLayoutInfo.editable.focus(options.onfocus); }
       if (options.onblur) { oLayoutInfo.editable.blur(options.onblur); }
-      if (options.onkeyup) { oLayoutInfo.editable.blur(options.onkeyup); }
-      if (options.onkeydown) { oLayoutInfo.editable.blur(options.onkeydown); }
+      if (options.onkeyup) { oLayoutInfo.editable.keyup(options.onkeyup); }
+      if (options.onkeydown) { oLayoutInfo.editable.keydown(options.onkeydown); }
 
-      // TODO: callback for advanced features
-      // autosave, impageUpload, imageUploadError, fileUpload, fileUploadError
+      // callbacks for advanced features (camel)
+      // All editor status will be saved on editable with jquery's data
+      // for support multiple editor with singleton object.
+      oLayoutInfo.editable.data('callbacks', {
+        onChange: options.onChange, onAutoSave: options.onAutoSave,
+        onPasteBefore: options.onPasteBefore, onPasteAfter: options.onPasteAfter,
+        onImageUpload: options.onImageUpload, onImageUploadError: options.onImageUpload,
+        onFileUpload: options.onFileUpload, onFileUploadError: options.onFileUpload
+      });
     };
 
     this.dettach = function(oLayoutInfo) {
@@ -1200,11 +1528,11 @@
   var Renderer = function() {
     var aToolbarItem = {
       picture:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Picture" data-event="showImageDialog" tabindex="-1"><i class="icon-picture"></i></button>',
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Picture" data-event="showImageDialog" tabindex="-1"><i class="fa fa-picture-o icon-picture"></i></button>',
       link:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Link" data-event="showLinkDialog" data-shortcut="Ctrl+K" data-mac-shortcut="⌘+K" tabindex="-1"><i class="icon-link"></i></button>',
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Link" data-event="showLinkDialog" data-shortcut="Ctrl+K" data-mac-shortcut="⌘+K" tabindex="-1"><i class="fa fa-link icon-link"></i></button>',
       table:
-        '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" title="Table" data-toggle="dropdown" tabindex="-1"><i class="icon-table"></i> <span class="caret"></span></button>' +
+        '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" title="Table" data-toggle="dropdown" tabindex="-1"><i class="fa fa-table icon-table"></i> <span class="caret"></span></button>' +
         '<ul class="dropdown-menu">' +
         '<div class="note-dimension-picker">' +
         '<div class="note-dimension-picker-mousecatcher" data-event="insertTable" data-value="1x1"></div>' +
@@ -1214,7 +1542,7 @@
         '<div class="note-dimension-display"> 1 x 1 </div>' +
         '</ul>',
       style:
-        '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" title="Style" data-toggle="dropdown" tabindex="-1"><i class="icon-magic"></i> <span class="caret"></span></button>' +
+        '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" title="Style" data-toggle="dropdown" tabindex="-1"><i class="fa fa-magic icon-magic"></i> <span class="caret"></span></button>' +
         '<ul class="dropdown-menu">' +
         '<li><a data-event="formatBlock" data-value="p">Normal</a></li>' +
         '<li><a data-event="formatBlock" data-value="blockquote"><blockquote>Quote</blockquote></a></li>' +
@@ -1229,18 +1557,18 @@
       fontsize:
         '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" data-toggle="dropdown" title="Font Size" tabindex="-1"><span class="note-current-fontsize">11</span> <b class="caret"></b></button>' +
         '<ul class="dropdown-menu">' +
-        '<li><a data-event="fontSize" data-value="8"><i class="icon-ok"></i> 8</a></li>' +
-        '<li><a data-event="fontSize" data-value="9"><i class="icon-ok"></i> 9</a></li>' +
-        '<li><a data-event="fontSize" data-value="10"><i class="icon-ok"></i> 10</a></li>' +
-        '<li><a data-event="fontSize" data-value="11"><i class="icon-ok"></i> 11</a></li>' +
-        '<li><a data-event="fontSize" data-value="12"><i class="icon-ok"></i> 12</a></li>' +
-        '<li><a data-event="fontSize" data-value="14"><i class="icon-ok"></i> 14</a></li>' +
-        '<li><a data-event="fontSize" data-value="18"><i class="icon-ok"></i> 18</a></li>' +
-        '<li><a data-event="fontSize" data-value="24"><i class="icon-ok"></i> 24</a></li>' +
-        '<li><a data-event="fontSize" data-value="36"><i class="icon-ok"></i> 36</a></li>' +
+        '<li><a data-event="fontSize" data-value="8"><i class="fa fa-check icon-ok"></i> 8</a></li>' +
+        '<li><a data-event="fontSize" data-value="9"><i class="fa fa-check icon-ok"></i> 9</a></li>' +
+        '<li><a data-event="fontSize" data-value="10"><i class="fa fa-check icon-ok"></i> 10</a></li>' +
+        '<li><a data-event="fontSize" data-value="11"><i class="fa fa-check icon-ok"></i> 11</a></li>' +
+        '<li><a data-event="fontSize" data-value="12"><i class="fa fa-check icon-ok"></i> 12</a></li>' +
+        '<li><a data-event="fontSize" data-value="14"><i class="fa fa-check icon-ok"></i> 14</a></li>' +
+        '<li><a data-event="fontSize" data-value="18"><i class="fa fa-check icon-ok"></i> 18</a></li>' +
+        '<li><a data-event="fontSize" data-value="24"><i class="fa fa-check icon-ok"></i> 24</a></li>' +
+        '<li><a data-event="fontSize" data-value="36"><i class="fa fa-check icon-ok"></i> 36</a></li>' +
         '</ul>',
       color:
-        '<button type="button" class="btn btn-default btn-sm btn-small note-recent-color" title="Recent Color" data-event="color" data-value=\'{"foreColor":"black","backColor":"yellow"}\' tabindex="-1"><i class="icon-font" style="color:black;background-color:yellow;"></i></button>' +
+        '<button type="button" class="btn btn-default btn-sm btn-small note-recent-color" title="Recent Color" data-event="color" data-value=\'{"backColor":"yellow"}\' tabindex="-1"><i class="fa fa-font icon-font" style="color:black;background-color:yellow;"></i></button>' +
         '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" title="More Color" data-toggle="dropdown" tabindex="-1">' +
         '<span class="caret"></span>' +
         '</button>' +
@@ -1248,82 +1576,87 @@
         '<li>' +
         '<div class="btn-group">' +
         '<div class="note-palette-title">BackColor</div>' +
+        '<div class="note-color-reset" data-event="backColor" data-value="inherit" title="Transparent">Set transparent</div>' +
         '<div class="note-color-palette" data-target-event="backColor"></div>' +
         '</div>' +
         '<div class="btn-group">' +
         '<div class="note-palette-title">FontColor</div>' +
+        '<div class="note-color-reset" data-event="foreColor" data-value="inherit" title="Reset">Reset to default</div>' +
         '<div class="note-color-palette" data-target-event="foreColor"></div>' +
         '</div>' +
         '</li>' +
         '</ul>',
       bold:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Bold" data-shortcut="Ctrl+B" data-mac-shortcut="⌘+B" data-event="bold" tabindex="-1"><i class="icon-bold"></i></button>',
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Bold" data-shortcut="Ctrl+B" data-mac-shortcut="⌘+B" data-event="bold" tabindex="-1"><i class="fa fa-bold icon-bold"></i></button>',
       italic:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Italic" data-shortcut="Ctrl+I" data-mac-shortcut="⌘+I" data-event="italic" tabindex="-1"><i class="icon-italic"></i></button>',
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Italic" data-shortcut="Ctrl+I" data-mac-shortcut="⌘+I" data-event="italic" tabindex="-1"><i class="fa fa-italic icon-italic"></i></button>',
       underline:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Underline" data-shortcut="Ctrl+U" data-mac-shortcut="⌘+U" data-event="underline" tabindex="-1"><i class="icon-underline"></i></button>',
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Underline" data-shortcut="Ctrl+U" data-mac-shortcut="⌘+U" data-event="underline" tabindex="-1"><i class="fa fa-underline icon-underline"></i></button>',
       clear:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Remove Font Style" data-shortcut="Ctrl+\\" data-mac-shortcut="⌘+\\" data-event="removeFormat" tabindex="-1"><i class="icon-eraser"></i></button>',
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Remove Font Style" data-shortcut="Ctrl+\\" data-mac-shortcut="⌘+\\" data-event="removeFormat" tabindex="-1"><i class="fa fa-eraser icon-eraser"></i></button>',
       ul:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Unordered list" data-shortcut="Ctrl+Shift+8" data-mac-shortcut="⌘+⇧+7" data-event="insertUnorderedList" tabindex="-1"><i class="icon-list-ul"></i></button>',
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Unordered list" data-shortcut="Ctrl+Shift+8" data-mac-shortcut="⌘+⇧+7" data-event="insertUnorderedList" tabindex="-1"><i class="fa fa-list-ul icon-list-ul"></i></button>',
       ol:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Ordered list" data-shortcut="Ctrl+Shift+7" data-mac-shortcut="⌘+⇧+8" data-event="insertOrderedList" tabindex="-1"><i class="icon-list-ol"></i></button>',
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Ordered list" data-shortcut="Ctrl+Shift+7" data-mac-shortcut="⌘+⇧+8" data-event="insertOrderedList" tabindex="-1"><i class="fa fa-list-ol icon-list-ol"></i></button>',
       paragraph:
-        '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" title="Paragraph" data-toggle="dropdown" tabindex="-1"><i class="icon-align-left"></i>  <span class="caret"></span></button>' +
+        '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" title="Paragraph" data-toggle="dropdown" tabindex="-1"><i class="fa fa-align-left icon-align-left"></i>  <span class="caret"></span></button>' +
         '<ul class="dropdown-menu">' +
           '<li>' +
           '<div class="note-align btn-group">' +
-          '<button type="button" class="btn btn-default btn-sm btn-small" title="Align left" data-shortcut="Ctrl+Shift+L" data-mac-shortcut="⌘+⇧+L" data-event="justifyLeft" tabindex="-1"><i class="icon-align-left"></i></button>' +
-          '<button type="button" class="btn btn-default btn-sm btn-small" title="Align center" data-shortcut="Ctrl+Shift+E" data-mac-shortcut="⌘+⇧+E" data-event="justifyCenter" tabindex="-1"><i class="icon-align-center"></i></button>' +
-          '<button type="button" class="btn btn-default btn-sm btn-small" title="Align right" data-shortcut="Ctrl+Shift+R" data-mac-shortcut="⌘+⇧+R" data-event="justifyRight" tabindex="-1"><i class="icon-align-right"></i></button>' +
-          '<button type="button" class="btn btn-default btn-sm btn-small" title="Justify full" data-shortcut="Ctrl+Shift+J" data-mac-shortcut="⌘+⇧+J" data-event="justifyFull" tabindex="-1"><i class="icon-align-justify"></i></button>' +
+          '<button type="button" class="btn btn-default btn-sm btn-small" title="Align left" data-shortcut="Ctrl+Shift+L" data-mac-shortcut="⌘+⇧+L" data-event="justifyLeft" tabindex="-1"><i class="fa fa-align-left icon-align-left"></i></button>' +
+          '<button type="button" class="btn btn-default btn-sm btn-small" title="Align center" data-shortcut="Ctrl+Shift+E" data-mac-shortcut="⌘+⇧+E" data-event="justifyCenter" tabindex="-1"><i class="fa fa-align-center icon-align-center"></i></button>' +
+          '<button type="button" class="btn btn-default btn-sm btn-small" title="Align right" data-shortcut="Ctrl+Shift+R" data-mac-shortcut="⌘+⇧+R" data-event="justifyRight" tabindex="-1"><i class="fa fa-align-right icon-align-right"></i></button>' +
+          '<button type="button" class="btn btn-default btn-sm btn-small" title="Justify full" data-shortcut="Ctrl+Shift+J" data-mac-shortcut="⌘+⇧+J" data-event="justifyFull" tabindex="-1"><i class="fa fa-align-justify icon-align-justify"></i></button>' +
           '</div>' +
           '</li>' +
           '<li>' +
           '<div class="note-list btn-group">' +
-          '<button type="button" class="btn btn-default btn-sm btn-small" title="Outdent" data-shortcut="Ctrl+[" data-mac-shortcut="⌘+[" data-event="outdent" tabindex="-1"><i class="icon-indent-left"></i></button>' +
-          '<button type="button" class="btn btn-default btn-sm btn-small" title="Indent" data-shortcut="Ctrl+]" data-mac-shortcut="⌘+]" data-event="indent" tabindex="-1"><i class="icon-indent-right"></i></button>' +
+          '<button type="button" class="btn btn-default btn-sm btn-small" title="Outdent" data-shortcut="Ctrl+[" data-mac-shortcut="⌘+[" data-event="outdent" tabindex="-1"><i class="fa fa-outdent icon-indent-left"></i></button>' +
+          '<button type="button" class="btn btn-default btn-sm btn-small" title="Indent" data-shortcut="Ctrl+]" data-mac-shortcut="⌘+]" data-event="indent" tabindex="-1"><i class="fa fa-indent icon-indent-right"></i></button>' +
           '</li>' +
         '</ul>',
       height:
-        '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" data-toggle="dropdown" title="Line Height" tabindex="-1"><i class="icon-text-height"></i>&nbsp; <b class="caret"></b></button>' +
+        '<button type="button" class="btn btn-default btn-sm btn-small dropdown-toggle" data-toggle="dropdown" title="Line Height" tabindex="-1"><i class="fa fa-text-height icon-text-height"></i>&nbsp; <b class="caret"></b></button>' +
         '<ul class="dropdown-menu">' +
-        '<li><a data-event="lineHeight" data-value="1.0"><i class="icon-ok"></i> 1.0</a></li>' +
-        '<li><a data-event="lineHeight" data-value="1.2"><i class="icon-ok"></i> 1.2</a></li>' +
-        '<li><a data-event="lineHeight" data-value="1.4"><i class="icon-ok"></i> 1.4</a></li>' +
-        '<li><a data-event="lineHeight" data-value="1.5"><i class="icon-ok"></i> 1.5</a></li>' +
-        '<li><a data-event="lineHeight" data-value="1.6"><i class="icon-ok"></i> 1.6</a></li>' +
-        '<li><a data-event="lineHeight" data-value="1.8"><i class="icon-ok"></i> 1.8</a></li>' +
-        '<li><a data-event="lineHeight" data-value="2.0"><i class="icon-ok"></i> 2.0</a></li>' +
-        '<li><a data-event="lineHeight" data-value="3.0"><i class="icon-ok"></i> 3.0</a></li>' +
+        '<li><a data-event="lineHeight" data-value="1.0"><i class="fa fa-check icon-ok"></i> 1.0</a></li>' +
+        '<li><a data-event="lineHeight" data-value="1.2"><i class="fa fa-check icon-ok"></i> 1.2</a></li>' +
+        '<li><a data-event="lineHeight" data-value="1.4"><i class="fa fa-check icon-ok"></i> 1.4</a></li>' +
+        '<li><a data-event="lineHeight" data-value="1.5"><i class="fa fa-check icon-ok"></i> 1.5</a></li>' +
+        '<li><a data-event="lineHeight" data-value="1.6"><i class="fa fa-check icon-ok"></i> 1.6</a></li>' +
+        '<li><a data-event="lineHeight" data-value="1.8"><i class="fa fa-check icon-ok"></i> 1.8</a></li>' +
+        '<li><a data-event="lineHeight" data-value="2.0"><i class="fa fa-check icon-ok"></i> 2.0</a></li>' +
+        '<li><a data-event="lineHeight" data-value="3.0"><i class="fa fa-check icon-ok"></i> 3.0</a></li>' +
         '</ul>',
       help:
-        '<button type="button" class="btn btn-default btn-sm btn-small" title="Help" data-shortcut="Ctrl+/" data-mac-shortcut="⌘+/" data-event="showHelpDialog" tabindex="-1"><i class="icon-question"></i></button>'
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Help" data-shortcut="Ctrl+/" data-mac-shortcut="⌘+/" data-event="showHelpDialog" tabindex="-1"><i class="fa fa-question icon-question"></i></button>',
+      fullscreen:
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Full Screen" data-event="fullscreen" tabindex="-1"><i class="fa fa-arrows-alt icon-fullscreen"></i></button>',
+      codeview:
+        '<button type="button" class="btn btn-default btn-sm btn-small" title="Code View" data-event="codeview" tabindex="-1"><i class="fa fa-code icon-code"></i></button>'
     };
     var sPopover = '<div class="note-popover">' +
-                     '<div class="note-link-popover popover fade bottom in" style="display: none;">' +
+                     '<div class="note-link-popover popover bottom in" style="display: none;">' +
                        '<div class="arrow"></div>' +
                        '<div class="popover-content note-link-content">' +
                          '<a href="http://www.google.com" target="_blank">www.google.com</a>&nbsp;&nbsp;' +
                          '<div class="note-insert btn-group">' +
-                         '<button type="button" class="btn btn-default btn-sm btn-small" title="Edit" data-event="showLinkDialog" tabindex="-1"><i class="icon-edit"></i></button>' +
-                         '<button type="button" class="btn btn-default btn-sm btn-small" title="Unlink" data-event="unlink" tabindex="-1"><i class="icon-unlink"></i></button>' +
+                         '<button type="button" class="btn btn-default btn-sm btn-small" title="Edit" data-event="showLinkDialog" tabindex="-1"><i class="fa fa-edit icon-edit"></i></button>' +
+                         '<button type="button" class="btn btn-default btn-sm btn-small" title="Unlink" data-event="unlink" tabindex="-1"><i class="fa fa-unlink icon-unlink"></i></button>' +
                          '</div>' +
                        '</div>' +
                      '</div>' +
-                     '<div class="note-image-popover popover fade bottom in" style="display: none;">' +
+                     '<div class="note-image-popover popover bottom in" style="display: none;">' +
                        '<div class="arrow"></div>' +
                        '<div class="popover-content note-image-content">' +
                          '<div class="btn-group">' +
-                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Resize Full" data-event="resize" data-value="1" tabindex="-1"><i class="icon-resize-full"></i></button>' +
-                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Resize Half" data-event="resize" data-value="0.5" tabindex="-1">½</button>' +
-                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Resize Thrid" data-event="resize" data-value="0.33" tabindex="-1">⅓</button>' +
-                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Resize Quarter" data-event="resize" data-value="0.25" tabindex="-1">¼</button>' +
+                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Resize Full" data-event="resize" data-value="1" tabindex="-1"><span class="note-fontsize-10">100%</span> </button>' +
+                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Resize Half" data-event="resize" data-value="0.5" tabindex="-1"><span class="note-fontsize-10">50%</span> </button>' +
+                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Resize Quarter" data-event="resize" data-value="0.25" tabindex="-1"><span class="note-fontsize-10">25%</span> </button>' +
                          '</div>' +
                          '<div class="btn-group">' +
-                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Float Left" data-event="float" data-value="left" tabindex="-1"><i class="icon-align-left"></i></button>' +
-                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Float Right" data-event="float" data-value="right" tabindex="-1"><i class="icon-align-right"></i></button>' +
-                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Float None" data-event="float" data-value="none" tabindex="-1"><i class="icon-reorder"></i></button>' +
+                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Float Left" data-event="floatMe" data-value="left" tabindex="-1"><i class="fa fa-align-left icon-align-left"></i></button>' +
+                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Float Right" data-event="floatMe" data-value="right" tabindex="-1"><i class="fa fa-align-right icon-align-right"></i></button>' +
+                           '<button type="button" class="btn btn-default btn-sm btn-small" title="Float None" data-event="floatMe" data-value="none" tabindex="-1"><i class="fa fa-align-justify icon-align-justify"></i></button>' +
                          '</div>' +
                        '</div>' +
                      '</div>' +
@@ -1404,20 +1737,29 @@
                            '</tbody>' +
                          '</table>';
 
+    if (!agent.bMac) { // shortcut modifier for windows
+      sShortcutTable = sShortcutTable.replace(/⌘/g, 'Ctrl').replace(/⇧/g, 'Shift');
+    }
+
     var sDialog = '<div class="note-dialog">' +
                     '<div class="note-image-dialog modal" aria-hidden="false">' +
                       '<div class="modal-dialog">' +
                         '<div class="modal-content">' +
                           '<div class="modal-header">' +
-                            '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" tabindex="-1">×</button>' +
+                            '<button type="button" class="close" aria-hidden="true" tabindex="-1">×</button>' +
                             '<h4>Insert Image</h4>' +
                           '</div>' +
                           '<div class="modal-body">' +
                             '<div class="row-fluid">' +
                               '<div class="note-dropzone span12">Drag an image here</div>' +
-                              '<div>or if you prefer...</div>' +
-                              '<input class="note-image-input" type="file" class="note-link-url" type="text" />' +
+                              '<h5>Select from files</h5>' +
+                              '<input class="note-image-input" type="file" name="files" accept="image/*" capture="camera" />' +
+                              '<h5>Image URL</h5>' +
+                              '<input class="note-image-url form-control span12" type="text" />' +
                             '</div>' +
+                          '</div>' +
+                          '<div class="modal-footer">' +
+                            '<button href="#" class="btn btn-primary note-image-btn disabled" disabled="disabled">Insert</button>' +
                           '</div>' +
                         '</div>' +
                       '</div>' +
@@ -1426,7 +1768,7 @@
                       '<div class="modal-dialog">' +
                         '<div class="modal-content">' +
                           '<div class="modal-header">' +
-                            '<button type="button" class="close" data-dismiss="modal" aria-hidden="true" tabindex="-1">×</button>' +
+                            '<button type="button" class="close" aria-hidden="true" tabindex="-1">×</button>' +
                             '<h4>Edit Link</h4>' +
                           '</div>' +
                           '<div class="modal-body">' +
@@ -1443,20 +1785,20 @@
                             '</div>' +
                           '</div>' +
                           '<div class="modal-footer">' +
-                            '<a href="#" class="btn disabled note-link-btn" disabled="disabled">Link</a>' +
+                            '<button href="#" class="btn btn-primary note-link-btn disabled" disabled="disabled">Link</button>' +
                           '</div>' +
                         '</div>' +
                       '</div>' +
                     '</div>' +
-                    '<div class="note-help-dialog modal fade" aria-hidden="false">' +
+                    '<div class="note-help-dialog modal" aria-hidden="false">' +
                       '<div class="modal-dialog">' +
                         '<div class="modal-content">' +
                           '<div class="modal-body">' +
                             '<div class="modal-background">' +
-                            '<a class="modal-close pull-right" data-dismiss="modal" aria-hidden="true" tabindex="-1">Close</a>' +
+                            '<a class="modal-close pull-right" aria-hidden="true" tabindex="-1">Close</a>' +
                             '<div class="title">Keyboard shortcuts</div>' +
                             sShortcutTable +
-                            '<p class="text-center"><a href="//hackerwins.github.io/summernote/" target="_blank">Summernote v0.3</a> · <a href="//github.com/HackerWins/summernote" target="_blank">Project</a> · <a href="//github.com/HackerWins/summernote/issues" target="_blank">Issues</a></p>' +
+                            '<p class="text-center"><a href="//hackerwins.github.io/summernote/" target="_blank">Summernote v0.4</a> · <a href="//github.com/HackerWins/summernote" target="_blank">Project</a> · <a href="//github.com/HackerWins/summernote/issues" target="_blank">Issues</a></p>' +
                           '</div>' +
                         '</div>' +
                       '</div>' +
@@ -1467,15 +1809,15 @@
     var createTooltip = function(welContainer, sPlacement) {
       welContainer.find('button').each(function(i, elBtn) {
         var welBtn = $(elBtn);
-        var sShortcut = welBtn.attr(bMac ? 'data-mac-shortcut':'data-shortcut');
-        if (sShortcut) { welBtn.attr('title', function(i, v) { return v + ' (' + sShortcut + ')'}); }
+        var sShortcut = welBtn.attr(agent.bMac ? 'data-mac-shortcut': 'data-shortcut');
+        if (sShortcut) { welBtn.attr('title', function(i, v) { return v + ' (' + sShortcut + ')'; }); }
       //bootstrap tooltip on btn-group bug: https://github.com/twitter/bootstrap/issues/5687
       }).tooltip({container: 'body', placement: sPlacement || 'top'});
     };
     
     // pallete colors
     var aaColor = [
-      ['#000000', '#424242', '#636363', '#9C9C94', '#CEC6CE', '#EFEFEF', '#EFF7F7', '#FFFFFF'],
+      ['#000000', '#424242', '#636363', '#9C9C94', '#CEC6CE', '#EFEFEF', '#F7F7F7', '#FFFFFF'],
       ['#FF0000', '#FF9C00', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF', '#9C00FF', '#FF00FF'],
       ['#F7C6CE', '#FFE7CE', '#FFEFC6', '#D6EFD6', '#CEDEE7', '#CEE7F7', '#D6D6E7', '#E7D6DE'],
       ['#E79C9C', '#FFC69C', '#FFE79C', '#B5D6A5', '#A5C6CE', '#9CC6EF', '#B5A5D6', '#D6A5BD'],
@@ -1510,7 +1852,7 @@
     };
     
     // createLayout
-    var createLayout = this.createLayout = function(welHolder, nHeight, nTabIndex, aToolbarSetting) {
+    var createLayout = this.createLayout = function(welHolder, nHeight, nTabsize, aToolbarSetting) {
       //already created
       if (welHolder.next().hasClass('note-editor')) { return; }
       
@@ -1524,11 +1866,21 @@
 
       //03. create Editable
       var welEditable = $('<div class="note-editable" contentEditable="true"></div>').prependTo(welEditor);
-      if (nTabIndex) { welEditable.attr('tabIndex', nTabIndex); }
       if (nHeight) { welEditable.height(nHeight); }
+      if (nTabsize) {
+        welEditable.data('tabsize', nTabsize);
+      }
 
-      welEditable.html(welHolder.html());
+      welEditable.html(dom.html(welHolder));
       welEditable.data('NoteHistory', new History());
+
+      //031. create codable
+      var welCodable = $('<textarea class="note-codable"></textarea>').prependTo(welEditor);
+
+      //032. set styleWithCSS for backColor / foreColor clearing with 'inherit'.
+      setTimeout(function() { // protect FF Error: NS_ERROR_FAILURE: Failure
+        document.execCommand('styleWithCSS', 0, true);
+      });
       
       //04. create Toolbar
       var sToolbar = '';
@@ -1539,7 +1891,7 @@
           sToolbar += aToolbarItem[group[1][i]];
         }
         sToolbar += '</div>';
-      };
+      }
 
       sToolbar = '<div class="note-toolbar btn-toolbar">' + sToolbar + '</div>';
 
@@ -1555,8 +1907,11 @@
       $(sHandle).prependTo(welEditor);
       
       //07. create Dialog
-      $(sDialog).prependTo(welEditor);
-      
+      var welDialog = $(sDialog).prependTo(welEditor);
+      welDialog.find('button.close, a.modal-close').click(function(event) {
+        $(this).closest('.modal').modal('hide');
+      });
+
       //08. Editor/Holder switch
       welEditor.insertAfter(welHolder);
       welHolder.hide();
@@ -1571,6 +1926,7 @@
         editor: welEditor,
         toolbar: welEditor.find('.note-toolbar'),
         editable: welEditor.find('.note-editable'),
+        codable: welEditor.find('.note-codable'),
         statusbar: welEditor.find('.note-statusbar'),
         popover: welEditor.find('.note-popover'),
         handle: welEditor.find('.note-handle'),
@@ -1608,6 +1964,7 @@
           ['height', ['height']],
           ['table', ['table']],
           ['insert', ['link', 'picture']],
+          ['view', ['fullscreen', 'codeview']],
           ['help', ['help']]
         ]
       }, options );
@@ -1616,7 +1973,7 @@
         var welHolder = $(elHolder);
 
         // createLayout with options
-        renderer.createLayout(welHolder, options.height, options.tabIndex, options.toolbar);
+        renderer.createLayout(welHolder, options.height, options.tabsize, options.toolbar);
 
         var info = renderer.layoutInfoFromHolder(welHolder);
         eventHandler.attach(info, options);
@@ -1628,17 +1985,20 @@
       }
       if (this.length > 0 && options.oninit) { // callback on init
         options.oninit();
-      };
+      }
     },
     // get the HTML contents of note or set the HTML contents of note.
     code: function(sHTML) {
       //get the HTML contents
       if (sHTML === undefined) {
-        return this.map(function(idx, elHolder) {
-          var info = renderer.layoutInfoFromHolder($(elHolder));
-          var bEditable = !!(info && info.editable);
-          return  bEditable ? info.editable.html() : $(elHolder).html();
-        });
+        var welHolder = this.first();
+        if (welHolder.length === 0) { return; }
+        var info = renderer.layoutInfoFromHolder(welHolder);
+        if (!!(info && info.editable)) {
+          var bCodeview = info.editor.hasClass('codeview');
+          return bCodeview ? info.codable.val() : info.editable.html();
+        }
+        return welHolder.html();
       }
 
       // set the HTML contents
@@ -1660,13 +2020,13 @@
     },
     // inner object for test
     summernoteInner: function() {
-      return { dom: dom, list: list, func: func, Range: Range };
+      return { dom: dom, list: list, func: func, range: range };
     }
   });
-})(jQuery); // jQuery
+})(window.jQuery); // jQuery
 
-//Array.prototype.reduce fallback
-//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
+// Array.prototype.reduce fallback
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
 if ('function' !== typeof Array.prototype.reduce) {
   Array.prototype.reduce = function(callback, opt_initialValue) {
     'use strict';
