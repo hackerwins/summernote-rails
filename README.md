@@ -15,7 +15,7 @@ The version of summernote-rails is matched with that of summernote editor.
 Add the following gems to your application's Gemfile:
 
     # for Rails 4.0
-    gem 'simple_form', github: 'plataformatec/simple_form', tag: 'v3.0.0.beta1'
+    gem 'simple_form'
     # for Rails 3.x
     gem 'simple_form'
 
@@ -94,17 +94,17 @@ $ ->
   summer_note.summernote
     # to set options
     height:300  
-    toolbar: [
+    # toolbar: [
                 # ['insert', ['picture', 'link']], // no insert buttons
-                ["table", ["table"]], 
-                ["style", ["style"]], 
-                ["fontsize", ["fontsize"]], 
-                ["color", ["color"]], 
-                ["style", ["bold", "italic", "underline", "clear"]], 
-                ["para", ["ul", "ol", "paragraph"]], 
-                ["height", ["height"]], 
-                ["help", ["help"]]
-             ]
+                # ["table", ["table"]], 
+                # ["style", ["style"]], 
+                # ["fontsize", ["fontsize"]], 
+                # ["color", ["color"]], 
+                # ["style", ["bold", "italic", "underline", "clear"]], 
+                # ["para", ["ul", "ol", "paragraph"]], 
+                # ["height", ["height"]], 
+                # ["help", ["help"]]
+             #]
 
   # to set code for summernote
   summer_note.code summer_note.val()
@@ -126,6 +126,12 @@ That's it.
 
 ## Changelogs
 
+ - v0.4.0   : Support both Bootstrap 3.0 and 2.x
+    * Updated with `v0.4 Summernote, 2013-11-01` as the followings:
+    * View mode
+      * Fullscreen
+      * Code view
+      * Image upload callback
  - v0.3.0   : Added the resizing bar at the bottom of editor.
     * Updated with `v0.3 Summernote, 2013-09-01` as the followings:     
       * `FIXED` bugs(image upload, fontsize, tab, recent color, ...)
