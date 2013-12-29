@@ -14,14 +14,15 @@ The version of summernote-rails is matched with that of summernote editor.
 
 Add the following gems to your application's Gemfile:
 
-    # for Rails 4.0
+    # for Rails 4.0.x
     gem 'simple_form'
-    # for Rails 3.x
+
+    # for Rails 3.2.x
     gem 'simple_form'
 
     # You'll need to include the following dependencies of Summernote
     gem 'bootstrap-sass'
-    gem 'font-awesome-rails'
+    gem 'font-awesome-sass'
 
     # This is the right gem to use summernote editor in Rails projects.
     gem 'summernote-rails'
@@ -36,7 +37,7 @@ First of all, the summernote editor works on Bootstrap and so it is assumed that
 
 > Note that when using font-awesome-rails with bootstrap-sass, both FontAwesome & Glyphicon icons show up, overlapping. So if you have bootstrap_and_override.css.scss file, please add the following two code lines related with the Bootstrap's glyphicon:
 
-In app/assets/stylesheets/bootstrap_and_override.css.scss, 
+In app/assets/stylesheets/bootstrap_and_override.css.scss,
 
 ```
 $iconSpritePath: '';
@@ -62,7 +63,7 @@ And also, in app/assets/stylesheets/application.css, you should add the followin
 *= require summernote
 ```
 
-For example, if you made a `Post` model using `scaffold generator` of Rails, you would see the `post` form view template in app/views/posts/_form.html.erb. 
+For example, if you made a `Post` model using `scaffold generator` of Rails, you would see the `post` form view template in app/views/posts/_form.html.erb.
 
 In that template file, you should add `summernote` class to the textarea input as the following:
 
@@ -93,16 +94,16 @@ $ ->
   # to call summernote editor
   summer_note.summernote
     # to set options
-    height:300  
+    height:300
     # toolbar: [
                 # ['insert', ['picture', 'link']], // no insert buttons
-                # ["table", ["table"]], 
-                # ["style", ["style"]], 
-                # ["fontsize", ["fontsize"]], 
-                # ["color", ["color"]], 
-                # ["style", ["bold", "italic", "underline", "clear"]], 
-                # ["para", ["ul", "ol", "paragraph"]], 
-                # ["height", ["height"]], 
+                # ["table", ["table"]],
+                # ["style", ["style"]],
+                # ["fontsize", ["fontsize"]],
+                # ["color", ["color"]],
+                # ["style", ["bold", "italic", "underline", "clear"]],
+                # ["para", ["ul", "ol", "paragraph"]],
+                # ["height", ["height"]],
                 # ["help", ["help"]]
              #]
 
@@ -116,15 +117,23 @@ $ ->
     true
 ```
 
-That's it. 
+That's it.
 
 
-## Sample projects 
+## Sample projects
 
- - Rails 3.2.14 : http://github.com/rorlab/summernote-test-r3
- - Rails 4.0 : http://github.com/rorlab/summernote-test
+ - Rails 3.2.16 : http://github.com/rorlab/summernote-test-r3
+ - Rails 4.0.2 : http://github.com/rorlab/summernote-test
 
 ## Changelogs
+
+ - v0.5.0   : Support i18n
+    * Updated with `v0.5 Summernote, 2013-12-29` as the followings:
+      * Support both Font-Awesome 3.x and 4.x
+      * CodeMirror as Codeview
+      * Insert Video (by cdownie)
+      * Support 5 Languages(by hendrismit, tschiela, inomies, cverond)
+      * Restructuring: jQuery build pattern
 
  - v0.4.0   : Support both Bootstrap 3.0 and 2.x
     * Updated with `v0.4 Summernote, 2013-11-01` as the followings:
@@ -133,16 +142,16 @@ That's it.
       * Code view
       * Image upload callback
  - v0.3.0   : Added the resizing bar at the bottom of editor.
-    * Updated with `v0.3 Summernote, 2013-09-01` as the followings:     
+    * Updated with `v0.3 Summernote, 2013-09-01` as the followings:
       * `FIXED` bugs(image upload, fontsize, tab, recent color, ...)
       * `ADDED` help dialog(keyboard shortcut)
       * `ADDED` init options(event callbacks, custom toolbar)
       * `ADDED` resize bar
       * `ADDED` support IE8 Beta(some range bugs, can't insert Image)
- - v0.2.1.4 : Enable to customize Toolbar Collection 
+ - v0.2.1.4 : Enable to customize Toolbar Collection
  - v0.2.1.3 : Added Help button in editor toolbox to popup Hot Key Table
- - v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor / 
-              Added summernote.js 
+ - v0.2.1.2 : Added InsertHorizontalRule(Cmd+Enter) in summernote editor /
+              Added summernote.js
  - v0.2.1.1 : Available for Rails >= 3.1
  - v0.2.1   : Bugfixed file uploading
  - v0.2.0   : Available for Rails v4.0
