@@ -35,14 +35,9 @@ And then execute:
 
 First of all, the summernote editor works on Bootstrap and so it is assumed that you have already set it up.
 
-> Note that when using font-awesome-rails with bootstrap-sass, both FontAwesome & Glyphicon icons show up, overlapping. So if you have bootstrap_and_override.css.scss file, please add the following two code lines related with the Bootstrap's glyphicon:
-
 In app/assets/stylesheets/bootstrap_and_override.css.scss,
 
 ```
-$iconSpritePath: '';
-$iconWhiteSpritePath: '';
-
 @import 'bootstrap';
 body {padding-top:3em;}
 @import 'bootstrap-responsive';
@@ -54,6 +49,7 @@ In app/assets/javascripts/application.js, you should add the following:
 //= require summernote.min
 or
 //= require summernote  # if you want to require the uncompressed one
+//= require lang/summernot-kr-KR   # if you need to use i18n support
 ```
 
 And also, in app/assets/stylesheets/application.css, you should add the following:
@@ -71,13 +67,15 @@ In that template file, you should add `summernote` class to the textarea input a
 <%= simple_form_for(@post) do |f| %>
   <%= f.error_notification %>
 
-  <div class="form-inputs">
-    <%= f.input :title %>
+  <div class="form-group">
+    <%= f.input :title, input_html:{class:'form-control'} %>
+  </div>
+  <div class="form-group">
     <%= f.input :content, class:'summernote' %>
   </div>
 
-  <div class="form-actions">
-    <%= f.button :submit %>
+  <div class="form-group">
+    <%= f.button :submit, class:'btn btn-default' %>
   </div>
 <% end %>
 ```
