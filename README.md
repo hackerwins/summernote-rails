@@ -95,6 +95,7 @@ $ ->
   summer_note.summernote
     # to set options
     height:300
+    lang: 'ko-KR'
     # toolbar: [
                 # ['insert', ['picture', 'link']], // no insert buttons
                 # ["table", ["table"]],
@@ -112,8 +113,8 @@ $ ->
 
   # to get code for summernote
   summer_note.closest('form').submit ->
-    # alert $('#post_content').code()[0]
-    summer_note.val summer_note.code()[0]
+    # alert $('#post_content').code()
+    summer_note.val summer_note.code()
     true
 ```
 
