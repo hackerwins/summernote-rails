@@ -38,8 +38,14 @@ First of all, the summernote editor works on Bootstrap and so it is assumed that
 In app/assets/stylesheets/bootstrap_and_override.css.scss,
 
 ```
+// You can insert the following two code lines if you are using Bootstrap 2
+$iconSpritePath: '';
+$iconWhiteSpritePath: '';
+
 @import 'bootstrap';
 body {padding-top:3em;}
+
+// You can delete the follow code line if you are using Bootstrap 3
 @import 'bootstrap-responsive';
 ```
 
