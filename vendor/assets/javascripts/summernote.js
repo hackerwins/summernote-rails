@@ -2511,3 +2511,27 @@
     }
   });
 }));
+
+// sorry for Coffeescript
+var __slice = [].slice;
+
+window.apply_summernote_to = function() {
+  var field, fields, form, input, _i, _len;
+  form = arguments[0], fields = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+  for (_i = 0, _len = fields.length; _i < _len; _i++) {
+    field = fields[_i];
+    input = field['input'];
+    input.summernote(field);
+    input.code(input.val());
+  }
+  return form.submit(function() {
+    var _j, _len1, _results;
+    _results = [];
+    for (_j = 0, _len1 = fields.length; _j < _len1; _j++) {
+      field = fields[_j];
+      input = field['input'];
+      _results.push(input.val(input.code()));
+    }
+    return _results;
+  });
+};
