@@ -132,6 +132,13 @@ That's it.
 
 ## Changelogs
 
+ - v0.5.1
+    * Updated with `v0.5.1 Summernote, 2014-03-16` as the followings:
+    * Support 15 Languages(https://github.com/HackerWins/summernote/tree/master/lang)
+    * Add local-server for develop summernote.
+    * Font style: Font-Family
+    * And Bug patch.
+
  - v0.5.0   : Support i18n
     * Updated with `v0.5 Summernote, 2013-12-29` as the followings:
       * Support both Font-Awesome 3.x and 4.x
