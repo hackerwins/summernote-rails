@@ -21,7 +21,7 @@
 	    floatNone: 'Aucun alignement',
 	    dragImageHere: 'Glissez une image ici',
 	    selectFromFiles: 'Parcourir',
-	    url: 'URL de l'image'
+	    url: 'URL de l\'image'
 	  },
 	  link: {
 	    link: 'Lien',
@@ -80,7 +80,7 @@
 	    background: 'Arrière plan',
 	    foreground: 'Couleur du texte',
 	    transparent: 'Transparent',
-	    setTransparent: 'Set transparent',
+	    setTransparent: 'Transparent',
 	    reset: 'Réinitialiser',
 	    resetToDefault: 'Par défaut'
 	  },
