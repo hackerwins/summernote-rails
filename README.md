@@ -38,19 +38,11 @@ First of all, the summernote editor works on Bootstrap and so it is assumed that
 In app/assets/stylesheets/application.css.scss,
 
 ```
-// You can insert the following two code lines if you are using Bootstrap 2
-$iconSpritePath: '';
-$iconWhiteSpritePath: '';
-
-@import 'bootstrap';
-@import "font-awesome";
-@import "summernote";
-body {padding-top:3em;}
-
-// You can delete the follow code line if you are using Bootstrap 3
+// Bootstrap 3
 @import "bootstrap";
 @import "font-awesome";
 @import "summernote";
+body {padding-top:3em;}
 ```
 
 In app/assets/javascripts/application.js, you should add the following:
