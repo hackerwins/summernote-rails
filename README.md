@@ -56,10 +56,14 @@ body {padding-top:3em;}
 In app/assets/javascripts/application.js, you should add the following:
 
 ```
+//= require jquery
+//= require jquery.turbolinks
+//= require jquery_ujs
+//= require bootstrap
 //= require summernote.min
-or
-//= require summernote              # if you want to require the uncompressed one
-//= require lang/summernote-ko-KR   # if you need to use i18n support
+//= require lang/summernote-ko-KR
+//= require_tree .
+//= require turbolinks
 ```
 
 For example, if you made a `Post` model using `scaffold generator` of Rails, you would see the `post` form view template in app/views/posts/_form.html.erb.
