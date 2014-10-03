@@ -4,39 +4,44 @@
       font: {
         bold: 'Полужирный',
         italic: 'Курсив',
-        underline: 'Подчеркнутый',
-        strike: 'Ударный',
-        clear: 'Очистить стиль шрифта',
-        height: 'Высота строки',
+        underline: 'Подчёркнутый',
+        strikethrough: 'Зачёркнутый',
+        subscript: 'Нижний индекс',
+        superscript: 'Верхний индекс',
+        clear: 'Убрать стили шрифта',
+        height: 'Высота линии',
+        name: 'Шрифт',
         size: 'Размер шрифта'
       },
       image: {
-        image: 'Изображение',
-        insert: 'Вставить изображение',
-        resizeFull: 'Расстянуть на 100:',
-        resizeHalf: 'Расстянуть на 50%',
-        resizeQuarter: 'Расстянуть на 25%',
-        floatLeft: 'Прижать влево',
-        floatRight: 'Прижать вправо',
-        floatNone: 'Не прижимать',
-        dragImageHere: 'Переместите изображение сюда',
-        selectFromFiles: 'Выберите файл',
-        url: 'Ссылка на изображение'
+        image: 'Картинка',
+        insert: 'Вставить картинку',
+        resizeFull: 'Восстановить размер',
+        resizeHalf: 'Уменьшить до 50%',
+        resizeQuarter: 'Уменьшить до 25%',
+        floatLeft: 'Расположить слева',
+        floatRight: 'Расположить справа',
+        floatNone: 'Расположение по-умолчанию',
+        dragImageHere: 'Перетащите сюда картинку',
+        selectFromFiles: 'Выбрать из файлов',
+        url: 'URL картинки',
+        remove: 'Удалить картинку'
       },
       link: {
         link: 'Ссылка',
         insert: 'Вставить ссылку',
-        unlink: 'Удалить ссылку',
+        unlink: 'Убрать ссылку',
         edit: 'Редактировать',
         textToDisplay: 'Отображаемый текст',
-        url: 'На какой URL указывает ссылка?'
+        url: 'URL для перехода',
+        openInNewWindow: 'Открывать в новом окне'
       },
       video: {
         video: 'Видео',
         videoLink: 'Ссылка на видео',
         insert: 'Вставить видео',
         url: 'URL видео',
-        providers: '(YouTube, Vimeo, Vine, Instagram или DailyMotion)'
+        providers: '(YouTube, Vimeo, Vine, Instagram, DailyMotion или Youku)'
       },
       table: {
         table: 'Таблица'
@@ -45,8 +50,8 @@
         insert: 'Вставить горизонтальную линию'
       },
       style: {
-        style: 'Стили',
-        normal: 'Обычный',
+        style: 'Стиль',
+        normal: 'Нормальный',
         blockquote: 'Цитата',
         pre: 'Код',
         h1: 'Заголовок 1',
@@ -61,40 +66,41 @@
         ordered: 'Нумерованный список'
       },
       options: {
-        help: 'Справка',
-        fullscreen: 'Расстянуть на весь экран',
-        codeview: 'Показать код'
+        help: 'Помощь',
+        fullscreen: 'На весь экран',
+        codeview: 'Исходный код'
       },
       paragraph: {
-        paragraph: 'Абзац',
-        outdent: 'Увеличить отступ',
-        indent: 'Уменьшить отступ',
-        left: 'Отступ слева',
-        center: 'По центру',
-        right: 'Отступ справа',
-        justify: 'По ширине'
+        paragraph: 'Параграф',
+        outdent: 'Уменьшить отступ',
+        indent: 'Увеличить отступ',
+        left: 'Выровнять по левому краю',
+        center: 'Выровнять по центру',
+        right: 'Выровнять по правому краю',
+        justify: 'Растянуть по ширине'
       },
       color: {
-        recent: 'Недавно использованные',
-        more: 'Больше цветов',
+        recent: 'Последний цвет',
+        more: 'Еще цвета',
         background: 'Цвет фона',
         foreground: 'Цвет шрифта',
-        transparent: 'Прозрачность',
-        setTransparent: 'Установить прозрачность',
-        reset: 'Сбросить',
-        resetToDefault: 'Сбросить на стандартные настройки'
+        transparent: 'Прозрачный',
+        setTransparent: 'Сделать прозрачным',
+        reset: 'Сброс',
+        resetToDefault: 'Восстановить умолчания'
       },
       shortcut: {
         shortcuts: 'Сочетания клавиш',
-        close: 'Выход',
+        close: 'Закрыть',
         textFormatting: 'Форматирование текста',
-        action: 'Действия',
-        paragraphFormatting: 'Форматирование абзаца',
-        documentStyle: 'Стиль'
+        action: 'Действие',
+        paragraphFormatting: 'Форматирование параграфа',
+        documentStyle: 'Стиль документа', 
+        extraKeys: 'Дополнительные комбинации'
       },
       history: {
-        undo: 'Назад',
-        redo: 'Повторить'
+        undo: 'Отменить',
+        redo: 'Повтор'
       }
     }
   });

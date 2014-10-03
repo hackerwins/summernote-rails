@@ -14,28 +14,28 @@ The version of summernote-rails is matched with that of summernote editor.
 
 Add the following gems to your application's Gemfile:
 
-    # for Rails 4.0.x
-    gem 'simple_form'
-
-    # for Rails 3.2.x
     gem 'simple_form'
 
     # You'll need to include the following dependencies of Summernote
     gem 'bootstrap-sass'
-    gem 'font-awesome-sass'
+    gem "font-awesome-rails"
 
     # This is the right gem to use summernote editor in Rails projects.
     gem 'summernote-rails'
 
+    # To solve the problems on the turbolinks
+    gem 'jquery-turbolinks'
+
 And then execute:
 
-    $ bundle
+    $ bundle install
 
 ## Usage
 
 First of all, the summernote editor works on Bootstrap and so it is assumed that you have already set it up.
 
-In app/assets/stylesheets/bootstrap_and_override.css.scss,
+
+In app/assets/stylesheets/application.css.scss,
 
 ```
 // You can insert the following two code lines if you are using Bootstrap 2
@@ -43,10 +43,14 @@ $iconSpritePath: '';
 $iconWhiteSpritePath: '';
 
 @import 'bootstrap';
+@import "font-awesome";
+@import "summernote";
 body {padding-top:3em;}
 
 // You can delete the follow code line if you are using Bootstrap 3
-@import 'bootstrap-responsive';
+@import "bootstrap";
+@import "font-awesome";
+@import "summernote";
 ```
 
 In app/assets/javascripts/application.js, you should add the following:
@@ -54,15 +58,8 @@ In app/assets/javascripts/application.js, you should add the following:
 ```
 //= require summernote.min
 or
-//= require summernote  # if you want to require the uncompressed one
-//= require lang/summernot-kr-KR   # if you need to use i18n support
-```
-
-And also, in app/assets/stylesheets/application.css, you should add the following:
-
-```
-*= require font-awesome
-*= require summernote
+//= require summernote              # if you want to require the uncompressed one
+//= require lang/summernote-ko-KR   # if you need to use i18n support
 ```
 
 For example, if you made a `Post` model using `scaffold generator` of Rails, you would see the `post` form view template in app/views/posts/_form.html.erb.
@@ -131,6 +128,34 @@ That's it.
  - Rails 4.0.2 : http://github.com/rorlab/summernote-test
 
 ## Changelogs
+
+ - v0.5.10.0
+    * Updated with `v0.5.10 Summernote, 2014-10-3`
+
+ - v0.5.9 2014-09-21
+    * Dom Editing: insert(Un)OrderedList, indent/outdent
+    * History in a line.
+
+ - v0.5.8 2014-08-31
+    * Remove autoFormatRange option
+    * Fixed onChange issues
+
+ - v0.5.7 ~ v0.5.4 2014-08-29 ~ 2014-08-23
+    * Dom editing: insertPara, insertNode
+
+ - v0.5.3 2014-07-25
+    * Extract codemirror.autoFormatOnStart option
+    * Bug patch (createLink)
+
+ - v0.5.2 2014-07-20
+    * Air Mode
+    * And bug patch (scroll, createLink, ...)
+
+ - v0.5.1 2014-03-16
+    * Support 15 Languages(https://github.com/HackerWins/summernote/tree/master/lang)
+    * Add local-server for develop summernote.
+    * Font style: Font-Family
+    * And Bug patch.
 
  - v0.5.0   : Support i18n
     * Updated with `v0.5 Summernote, 2013-12-29` as the followings:

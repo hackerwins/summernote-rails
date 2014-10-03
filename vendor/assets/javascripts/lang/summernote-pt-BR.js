@@ -4,93 +4,94 @@
       font: {
         bold: 'Negrito',
         italic: 'Itálico',
-        underline: 'Subscrito',
-        strike: 'Linha',
-        clear: 'Limpa formatação',
+        underline: 'Sublinhado',
+        strikethrough: 'Riscado',
+        clear: 'Remover estilo da fonte',
         height: 'Altura da linha',
-        size: 'Tamanho do caracter'
+        size: 'Tamanho da fonte'
       },
       image: {
         image: 'Imagem',
-        insert: 'Inserir Imagem',
-        resizeFull: 'Dimensão original',
-        resizeHalf: 'Redimensionar para 50%',
-        resizeQuarter: 'Redimensionar para 25%',
-        floatLeft: 'Alinhar na esquerda',
-        floatRight: 'Alinhar na direita',
-        floatNone: 'Sem alinhamento',
-        dragImageHere: 'Arraste sua imagem aqui',
-        selectFromFiles: 'Seleciona de arquivo',
-        url: 'URL da imagem'
+        insert: 'Inserir imagem',
+        resizeFull: 'Resize Full',
+        resizeHalf: 'Resize Half',
+        resizeQuarter: 'Resize Quarter',
+        floatLeft: 'Float Left',
+        floatRight: 'Float Right',
+        floatNone: 'Float None',
+        dragImageHere: 'Arraste uma imagem para cá',
+        selectFromFiles: 'Selecione a partir dos arquivos',
+        url: 'URL da image'
       },
       link: {
         link: 'Link',
         insert: 'Inserir link',
-        unlink: 'Eliminar link',
-        edit: 'Modificar link',
-        textToDisplay: 'Texto do link',
-        url: 'URL do link'
+        unlink: 'Remover link',
+        edit: 'Editar',
+        textToDisplay: 'Texto para exibir',
+        url: 'Para qual URL esse link leva?',
+	    	openInNewWindow: 'Abrir em uma nova janela'
       },
       video: {
-        video: 'Video',
-        videoLink: 'Link do Video',
-        insert: 'Inserir Video',
-        url: 'URL do Video',
-        providers: '(YouTube, Vimeo, Vine, Instagram o DailyMotion)'
+        video: 'Vídeo',
+        videoLink: 'Link para vídeo',
+        insert: 'Inserir vídeo',
+        url: 'URL do vídeo?',
+        providers: '(YouTube, Vimeo, Vine, Instagram, DailyMotion, ou Youku)'
       },
       table: {
         table: 'Tabela'
       },
       hr: {
-        insert: 'Linha de separação'
+        insert: 'Inserir linha horizontal'
       },
       style: {
         style: 'Estilo',
         normal: 'Normal',
         blockquote: 'Citação',
-        pre: 'Codigo',
-        h1: 'Titulo 1',
-        h2: 'Titulo 2',
-        h3: 'Titulo 3',
-        h4: 'Titulo 4',
-        h5: 'Titulo 5',
-        h6: 'Titulo 6'
+        pre: 'Código',
+        h1: 'Título 1',
+        h2: 'Título 2',
+        h3: 'Título 3',
+        h4: 'Título 4',
+        h5: 'Título 5',
+        h6: 'Título 6'
       },
       lists: {
-        unordered: 'Lista sem ordem',
+        unordered: 'Lista com marcadores',
         ordered: 'Lista numerada'
       },
       options: {
         help: 'Ajuda',
         fullscreen: 'Tela cheia',
-        codeview: 'Visualizar código html'
+        codeview: 'Ver código-fonte'
       },
       paragraph: {
         paragraph: 'Parágrafo',
-        outdent: 'De-identar',
-        indent: 'Identar',
+        outdent: 'Menor tabulação',
+        indent: 'Maior tabulação',
         left: 'Alinhar à esquerda',
-        center: 'Centro',
-        right: 'Alinhar à direita',
+        center: 'Alinhar ao centro',
+        right: 'Alinha à direita',
         justify: 'Justificado'
       },
       color: {
-        recent: 'Última cor utilizada',
-        more: 'Outra cor',
-        background: 'Cor de fundo',
-        foreground: 'Color do texto',
-        transparent: 'Trasparente',
-        setTransparent: 'Trasparente',
-        reset: 'Resetar',
-        resetToDefault: 'Resetar cor'
+        recent: 'Cor recente',
+        more: 'Mais cores',
+        background: 'Fundo',
+        foreground: 'Fonte',
+        transparent: 'Transparente',
+        setTransparent: 'Fundo transparente',
+        reset: 'Restaurar',
+        resetToDefault: 'Restaurar padrão'
       },
       shortcut: {
-        shortcuts: 'Atalho',
+        shortcuts: 'Atalhos do teclado',
         close: 'Fechar',
-        textFormatting: 'Formatar texto',
+        textFormatting: 'Formatação de texto',
         action: 'Ação',
-        paragraphFormatting: 'Formatar paragrafo',
-        documentStyle: 'Estilo'
+        paragraphFormatting: 'Formatação de parágrafo',
+        documentStyle: 'Estilo de documento'
       },
       history: {
         undo: 'Desfazer',
