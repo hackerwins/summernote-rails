@@ -31,9 +31,6 @@
         <h1>
 <a name="mannual" class="anchor" href="#mannual"><span class="octicon octicon-link"></span></a>Mannual</h1>
 
-<h1>
-<a name="summernoterails" class="anchor" href="#summernoterails"><span class="octicon octicon-link"></span></a>Summernote::Rails</h1>
-
 <p>This gem was built to gemify the assets used in Summernote, the Super Simple WYSIWYG Editor on Bootstrap, for Ruby on Rails version &gt;= 3.1.</p>
 
 <p>If you want to get the detailed information on how to use summernote editor, please click URL link to the website of Summernote.</p>
@@ -49,23 +46,24 @@
 
 <p>Add the following gems to your application's Gemfile:</p>
 
-<pre><code>gem 'simple_form'
+<div class="highlight highlight-ruby"><pre><span class="n">gem</span> <span class="s1">'simple_form'</span>
 
-# You'll need to include the following dependencies of Summernote
-gem 'bootstrap-sass'
-gem "font-awesome-rails"
+<span class="c1"># You'll need to include the following dependencies of Summernote</span>
+<span class="n">gem</span> <span class="s1">'bootstrap-sass'</span>
+<span class="n">gem</span> <span class="s2">"font-awesome-rails"</span>
 
-# This is the right gem to use summernote editor in Rails projects.
-gem 'summernote-rails'
+<span class="c1"># This is the right gem to use summernote editor in Rails projects.</span>
+<span class="n">gem</span> <span class="s1">'summernote-rails'</span>
+<span class="n">gem</span> <span class="s1">'codemirror-rails'</span>
 
-# To solve the problems on the turbolinks
-gem 'jquery-turbolinks'
-</code></pre>
+<span class="c1"># To solve the problems on the turbolinks</span>
+<span class="n">gem</span> <span class="s1">'jquery-turbolinks'</span>
+</pre></div>
 
 <p>And then execute:</p>
 
-<pre><code>$ bundle install
-</code></pre>
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>bundle install
+</pre></div>
 
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
@@ -74,79 +72,92 @@ gem 'jquery-turbolinks'
 
 <p>In app/assets/stylesheets/application.css.scss,</p>
 
-<pre><code>// Bootstrap 3
-@import "bootstrap";
-@import "font-awesome";
-@import "summernote";
-body {padding-top:3em;}
-</code></pre>
+<div class="highlight highlight-css"><pre><span class="o">//</span> <span class="nt">Bootstrap</span> <span class="nt">3</span>
+<span class="k">@import</span> <span class="s2">"bootstrap"</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s2">"font-awesome"</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s2">"summernote"</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s2">"codemirror"</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s2">"codemirror/themes/solarized"</span><span class="p">;</span>
+<span class="k">@import</span> <span class="s2">"posts"</span><span class="p">;</span>
+<span class="nt">body</span> <span class="p">{</span><span class="k">padding-top</span><span class="o">:</span><span class="m">3em</span><span class="p">;}</span>
+</pre></div>
 
 <p>In app/assets/javascripts/application.js, you should add the following:</p>
 
-<pre><code>//= require jquery
-//= require jquery.turbolinks
-//= require jquery_ujs
-//= require bootstrap
-//= require summernote.min
-//= require lang/summernote-ko-KR
-//= require_tree .
-//= require turbolinks
-</code></pre>
+<div class="highlight highlight-js"><pre><span class="c1">//= require jquery</span>
+<span class="c1">//= require jquery.turbolinks</span>
+<span class="c1">//= require jquery_ujs</span>
+<span class="c1">//= require bootstrap</span>
+<span class="c1">//= require codemirror</span>
+<span class="c1">//= require codemirror/modes/ruby</span>
+<span class="c1">//= require codemirror/modes/sass</span>
+<span class="c1">//= require codemirror/modes/shell</span>
+<span class="c1">//= require codemirror/modes/sql</span>
+<span class="c1">//= require codemirror/modes/slim</span>
+<span class="c1">//= require codemirror/modes/nginx</span>
+<span class="c1">//= require codemirror/modes/markdown</span>
+<span class="c1">//= require codemirror/modes/javascript</span>
+<span class="c1">//= require codemirror/modes/http</span>
+<span class="c1">//= require codemirror/modes/htmlmixed</span>
+<span class="c1">//= require codemirror/modes/haml</span>
+<span class="c1">//= require codemirror/modes/xml</span>
+<span class="c1">//= require codemirror/modes/css</span>
+<span class="c1">//= require codemirror/modes/yaml</span>
+<span class="c1">//= require codemirror/modes/slim</span>
+<span class="c1">//= require codemirror/modes/php</span>
+<span class="c1">//= require summernote</span>
+<span class="c1">//= require lang/summernote-ko-KR</span>
+<span class="c1">//= require_tree .</span>
+<span class="c1">//= require turbolinks</span>
+</pre></div>
 
 <p>For example, if you made a <code>Post</code> model using <code>scaffold generator</code> of Rails, you would see the <code>post</code> form view template in app/views/posts/_form.html.erb.</p>
 
 <p>In that template file, you should add <code>summernote</code> class to the textarea input as the following:</p>
 
-<pre><code>&lt;%= simple_form_for(@post) do |f| %&gt;
-  &lt;%= f.error_notification %&gt;
+<div class="highlight highlight-html"><pre><span class="err">&lt;</span>%= simple_form_for(@post) do |f| %&gt;
+  <span class="err">&lt;</span>%= f.error_notification %&gt;
 
-  &lt;div class="form-group"&gt;
-    &lt;%= f.input :title, input_html:{class:'form-control'} %&gt;
-  &lt;/div&gt;
-  &lt;div class="form-group"&gt;
-    &lt;%= f.input :content, class:'summernote' %&gt;
-  &lt;/div&gt;
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"form-group"</span><span class="nt">&gt;</span>
+    <span class="err">&lt;</span>%= f.input :title, input_html:{class:'form-control'} %&gt;
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"form-group"</span><span class="nt">&gt;</span>
+    <span class="err">&lt;</span>%= f.input :content, class:'summernote' %&gt;
+  <span class="nt">&lt;/div&gt;</span>
 
-  &lt;div class="form-group"&gt;
-    &lt;%= f.button :submit, class:'btn btn-default' %&gt;
-  &lt;/div&gt;
-&lt;% end %&gt;
-</code></pre>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"form-group"</span><span class="nt">&gt;</span>
+    <span class="err">&lt;</span>%= f.button :submit, class:'btn btn-default' %&gt;
+  <span class="nt">&lt;/div&gt;</span>
+<span class="err">&lt;</span>% end %&gt;
+</pre></div>
 
 <p>And then, in <code>post</code>-dedicated coffeescript file, app/assets/javascripts/posts.js.coffee, you should add the following:</p>
 
-<pre><code>$ -&gt;
+<div class="highlight highlight-js"><pre><span class="nx">$</span> <span class="o">-&gt;</span>
 
-  # to set summernote object
-  # You should change '#post_content' to your textarea input id
-  summer_note = $('#post_content')
+  <span class="err">#</span> <span class="nx">to</span> <span class="nx">set</span> <span class="nx">summernote</span> <span class="nx">object</span>
+  <span class="err">#</span> <span class="nx">You</span> <span class="nx">should</span> <span class="nx">change</span> <span class="s1">'#post_content'</span> <span class="nx">to</span> <span class="nx">your</span> <span class="nx">textarea</span> <span class="nx">input</span> <span class="nx">id</span>
+  <span class="nx">summer_note</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#post_content'</span><span class="p">)</span>
 
-  # to call summernote editor
-  summer_note.summernote
-    # to set options
-    height:300
-    lang: 'ko-KR'
-    # toolbar: [
-                # ['insert', ['picture', 'link']], // no insert buttons
-                # ["table", ["table"]],
-                # ["style", ["style"]],
-                # ["fontsize", ["fontsize"]],
-                # ["color", ["color"]],
-                # ["style", ["bold", "italic", "underline", "clear"]],
-                # ["para", ["ul", "ol", "paragraph"]],
-                # ["height", ["height"]],
-                # ["help", ["help"]]
-             #]
+  <span class="err">#</span> <span class="nx">to</span> <span class="nx">call</span> <span class="nx">summernote</span> <span class="nx">editor</span>
+  <span class="nx">summer_note</span><span class="p">.</span><span class="nx">summernote</span>
+    <span class="err">#</span> <span class="nx">to</span> <span class="nx">set</span> <span class="nx">options</span>
+    <span class="nx">height</span><span class="o">:</span><span class="mi">500</span>
+    <span class="nx">lang</span><span class="o">:</span> <span class="s1">'ko-KR'</span>
+    <span class="nx">codemirror</span><span class="o">:</span>
+      <span class="nx">lineNumbers</span><span class="o">:</span> <span class="kc">true</span>
+      <span class="nx">tabSize</span><span class="o">:</span> <span class="mi">2</span>
+      <span class="nx">theme</span><span class="o">:</span> <span class="s2">"solarized light"</span>
 
-  # to set code for summernote
-  summer_note.code summer_note.val()
+  <span class="err">#</span> <span class="nx">to</span> <span class="nx">set</span> <span class="nx">code</span> <span class="k">for</span> <span class="nx">summernote</span>
+  <span class="nx">summer_note</span><span class="p">.</span><span class="nx">code</span> <span class="nx">summer_note</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span>
 
-  # to get code for summernote
-  summer_note.closest('form').submit -&gt;
-    # alert $('#post_content').code()
-    summer_note.val summer_note.code()
-    true
-</code></pre>
+  <span class="err">#</span> <span class="nx">to</span> <span class="nx">get</span> <span class="nx">code</span> <span class="k">for</span> <span class="nx">summernote</span>
+  <span class="nx">summer_note</span><span class="p">.</span><span class="nx">closest</span><span class="p">(</span><span class="s1">'form'</span><span class="p">).</span><span class="nx">submit</span> <span class="o">-&gt;</span>
+    <span class="err">#</span> <span class="nx">alert</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#post_content'</span><span class="p">).</span><span class="nx">code</span><span class="p">()</span>
+    <span class="nx">summer_note</span><span class="p">.</span><span class="nx">val</span> <span class="nx">summer_note</span><span class="p">.</span><span class="nx">code</span><span class="p">()</span>
+    <span class="kc">true</span>
+</pre></div>
 
 <p>That's it.</p>
 
@@ -154,14 +165,21 @@ body {padding-top:3em;}
 <a name="sample-projects" class="anchor" href="#sample-projects"><span class="octicon octicon-link"></span></a>Sample projects</h2>
 
 <ul>
-<li>Rails 3.2.16 : <a href="http://github.com/rorlab/summernote-test-r3">http://github.com/rorlab/summernote-test-r3</a>
+<li>Rails 3.2.16 : <a href="https://github.com/rorlab/summernote-test-r3">https://github.com/rorlab/summernote-test-r3</a>
 </li>
-<li>Rails 4.0.2 : <a href="http://github.com/rorlab/summernote-test">http://github.com/rorlab/summernote-test</a>
+<li>Rails 4.1.6 : <a href="https://github.com/rorlab/summernote-rails-sample">https://github.com/rorlab/summernote-rails-sample</a>
 </li>
 </ul><h2>
 <a name="changelogs" class="anchor" href="#changelogs"><span class="octicon octicon-link"></span></a>Changelogs</h2>
 
 <ul>
+<li>
+<p>v0.5.10.2</p>
+
+<ul>
+<li>Updated README.md</li>
+</ul>
+</li>
 <li>
 <p>v0.5.10.0</p>
 
