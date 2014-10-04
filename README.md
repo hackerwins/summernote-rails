@@ -14,21 +14,26 @@ The version of summernote-rails is matched with that of summernote editor.
 
 Add the following gems to your application's Gemfile:
 
-    gem 'simple_form'
+```ruby
+gem 'simple_form'
 
-    # You'll need to include the following dependencies of Summernote
-    gem 'bootstrap-sass'
-    gem "font-awesome-rails"
+# You'll need to include the following dependencies of Summernote
+gem 'bootstrap-sass'
+gem "font-awesome-rails"
 
-    # This is the right gem to use summernote editor in Rails projects.
-    gem 'summernote-rails'
+# This is the right gem to use summernote editor in Rails projects.
+gem 'summernote-rails'
+gem 'codemirror-rails'
 
-    # To solve the problems on the turbolinks
-    gem 'jquery-turbolinks'
+# To solve the problems on the turbolinks
+gem 'jquery-turbolinks'
+```
 
 And then execute:
 
-    $ bundle install
+```bash
+$ bundle install
+```
 
 ## Usage
 
@@ -37,22 +42,42 @@ First of all, the summernote editor works on Bootstrap and so it is assumed that
 
 In app/assets/stylesheets/application.css.scss,
 
-```
+```css
 // Bootstrap 3
 @import "bootstrap";
 @import "font-awesome";
 @import "summernote";
+@import "codemirror";
+@import "codemirror/themes/solarized";
+@import "posts";
 body {padding-top:3em;}
 ```
 
 In app/assets/javascripts/application.js, you should add the following:
 
-```
+```js
 //= require jquery
 //= require jquery.turbolinks
 //= require jquery_ujs
 //= require bootstrap
-//= require summernote.min
+//= require codemirror
+//= require codemirror/modes/ruby
+//= require codemirror/modes/sass
+//= require codemirror/modes/shell
+//= require codemirror/modes/sql
+//= require codemirror/modes/slim
+//= require codemirror/modes/nginx
+//= require codemirror/modes/markdown
+//= require codemirror/modes/javascript
+//= require codemirror/modes/http
+//= require codemirror/modes/htmlmixed
+//= require codemirror/modes/haml
+//= require codemirror/modes/xml
+//= require codemirror/modes/css
+//= require codemirror/modes/yaml
+//= require codemirror/modes/slim
+//= require codemirror/modes/php
+//= require summernote
 //= require lang/summernote-ko-KR
 //= require_tree .
 //= require turbolinks
@@ -62,7 +87,7 @@ For example, if you made a `Post` model using `scaffold generator` of Rails, you
 
 In that template file, you should add `summernote` class to the textarea input as the following:
 
-```
+```html
 <%= simple_form_for(@post) do |f| %>
   <%= f.error_notification %>
 
@@ -81,7 +106,7 @@ In that template file, you should add `summernote` class to the textarea input a
 
 And then, in `post`-dedicated coffeescript file, app/assets/javascripts/posts.js.coffee, you should add the following:
 
-```
+```js
 $ ->
 
   # to set summernote object
@@ -91,19 +116,12 @@ $ ->
   # to call summernote editor
   summer_note.summernote
     # to set options
-    height:300
+    height:500
     lang: 'ko-KR'
-    # toolbar: [
-                # ['insert', ['picture', 'link']], // no insert buttons
-                # ["table", ["table"]],
-                # ["style", ["style"]],
-                # ["fontsize", ["fontsize"]],
-                # ["color", ["color"]],
-                # ["style", ["bold", "italic", "underline", "clear"]],
-                # ["para", ["ul", "ol", "paragraph"]],
-                # ["height", ["height"]],
-                # ["help", ["help"]]
-             #]
+    codemirror:
+      lineNumbers: true
+      tabSize: 2
+      theme: "solarized light"
 
   # to set code for summernote
   summer_note.code summer_note.val()
@@ -120,10 +138,13 @@ That's it.
 
 ## Sample projects
 
- - Rails 3.2.16 : http://github.com/rorlab/summernote-test-r3
- - Rails 4.0.2 : http://github.com/rorlab/summernote-test
+ - Rails 3.2.16 : https://github.com/rorlab/summernote-test-r3
+ - Rails 4.1.6 : https://github.com/rorlab/summernote-rails-sample
 
 ## Changelogs
+
+ - v0.5.10.2
+    * Updated README.md
 
  - v0.5.10.0
     * Updated with `v0.5.10 Summernote, 2014-10-3`
