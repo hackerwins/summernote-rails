@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Summernote-rails by rorlab</title>
+    <title>Summernote-rails by summernote</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -18,18 +18,18 @@
         <h1>Summernote-rails</h1>
         <p>To gemify the summernote WYSIWYG editor for Rails &gt;= 3.1</p>
 
-        <p class="view"><a href="https://github.com/rorlab/summernote-rails">View the Project on GitHub <small>rorlab/summernote-rails</small></a></p>
+        <p class="view"><a href="https://github.com/summernote/summernote-rails">View the Project on GitHub <small>summernote/summernote-rails</small></a></p>
 
 
         <ul>
-          <li><a href="https://github.com/rorlab/summernote-rails/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/rorlab/summernote-rails/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/rorlab/summernote-rails">View On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/summernote/summernote-rails/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/summernote/summernote-rails/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/summernote/summernote-rails">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
       <section>
         <h1>
-<a name="mannual" class="anchor" href="#mannual"><span class="octicon octicon-link"></span></a>Mannual</h1>
+<a id="mannual" class="anchor" href="#mannual" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mannual</h1>
 
 <p><a href="http://youtu.be/YuBW2TNOnK8"><img src="http://stech2.firstpost.com/wp-content/uploads/gallery/2013/may/youtube_cover_221624575600_640x360_061608159719_640x360.jpg" alt="유투브커버이미지"></a></p>
 
@@ -43,128 +43,126 @@
 
 <p><a href="http://badge.fury.io/rb/summernote-rails"><img src="https://badge.fury.io/rb/summernote-rails.png" alt="Gem Version"></a></p>
 
+<blockquote>
+<p><strong>Notice</strong> : This repository was transferred from rorlab/summernote-rails to summernote/summernote-rails, on December 11, 2014.</p>
+</blockquote>
+
 <h2>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
 
 <p>Add the following gems to your application's Gemfile:</p>
 
-<div class="highlight highlight-ruby"><pre><span class="n">gem</span> <span class="s1">'simple_form'</span>
+<div class="highlight highlight-ruby"><pre><span class="pl-k">gem</span> <span class="pl-s1"><span class="pl-pds">'</span>simple_form<span class="pl-pds">'</span></span>
 
-<span class="c1"># You'll need to include the following dependencies of Summernote</span>
-<span class="n">gem</span> <span class="s1">'bootstrap-sass'</span>
-<span class="n">gem</span> <span class="s2">"font-awesome-rails"</span>
+<span class="pl-c"># You'll need to include the following dependencies of Summernote</span>
+<span class="pl-k">gem</span> <span class="pl-s1"><span class="pl-pds">'</span>bootstrap-sass<span class="pl-pds">'</span></span>
+<span class="pl-k">gem</span> <span class="pl-s1"><span class="pl-pds">"</span>font-awesome-rails<span class="pl-pds">"</span></span>
 
-<span class="c1"># This is the right gem to use summernote editor in Rails projects.</span>
-<span class="n">gem</span> <span class="s1">'summernote-rails'</span>
-<span class="n">gem</span> <span class="s1">'codemirror-rails'</span>
+<span class="pl-c"># This is the right gem to use summernote editor in Rails projects.</span>
+<span class="pl-k">gem</span> <span class="pl-s1"><span class="pl-pds">'</span>summernote-rails<span class="pl-pds">'</span></span>
+<span class="pl-k">gem</span> <span class="pl-s1"><span class="pl-pds">'</span>codemirror-rails<span class="pl-pds">'</span></span>
 
-<span class="c1"># To solve the problems on the turbolinks</span>
-<span class="n">gem</span> <span class="s1">'jquery-turbolinks'</span>
-</pre></div>
+<span class="pl-c"># To solve the problems on the turbolinks</span>
+<span class="pl-k">gem</span> <span class="pl-s1"><span class="pl-pds">'</span>jquery-turbolinks<span class="pl-pds">'</span></span></pre></div>
 
 <p>And then execute:</p>
 
-<div class="highlight highlight-bash"><pre><span class="nv">$ </span>bundle install
-</pre></div>
+<div class="highlight highlight-bash"><pre>$ bundle install</pre></div>
 
 <h2>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <p>First of all, the summernote editor works on Bootstrap and so it is assumed that you have already set it up.</p>
 
 <p>In app/assets/stylesheets/application.css.scss,</p>
 
-<div class="highlight highlight-css"><pre><span class="o">//</span> <span class="nt">Bootstrap</span> <span class="nt">3</span>
-<span class="k">@import</span> <span class="s2">"bootstrap"</span><span class="p">;</span>
-<span class="k">@import</span> <span class="s2">"font-awesome"</span><span class="p">;</span>
-<span class="k">@import</span> <span class="s2">"summernote"</span><span class="p">;</span>
-<span class="k">@import</span> <span class="s2">"codemirror"</span><span class="p">;</span>
-<span class="k">@import</span> <span class="s2">"codemirror/themes/solarized"</span><span class="p">;</span>
-<span class="k">@import</span> <span class="s2">"posts"</span><span class="p">;</span>
-<span class="nt">body</span> <span class="p">{</span><span class="k">padding-top</span><span class="o">:</span><span class="m">3em</span><span class="p">;}</span>
-</pre></div>
+<div class="highlight highlight-css"><pre>// Bootstrap 3
+<span class="pl-k">@import</span> <span class="pl-s1"><span class="pl-pds">"</span>bootstrap<span class="pl-pds">"</span></span>;
+<span class="pl-k">@import</span> <span class="pl-s1"><span class="pl-pds">"</span>font-awesome<span class="pl-pds">"</span></span>;
+<span class="pl-k">@import</span> <span class="pl-s1"><span class="pl-pds">"</span>summernote<span class="pl-pds">"</span></span>;
+<span class="pl-k">@import</span> <span class="pl-s1"><span class="pl-pds">"</span>codemirror<span class="pl-pds">"</span></span>;
+<span class="pl-k">@import</span> <span class="pl-s1"><span class="pl-pds">"</span>codemirror/themes/solarized<span class="pl-pds">"</span></span>;
+<span class="pl-k">@import</span> <span class="pl-s1"><span class="pl-pds">"</span>posts<span class="pl-pds">"</span></span>;
+<span class="pl-ent">body</span> {<span class="pl-mp"><span class="pl-s3">padding-top</span></span>:<span class="pl-c1">3<span class="pl-k">em</span></span>;}</pre></div>
 
 <p>In app/assets/javascripts/application.js, you should add the following:</p>
 
-<div class="highlight highlight-js"><pre><span class="c1">//= require jquery</span>
-<span class="c1">//= require jquery.turbolinks</span>
-<span class="c1">//= require jquery_ujs</span>
-<span class="c1">//= require bootstrap</span>
-<span class="c1">//= require codemirror</span>
-<span class="c1">//= require codemirror/modes/ruby</span>
-<span class="c1">//= require codemirror/modes/sass</span>
-<span class="c1">//= require codemirror/modes/shell</span>
-<span class="c1">//= require codemirror/modes/sql</span>
-<span class="c1">//= require codemirror/modes/slim</span>
-<span class="c1">//= require codemirror/modes/nginx</span>
-<span class="c1">//= require codemirror/modes/markdown</span>
-<span class="c1">//= require codemirror/modes/javascript</span>
-<span class="c1">//= require codemirror/modes/http</span>
-<span class="c1">//= require codemirror/modes/htmlmixed</span>
-<span class="c1">//= require codemirror/modes/haml</span>
-<span class="c1">//= require codemirror/modes/xml</span>
-<span class="c1">//= require codemirror/modes/css</span>
-<span class="c1">//= require codemirror/modes/yaml</span>
-<span class="c1">//= require codemirror/modes/slim</span>
-<span class="c1">//= require codemirror/modes/php</span>
-<span class="c1">//= require summernote</span>
-<span class="c1">//= require lang/summernote-ko-KR</span>
-<span class="c1">//= require_tree .</span>
-<span class="c1">//= require turbolinks</span>
-</pre></div>
+<div class="highlight highlight-js"><pre><span class="pl-c">//= require jquery</span>
+<span class="pl-c">//= require jquery.turbolinks</span>
+<span class="pl-c">//= require jquery_ujs</span>
+<span class="pl-c">//= require bootstrap</span>
+<span class="pl-c">//= require codemirror</span>
+<span class="pl-c">//= require codemirror/modes/ruby</span>
+<span class="pl-c">//= require codemirror/modes/sass</span>
+<span class="pl-c">//= require codemirror/modes/shell</span>
+<span class="pl-c">//= require codemirror/modes/sql</span>
+<span class="pl-c">//= require codemirror/modes/slim</span>
+<span class="pl-c">//= require codemirror/modes/nginx</span>
+<span class="pl-c">//= require codemirror/modes/markdown</span>
+<span class="pl-c">//= require codemirror/modes/javascript</span>
+<span class="pl-c">//= require codemirror/modes/http</span>
+<span class="pl-c">//= require codemirror/modes/htmlmixed</span>
+<span class="pl-c">//= require codemirror/modes/haml</span>
+<span class="pl-c">//= require codemirror/modes/xml</span>
+<span class="pl-c">//= require codemirror/modes/css</span>
+<span class="pl-c">//= require codemirror/modes/yaml</span>
+<span class="pl-c">//= require codemirror/modes/slim</span>
+<span class="pl-c">//= require codemirror/modes/php</span>
+<span class="pl-c">//= require summernote</span>
+<span class="pl-c">//= require lang/summernote-ko-KR</span>
+<span class="pl-c">//= require_tree .</span>
+<span class="pl-c">//= require turbolinks</span></pre></div>
 
 <p>For example, if you made a <code>Post</code> model using <code>scaffold generator</code> of Rails, you would see the <code>post</code> form view template in app/views/posts/_form.html.erb.</p>
 
 <p>In that template file, you should add <code>summernote</code> class to the textarea input as the following:</p>
 
-<div class="highlight highlight-html"><pre><span class="err">&lt;</span>%= simple_form_for(@post) do |f| %&gt;
-  <span class="err">&lt;</span>%= f.error_notification %&gt;
+<div class="highlight highlight-html"><pre>&lt;%= simple_form_for(@post) do |f| %&gt;
+  &lt;%= f.error_notification %&gt;
 
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"form-group"</span><span class="nt">&gt;</span>
-    <span class="err">&lt;</span>%= f.input :title, input_html:{class:'form-control'} %&gt;
-  <span class="nt">&lt;/div&gt;</span>
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"form-group"</span><span class="nt">&gt;</span>
-    <span class="err">&lt;</span>%= f.input :content, class:'summernote' %&gt;
-  <span class="nt">&lt;/div&gt;</span>
+  &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s1"><span class="pl-pds">"</span>form-group<span class="pl-pds">"</span></span>&gt;
+    &lt;%= f.input :title, input_html:{class:'form-control'} %&gt;
+  &lt;/<span class="pl-ent">div</span>&gt;
+  &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s1"><span class="pl-pds">"</span>form-group<span class="pl-pds">"</span></span>&gt;
+    &lt;%= f.input :content, class:'summernote' %&gt;
+  &lt;/<span class="pl-ent">div</span>&gt;
 
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"form-group"</span><span class="nt">&gt;</span>
-    <span class="err">&lt;</span>%= f.button :submit, class:'btn btn-default' %&gt;
-  <span class="nt">&lt;/div&gt;</span>
-<span class="err">&lt;</span>% end %&gt;
-</pre></div>
+  &lt;<span class="pl-ent">div</span> <span class="pl-e">class</span>=<span class="pl-s1"><span class="pl-pds">"</span>form-group<span class="pl-pds">"</span></span>&gt;
+    &lt;%= f.button :submit, class:'btn btn-default' %&gt;
+  &lt;/<span class="pl-ent">div</span>&gt;
+&lt;% end %&gt;</pre></div>
 
 <p>And then, in <code>post</code>-dedicated coffeescript file, app/assets/javascripts/posts.js.coffee, you should add the following:</p>
 
-<div class="highlight highlight-js"><pre><span class="nx">$</span> <span class="o">-&gt;</span>
+<div class="highlight highlight-js"><pre>$ <span class="pl-k">-&gt;</span>
 
-  <span class="err">#</span> <span class="nx">to</span> <span class="nx">set</span> <span class="nx">summernote</span> <span class="nx">object</span>
-  <span class="err">#</span> <span class="nx">You</span> <span class="nx">should</span> <span class="nx">change</span> <span class="s1">'#post_content'</span> <span class="nx">to</span> <span class="nx">your</span> <span class="nx">textarea</span> <span class="nx">input</span> <span class="nx">id</span>
-  <span class="nx">summer_note</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#post_content'</span><span class="p">)</span>
+  # to set summernote object
+  # You should change <span class="pl-s1"><span class="pl-pds">'</span>#post_content<span class="pl-pds">'</span></span> to your textarea input id
+  summer_note <span class="pl-k">=</span> $(<span class="pl-s1"><span class="pl-pds">'</span>#post_content<span class="pl-pds">'</span></span>)
 
-  <span class="err">#</span> <span class="nx">to</span> <span class="nx">call</span> <span class="nx">summernote</span> <span class="nx">editor</span>
-  <span class="nx">summer_note</span><span class="p">.</span><span class="nx">summernote</span>
-    <span class="err">#</span> <span class="nx">to</span> <span class="nx">set</span> <span class="nx">options</span>
-    <span class="nx">height</span><span class="o">:</span><span class="mi">500</span>
-    <span class="nx">lang</span><span class="o">:</span> <span class="s1">'ko-KR'</span>
-    <span class="nx">codemirror</span><span class="o">:</span>
-      <span class="nx">lineNumbers</span><span class="o">:</span> <span class="kc">true</span>
-      <span class="nx">tabSize</span><span class="o">:</span> <span class="mi">2</span>
-      <span class="nx">theme</span><span class="o">:</span> <span class="s2">"solarized light"</span>
+  # to call summernote editor
+  summer_note.summernote
+    # to set options
+    height<span class="pl-k">:</span><span class="pl-c1">500</span>
+    lang<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>ko-KR<span class="pl-pds">'</span></span>
+    codemirror<span class="pl-k">:</span>
+      lineNumbers<span class="pl-k">:</span> <span class="pl-c1">true</span>
+      tabSize<span class="pl-k">:</span> <span class="pl-c1">2</span>
+      theme<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>solarized light<span class="pl-pds">"</span></span>
 
-  <span class="err">#</span> <span class="nx">to</span> <span class="nx">set</span> <span class="nx">code</span> <span class="k">for</span> <span class="nx">summernote</span>
-  <span class="nx">summer_note</span><span class="p">.</span><span class="nx">code</span> <span class="nx">summer_note</span><span class="p">.</span><span class="nx">val</span><span class="p">()</span>
+  # to set code <span class="pl-k">for</span> summernote
+  summer_note.<span class="pl-sc">code</span> summer_note.val()
 
-  <span class="err">#</span> <span class="nx">to</span> <span class="nx">get</span> <span class="nx">code</span> <span class="k">for</span> <span class="nx">summernote</span>
-  <span class="nx">summer_note</span><span class="p">.</span><span class="nx">closest</span><span class="p">(</span><span class="s1">'form'</span><span class="p">).</span><span class="nx">submit</span> <span class="o">-&gt;</span>
-    <span class="err">#</span> <span class="nx">alert</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#post_content'</span><span class="p">).</span><span class="nx">code</span><span class="p">()</span>
-    <span class="nx">summer_note</span><span class="p">.</span><span class="nx">val</span> <span class="nx">summer_note</span><span class="p">.</span><span class="nx">code</span><span class="p">()</span>
-    <span class="kc">true</span>
-</pre></div>
+  # to get code <span class="pl-k">for</span> summernote
+  summer_note.closest(<span class="pl-s1"><span class="pl-pds">'</span>form<span class="pl-pds">'</span></span>).submit <span class="pl-k">-&gt;</span>
+    # alert $(<span class="pl-s1"><span class="pl-pds">'</span>#post_content<span class="pl-pds">'</span></span>).<span class="pl-sc">code</span>()
+    summer_note.val summer_note.<span class="pl-sc">code</span>()
+    <span class="pl-c1">true</span></pre></div>
 
 <p>That's it.</p>
 
 <h2>
-<a name="sample-projects" class="anchor" href="#sample-projects"><span class="octicon octicon-link"></span></a>Sample projects</h2>
+<a id="sample-projects" class="anchor" href="#sample-projects" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample projects</h2>
 
 <ul>
 <li>Rails 3.2.16 : <a href="https://github.com/rorlab/summernote-test-r3">https://github.com/rorlab/summernote-test-r3</a>
@@ -174,7 +172,7 @@
 </ul>
 
 <h2>
-<a name="changelogs" class="anchor" href="#changelogs"><span class="octicon octicon-link"></span></a>Changelogs</h2>
+<a id="changelogs" class="anchor" href="#changelogs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Changelogs</h2>
 
 <ul>
 <li>
@@ -302,7 +300,7 @@
 </ul>
 
 <h2>
-<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+<a id="contributing" class="anchor" href="#contributing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Contributing</h2>
 
 <ol>
 <li>Fork it</li>
@@ -313,7 +311,7 @@
 </ol>
       </section>
       <footer>
-        <p>This project is maintained by <a href="https://github.com/rorlab">rorlab</a></p>
+        <p>This project is maintained by <a href="https://github.com/summernote">summernote</a></p>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
