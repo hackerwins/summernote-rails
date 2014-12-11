@@ -6,9 +6,13 @@ If you want to get the detailed information on how to use summernote editor, ple
 
 https://github.com/hackerwins/summernote.
 
+
 The version of summernote-rails is matched with that of summernote editor.
 
 [![Gem Version](https://badge.fury.io/rb/summernote-rails.png)](http://badge.fury.io/rb/summernote-rails)
+
+> **Notice** : This repository was transferred from rorlab/summernote-rails to summernote/summernote-rails, on December 11, 2014.
+
 
 ## Installation
 
