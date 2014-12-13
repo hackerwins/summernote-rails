@@ -137,6 +137,25 @@ $ ->
     true
 ```
 
+It may be necessary to render multiple editors on the same page on multiple instances of the same css class. This can be acheived by modifying the javascript slightly:
+
+```js
+$ ->
+  $('#post_content').each ->
+
+    $(this).summernote
+      # to set options
+      height:500
+      lang: 'ko-KR'
+      codemirror:
+        lineNumbers: true
+        tabSize: 2
+        theme: "solarized light"
+
+    # to set code for summernote
+    $(this).code $(this).val()
+```
+
 That's it.
 
 
