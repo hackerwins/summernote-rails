@@ -1,0 +1,2 @@
+//= require ./summernote
+//= require ./locales/
