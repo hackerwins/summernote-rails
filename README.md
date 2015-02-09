@@ -14,6 +14,8 @@ Add the following gems to your application's Gemfile:
 
 ```ruby
 gem 'summernote-rails'
+gem 'font-awesome-rails' # required
+gem 'bootstrap-sass'     # required
 ```
 
 And then execute:
@@ -22,16 +24,12 @@ And then execute:
 $ bundle install
 ```
 
-You will also need Bootstrap and FontAwesome. Get them here:
-
-* https://github.com/twbs/bootstrap-sass
-* https://github.com/bokmann/font-awesome-rails
-
 ## Usage
 
 In app/assets/stylesheets/application.css.scss,
 
 ```css
+*= require font-awesome
 *= require summernote
 *= require summernote/bs3
 
@@ -42,6 +40,7 @@ Or if you are using bootstrap 2:
 In app/assets/javascripts/application.js, you should add the following:
 
 ```js
+//= require bootstrap
 //= require summernote
 ```
 
