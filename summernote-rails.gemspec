@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["rorlab@gmail.com"]
   spec.description   = %q{Super Simple WYSIWYG Editor on Bootstrap}
   spec.summary       = %q{Gemify Summernote for Ruby on Rails}
-  spec.homepage      = "http://rorlab.github.io/summernote-rails/"
+  spec.homepage      = "https://github.com/summernote/summernote-rails"
   spec.license       = "MIT"
 
   # spec.files         = `git ls-files`.split($/)
