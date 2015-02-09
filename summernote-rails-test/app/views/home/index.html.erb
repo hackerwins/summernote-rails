@@ -1,8 +1,11 @@
-<h1>Home#index</h1>
-<p>Find me in app/views/home/index.html.erb</p>
+<h1>summernote-rails test page</h1>
 
-<textarea class="textarea" placeholder="Enter text ..."></textarea>
+<div id="summernote">Hello Summernote</div>
 
 <script type="text/javascript">
-  $('.textarea').summernote();
+  $(document).ready(function() {
+    $('#summernote').summernote({
+      height: 480
+    });
+  });
 </script>
