@@ -1,16 +1,15 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'summernote/rails/version'
+
+require File.expand_path('../lib/summernote-rails/version', __FILE__)
 
 Gem::Specification.new do |spec|
   spec.name          = "summernote-rails"
-  spec.version       = Summernote::Rails::VERSION
+  spec.version       = SummernoteRails::Rails::VERSION
   spec.authors       = ["Hyo Seong Choi"]
   spec.email         = ["rorlab@gmail.com"]
-  spec.description   = %q{Super Simple WYSIWYG Editor on Bootstrap}
+  spec.description   = %q{This gem packages the editor Summernote for Rails' assets pipeline}
   spec.summary       = %q{Gemify Summernote for Ruby on Rails}
-  spec.homepage      = "http://rorlab.github.io/summernote-rails/"
+  spec.homepage      = "https://github.com/summernote/summernote-rails"
   spec.license       = "MIT"
 
   # spec.files         = `git ls-files`.split($/)
