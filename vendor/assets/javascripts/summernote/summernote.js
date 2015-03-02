@@ -2273,7 +2273,7 @@
       onCreateLink: function (sLinkUrl) {
         if (sLinkUrl.indexOf('@') !== -1 && sLinkUrl.indexOf(':') === -1) {
           sLinkUrl =  'mailto:' + sLinkUrl;
-        } else if (sLinkUrl.indexOf('://') === -1) {
+        } else if (sLinkUrl.indexOf('://') === -1 && sLinkUrl.indexOf('#') !== 0) {
           sLinkUrl = 'http://' + sLinkUrl;
         }
 
