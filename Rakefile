@@ -18,10 +18,6 @@ task 'update' do
 
   `cp summernote/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
   `cp summernote/dist/summernote.css vendor/assets/stylesheets/summernote/summernote.css`
-  `cp summernote/dist/summernote-bs3.css vendor/assets/stylesheets/summernote/bs3.css`
-  `cp summernote/dist/summernote-bs2.css vendor/assets/stylesheets/summernote/bs2.css`
 
   copy_locales
-
-
 end
