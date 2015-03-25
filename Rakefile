@@ -13,7 +13,7 @@ task 'update' do
     last_revision = `cd summernote; git describe --abbrev=0 --tags`
     system("cd summernote; git checkout #{last_revision}")
   else
-    system("git clone git@github.com:summernote/summernote.git")
+    system("git clone https://github.com/summernote/summernote.git")
   end
 
   `cp summernote/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`

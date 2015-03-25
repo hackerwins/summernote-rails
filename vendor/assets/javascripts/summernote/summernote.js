@@ -1,12 +1,12 @@
 /**
- * Super simple wysiwyg editor on Bootstrap v0.6.1
+ * Super simple wysiwyg editor on Bootstrap v0.6.2
  * http://summernote.org/
  *
  * summernote.js
  * Copyright 2013-2015 Alan Hong. and other contributors
  * summernote may be freely distributed under the MIT license./
  *
- * Date: 2015-02-08T09:50Z
+ * Date: 2015-03-14T03:32Z
  */
 (function (factory) {
   /* global define */
@@ -2122,7 +2122,7 @@
    */
   var settings = {
     /** @property */
-    version: '0.6.1',
+    version: '0.6.2',
 
     /**
      * 
@@ -4664,8 +4664,29 @@
 
         setTimeout(function () {
           var $img = $editable.find('img');
-          var datauri = $img[0].src;
 
+          if (!$img.length || $img[0].src.indexOf('data:') === -1) {
+            // pasted content
+            var html = $editable.html();
+
+            editor.restoreNode($editable);
+            editor.restoreRange($editable);
+
+            try {
+              // insert normal dom code
+              $(html).each(function () {
+                $editable.focus();
+                editor.insertNode($editable, this);
+              });
+            } catch (ex) {
+              // insert text
+              $editable.focus();
+              editor.insertText($editable, html);
+            }
+            return;
+          }
+
+          var datauri = $img[0].src;
           var data = atob(datauri.split(',')[1]);
           var array = new Uint8Array(data.length);
           for (var i = 0; i < data.length; i++) {
@@ -5726,7 +5747,7 @@
                    '<div class="title">' + lang.shortcut.shortcuts + '</div>' +
                    (agent.isMac ? tplShortcutTable(lang, options) : replaceMacKeys(tplShortcutTable(lang, options))) +
                    '<p class="text-center">' +
-                     '<a href="//summernote.org/" target="_blank">Summernote 0.6.1</a> · ' +
+                     '<a href="//summernote.org/" target="_blank">Summernote 0.6.2</a> · ' +
                      '<a href="//github.com/summernote/summernote" target="_blank">Project</a> · ' +
                      '<a href="//github.com/summernote/summernote/issues" target="_blank">Issues</a>' +
                    '</p>';
