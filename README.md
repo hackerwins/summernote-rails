@@ -31,10 +31,6 @@ In app/assets/stylesheets/application.css.scss,
 ```css
 *= require font-awesome
 *= require summernote
-*= require summernote/bs3
-
-Or if you are using bootstrap 2:
-*= require summernote/bs2
 ```
 
 In app/assets/javascripts/application.js, you should add the following:
