@@ -70,6 +70,32 @@ Then, if you are using simple_form, you can use the `:summernote` input type. Th
 
 If you are not using simple_form, then simply add the `data-provider="summernote"` to the input field yourself.
 
+### i18n Support
+
+If you use i18n, you have to include language files. In `app/assets/javascripts/application.js`, you should add the following:
+
+```js
+// load all locales
+//= require summernote/locales
+
+// load specific locale(ko-KR)
+//= require summernote/locales/ko-KR
+```
+
+and update summernote option
+
+```html
+<div id="summernote">Hello Summernote</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#summernote').summernote({
+      lang: 'ko-KR'
+    });
+  });
+</script>
+```
+
 ## Sample projects
 
 For an example, take a look at the summernote-rails-test folder in this repository.
