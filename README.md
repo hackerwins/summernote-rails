@@ -96,6 +96,36 @@ and update summernote option
 </script>
 ```
 
+### Plugin
+
+If you use Plugin, you have to include plugin files. In `app/assets/javascripts/application.js`, you should add the following:
+
+```js
+// load video plugin
+//= require summernote/plugin/summernote-ext-video.js
+```
+
+and update summernote option
+
+```html
+<div id="summernote">Hello Summernote</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#summernote').summernote({
+      toolbar : [
+        ...
+        ['group', [ 'video' ]]
+        ...
+      ]
+    });
+  });
+</script>
+```
+
+* [plugin example](https://github.com/summernote/summernote/blob/develop/examples/plugin-video.html)
+
+
 ## Sample projects
 
 For an example, take a look at the summernote-rails-test folder in this repository.

@@ -15,4 +15,6 @@
 //= require turbolinks
 //= require bootstrap
 //= require summernote
+//= require summernote/locales/ko-KR
+//= require summernote/plugin/summernote-ext-video.js
 //= require_tree .
