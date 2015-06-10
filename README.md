@@ -26,34 +26,39 @@ $ bundle install
 
 ## Usage
 
-In app/assets/stylesheets/application.css.scss,
+In app/assets/stylesheets/application.scss,
 
 ```css
-*= require font-awesome
-*= require summernote
+@import "bootstrap";
+@import "font-awesome";
+@import "summernote";
 ```
 
-In app/assets/javascripts/application.js, you should add the following:
+In app/assets/javascripts/application.js, you should add as follows:
 
 ```js
+//= require ...
 //= require bootstrap
 //= require summernote
+//= require ...
 ```
 
 Basic Example:
+
 ```html
 <div id="summernote">Hello Summernote</div>
+```
 
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#summernote').summernote();
-  });
-</script>
+In app/assets/javascripts/summernote_bootstraped.coffee, you should add the following:
+
+```coffee
+$ ->
+  $('#summernote').summernote()
 ```
 
 Ideally, you would do it like this:
 
-```
+```javscript
 # This goes into your main javascript file. Customize as you need.
 
 $('[data-provider="summernote"]').each(function(){
@@ -63,7 +68,7 @@ $('[data-provider="summernote"]').each(function(){
 
 Then, if you are using simple_form, you can use the `:summernote` input type. This input types simply adds the `data-provider="summernote"` to the field.
 
-```
+```haml
 = simple_form_for(:example) do |f|
   = f.input :text, as: :summernote
 ```
@@ -74,9 +79,11 @@ If you are not using simple_form, then simply add the `data-provider="summernote
 
 If you use i18n, you have to include language files. In `app/assets/javascripts/application.js`, you should add the following:
 
-```js
+```javascript
 // load all locales
 //= require summernote/locales
+
+// or
 
 // load specific locale(ko-KR)
 //= require summernote/locales/ko-KR
@@ -86,41 +93,47 @@ and update summernote option
 
 ```html
 <div id="summernote">Hello Summernote</div>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#summernote').summernote({
-      lang: 'ko-KR'
-    });
-  });
-</script>
 ```
+
+In app/assets/javascripts/summernote_bootstraped.coffee, you should add as follows:
+
+```coffee
+$ ->
+  $('#summernote').summernote
+    lang: 'ko-KR'
+```
+
 
 ### Plugin
 
-If you use Plugin, you have to include plugin files. In `app/assets/javascripts/application.js`, you should add the following:
+If you want to use a plugin, you have to include the corresponding file. In `app/assets/javascripts/application.js`, you should add the following:
 
 ```js
 // load video plugin
 //= require summernote/plugin/summernote-ext-video.js
 ```
 
-and update summernote option
+and update summernote option.
 
 ```html
 <div id="summernote">Hello Summernote</div>
+```
 
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#summernote').summernote({
+In app/assets/javascripts/summernote_bootstraped.coffee, you should add as follows:
+
+```coffee
+  $ ->
+    $('#summernote').summernote
       toolbar : [
         ...
-        ['group', [ 'video' ]]
+        [
+          'group'
+            [ 
+              'video' 
+            ]
+        ]
         ...
       ]
-    });
-  });
-</script>
 ```
 
 * [plugin example](https://github.com/summernote/summernote/blob/develop/examples/plugin-video.html)
