@@ -47,9 +47,14 @@ Basic Example:
 
 ```html
 <div id="summernote">Hello Summernote</div>
-```
 
-In app/assets/javascripts/summernote_bootstraped.coffee, you should add the following:
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#summernote').summernote();
+  });
+</script>
+```
+Or, if your want to use javascript with unobtrusive pattern, you can move the javascript script code lines to  app/assets/javascripts/summernote_bootstraped.coffee as follows:
 
 ```coffee
 $ ->
@@ -66,11 +71,31 @@ $('[data-provider="summernote"]').each(function(){
 })
 ```
 
-Then, if you are using simple_form, you can use the `:summernote` input type. This input types simply adds the `data-provider="summernote"` to the field.
+Or, if you want to code in coffeescript, 
+
+```coffeescript
+$ ->
+  $('[data-provider="summernote"]').each ->
+    $(this).summernote()
+```
+
+Then, if you are using simple_form, you can use the `:summernote` input type. This type simply adds the `data-provider="summernote"` to the field.
+
+```erb
+<%= simple_form_for :example do | f | %>
+  ...
+  <%= f.input :text, as: :summernote %>
+  ...
+<% end %>
+```  
+
+Or, if you prefer haml-style, 
 
 ```haml
-= simple_form_for(:example) do |f|
+= simple_form_for(:example) do | f |
+  ...
   = f.input :text, as: :summernote
+  ...
 ```
 
 If you are not using simple_form, then simply add the `data-provider="summernote"` to the input field yourself.
@@ -93,16 +118,23 @@ and update summernote option
 
 ```html
 <div id="summernote">Hello Summernote</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#summernote').summernote({
+      lang: 'ko-KR'
+    });
+  });
+</script>
 ```
 
-In app/assets/javascripts/summernote_bootstraped.coffee, you should add as follows:
+Also, you can move the above javascript code lines to app/assets/javascripts/summernote_bootstraped.coffee and add as follows:
 
 ```coffee
 $ ->
   $('#summernote').summernote
     lang: 'ko-KR'
 ```
-
 
 ### Plugin
 
@@ -117,9 +149,21 @@ and update summernote option.
 
 ```html
 <div id="summernote">Hello Summernote</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#summernote').summernote({
+      toolbar : [
+        ...
+        ['group', [ 'video' ]]
+        ...
+      ]
+    });
+  });
+</script>
 ```
 
-In app/assets/javascripts/summernote_bootstraped.coffee, you should add as follows:
+Also, you can move the above javascript code lines to app/assets/javascripts/summernote_bootstraped.coffee and add as follows:
 
 ```coffee
   $ ->
