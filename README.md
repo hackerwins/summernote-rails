@@ -31,7 +31,7 @@ In app/assets/stylesheets/application.scss,
 ```css
 @import "bootstrap";
 @import "font-awesome";
-@import "summernote";
+@import "summernote/summernote";
 ```
 
 In app/assets/javascripts/application.js, you should add as follows:
