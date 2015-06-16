@@ -16,8 +16,11 @@ def download_release_file
 end
 
 def clean_assets
+  `rm -rf vendor/assets/stylesheets`
   `rm -rf vendor/assets/javascripts/locales`
   `rm -rf vendor/assets/javascripts/plugin`
+
+  FileUtils.mkdir_p("vendor/assets/stylesheets")
   FileUtils.mkdir_p("vendor/assets/javascripts/summernote/locales")
   FileUtils.mkdir_p("vendor/assets/javascripts/summernote/plugin")
 end
@@ -26,7 +29,7 @@ def copy_assets
   clean_assets
 
   `cp tmp/summernote/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
-  `cp tmp/summernote/dist/summernote.css vendor/assets/stylesheets/summernote/summernote.css`
+  `cp tmp/summernote/dist/summernote.css vendor/assets/stylesheets/summernote.css`
 
   Dir["tmp/summernote/plugin/*"].each do |file|
     `cp #{file} vendor/assets/javascripts/summernote/plugin/#{File.basename(file)}`
