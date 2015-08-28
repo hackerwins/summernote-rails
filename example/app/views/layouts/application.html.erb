@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Example</title>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<div class="container">
+  <h1>summernote-rails example page</h1>
+
+  <div class="btn-group" role="group" aria-label="...">
+    <%= link_to 'default', root_path, class: 'btn btn-default' %>
+    <%= link_to 'simple-form', simpleform_path, class: 'btn btn-default' %>
+  </div>
+
+  <%= yield %>  
+</div>
+
+</body>
+</html>
