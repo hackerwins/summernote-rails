@@ -18,5 +18,5 @@
 //= require codemirror
 //= require summernote
 //= require summernote/locales/ko-KR
-//= require summernote/plugin/summernote-ext-video.js
+//= require summernote/plugin/hello/summernote-ext-hello
 //= require_tree .

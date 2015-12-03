@@ -5,6 +5,7 @@ def download_release_file
   url = 'https://api.github.com/repos/summernote/summernote/releases/latest'
   tarball_url = JSON.parse(open(url).read)['tarball_url']
 
+  FileUtils.rm_rf("tmp/summernote")
   FileUtils.mkdir_p("tmp/summernote")
   File.open("tmp/summernote.tar.gz", "wb") do |saved_file|
     open(tarball_url, "rb") do |read_file|
@@ -32,7 +33,7 @@ def copy_assets
   `cp tmp/summernote/dist/summernote.css vendor/assets/stylesheets/summernote.css`
 
   Dir["tmp/summernote/plugin/*"].each do |file|
-    `cp #{file} vendor/assets/javascripts/summernote/plugin/#{File.basename(file)}`
+    `cp -R #{file} vendor/assets/javascripts/summernote/plugin/#{File.basename(file)}`
   end
 
   Dir["tmp/summernote/lang/*"].each do |file|

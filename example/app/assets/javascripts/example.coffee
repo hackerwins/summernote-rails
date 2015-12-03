@@ -47,8 +47,9 @@ $ ->
         [ 'chart' ]
       ]
       [
-        'group'
-        [ 'video' ]
+        'insert'
+        [ 
+          'hello'
+        ]
       ]
     ]
-
