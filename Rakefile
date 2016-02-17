@@ -18,10 +18,12 @@ end
 
 def clean_assets
   `rm -rf vendor/assets/stylesheets`
+  `rm -rf vendor/assets/fonts`
   `rm -rf vendor/assets/javascripts/locales`
   `rm -rf vendor/assets/javascripts/plugin`
 
   FileUtils.mkdir_p("vendor/assets/stylesheets")
+  FileUtils.mkdir_p("vendor/assets/fonts")
   FileUtils.mkdir_p("vendor/assets/javascripts/summernote/locales")
   FileUtils.mkdir_p("vendor/assets/javascripts/summernote/plugin")
 end
@@ -31,7 +33,7 @@ def copy_assets
 
   `cp tmp/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
   `cp tmp/dist/summernote.css vendor/assets/stylesheets/summernote.css`
-  `cp -R tmp/dist/font vendor/assets/stylesheets/font`
+  `cp -R tmp/dist/font/* vendor/assets/fonts`
 
   Dir["tmp/dist/plugin/*"].each do |file|
     `cp -R #{file}/ vendor/assets/javascripts/summernote/plugin/#{File.basename(file)}`
