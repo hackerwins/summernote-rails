@@ -11,7 +11,6 @@ gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'summernote-rails', :path => '../'
-gem 'font-awesome-rails'
 gem 'bootstrap-sass', '~> 3.3.5'
 gem 'simple_form'
 gem 'codemirror-rails'
@@ -25,4 +24,3 @@ group :development do
   gem 'web-console', '~> 2.0'
   gem 'spring'
 end
-

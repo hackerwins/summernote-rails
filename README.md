@@ -14,7 +14,6 @@ Add the following gems to your application's Gemfile:
 
 ```ruby
 gem 'summernote-rails', 'current version number'
-gem 'font-awesome-rails' # required
 gem 'bootstrap-sass'     # required
 ```
 
@@ -30,7 +29,6 @@ In app/assets/stylesheets/application.scss,
 
 ```css
 @import "bootstrap";
-@import "font-awesome";
 @import "summernote";
 ```
 
@@ -71,7 +69,7 @@ $('[data-provider="summernote"]').each(function(){
 })
 ```
 
-Or, if you want to code in coffeescript, 
+Or, if you want to code in coffeescript,
 
 ```coffeescript
 $ ->
@@ -89,7 +87,7 @@ Then, if you are using simple_form, you can use the `:summernote` input type. Th
 <% end %>
 ```  
 
-Or, if you prefer haml-style, 
+Or, if you prefer haml-style,
 
 ```haml
 = simple_form_for(:example) do | f |
@@ -172,8 +170,8 @@ Also, you can move the above javascript code lines to app/assets/javascripts/sum
         ...
         [
           'insert'
-            [ 
-              'hello' 
+            [
+              'hello'
             ]
         ]
         ...

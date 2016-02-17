@@ -3,17 +3,17 @@ require "json"
 
 def download_release_file
   url = 'https://api.github.com/repos/summernote/summernote/releases/latest'
-  tarball_url = JSON.parse(open(url).read)['tarball_url']
+  zip_url = JSON.parse(open(url).read)['assets'].first['browser_download_url']
 
-  FileUtils.rm_rf("tmp/summernote")
-  FileUtils.mkdir_p("tmp/summernote")
-  File.open("tmp/summernote.tar.gz", "wb") do |saved_file|
-    open(tarball_url, "rb") do |read_file|
+  FileUtils.rm_rf("tmp")
+  FileUtils.mkdir_p("tmp")
+  File.open("tmp/summernote.zip", "wb") do |saved_file|
+    open(zip_url, "rb") do |read_file|
       saved_file.write(read_file.read)
     end
   end
 
-  `tar xzvf tmp/summernote.tar.gz -C tmp/summernote --strip-components=1`
+  `unzip -d tmp tmp/summernote.zip`
 end
 
 def clean_assets
@@ -29,14 +29,15 @@ end
 def copy_assets
   clean_assets
 
-  `cp tmp/summernote/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
-  `cp tmp/summernote/dist/summernote.css vendor/assets/stylesheets/summernote.css`
+  `cp tmp/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
+  `cp tmp/dist/summernote.css vendor/assets/stylesheets/summernote.css`
+  `cp -R tmp/dist/font vendor/assets/stylesheets/font`
 
-  Dir["tmp/summernote/plugin/*"].each do |file|
-    `cp -R #{file} vendor/assets/javascripts/summernote/plugin/#{File.basename(file)}`
+  Dir["tmp/dist/plugin/*"].each do |file|
+    `cp -R #{file}/ vendor/assets/javascripts/summernote/plugin/#{File.basename(file)}`
   end
 
-  Dir["tmp/summernote/lang/*"].each do |file|
+  Dir["tmp/dist/lang/*"].each do |file|
     `cp #{file} vendor/assets/javascripts/summernote/locales/#{File.basename(file).gsub('summernote-', '')}`
   end
 end
