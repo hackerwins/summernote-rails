@@ -1687,6 +1687,15 @@
       delete this.memos[key];
     };
 
+    this.createInvokeHandlerBtn = function (class_name, namespace, value) {
+      var contex = this
+      return function (event) {
+        ui.toggleBtnActive(contex.layoutInfo.toolbar.find("."+class_name), !contex.layoutInfo.toolbar.find("."+class_name).hasClass('active'))
+        event.preventDefault();
+        self.invoke(namespace, value || $(event.target).closest('[data-value]').data('value'));
+      };
+    };
+
     this.createInvokeHandler = function (namespace, value) {
       return function (event) {
         event.preventDefault();
@@ -5125,7 +5134,7 @@
           className: 'note-btn-bold',
           contents: ui.icon(options.icons.bold),
           tooltip: lang.font.bold + representShortcut('bold'),
-          click: context.createInvokeHandler('editor.bold')
+          click: context.createInvokeHandlerBtn('note-btn-bold', 'editor.bold')
         }).render();
       });
 
@@ -5134,7 +5143,7 @@
           className: 'note-btn-italic',
           contents: ui.icon(options.icons.italic),
           tooltip: lang.font.italic + representShortcut('italic'),
-          click: context.createInvokeHandler('editor.italic')
+          click: context.createInvokeHandlerBtn('note-btn-italic', 'editor.italic')
         }).render();
       });
 
@@ -5143,7 +5152,7 @@
           className: 'note-btn-underline',
           contents: ui.icon(options.icons.underline),
           tooltip: lang.font.underline + representShortcut('underline'),
-          click: context.createInvokeHandler('editor.underline')
+          click: context.createInvokeHandlerBtn('note-btn-underline', 'editor.underline')
         }).render();
       });
 
@@ -5160,7 +5169,7 @@
           className: 'note-btn-strikethrough',
           contents: ui.icon(options.icons.strikethrough),
           tooltip: lang.font.strikethrough + representShortcut('strikethrough'),
-          click: context.createInvokeHandler('editor.strikethrough')
+          click: context.createInvokeHandlerBtn('note-btn-strikethrough', 'editor.strikethrough')
         }).render();
       });
 
@@ -5169,7 +5178,7 @@
           className: 'note-btn-superscript',
           contents: ui.icon(options.icons.superscript),
           tooltip: lang.font.superscript,
-          click: context.createInvokeHandler('editor.superscript')
+          click: context.createInvokeHandlerBtn('note-btn-superscript', 'editor.superscript')
         }).render();
       });
 
@@ -5178,7 +5187,7 @@
           className: 'note-btn-subscript',
           contents: ui.icon(options.icons.subscript),
           tooltip: lang.font.subscript,
-          click: context.createInvokeHandler('editor.subscript')
+          click: context.createInvokeHandlerBtn('note-btn-subscript', 'editor.subscript')
         }).render();
       });
 
