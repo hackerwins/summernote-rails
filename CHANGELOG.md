@@ -6,7 +6,7 @@ Updates:
 
 Changes:
 
-  - [Support sprocket 3.x](summernote asset update to 0.8.://github.com/summernote/summernote-rails/issues/49)
+  - [Support sprocket 3.x](https://github.com/summernote/summernote-rails/issues/49)
 
 ## 0.8.1.0 (2016-01-12)
 
