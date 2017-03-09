@@ -5986,7 +5986,7 @@
           self.bindEnterKey($linkUrl, $linkBtn);
           self.bindEnterKey($linkText, $linkBtn);
 
-          $openInNewWindow.prop('checked', linkInfo.isNewWindow);
+          $openInNewWindow.prop('checked', true);
 
           $linkBtn.one('click', function (event) {
             event.preventDefault();
