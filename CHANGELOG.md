@@ -1,3 +1,13 @@
+## 0.8.3.0 (2017-05-06)
+
+Updates:
+
+  - Update assets to version 0.8.3
+
+Fixed:
+
+  - [Fixed cannot be loaded with Rails 3.1 <=](https://github.com/summernote/summernote-rails/pull/63)
+
 ## 0.8.2.0 (2016-11-03)
 
 Updates:
