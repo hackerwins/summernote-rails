@@ -1,0 +1,20 @@
+.note-editor {
+  .note-btn {
+    background-color: white;
+    border-color: #ccc;
+  }
+  .help-list-item + label {
+    display: inline-block;
+  }
+  .modal-header {
+    button.close {
+      font-size: 1.2em;
+    }
+  }
+  .modal-footer {
+    display: inline-block;
+    p:last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+}

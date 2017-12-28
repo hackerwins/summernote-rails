@@ -1,6 +1,5 @@
-@import "bootstrap-sprockets";
 @import "bootstrap";
-@import "codemirror";
-
-@import "summernote";
-@import "example"
+@import "summernote-bs4";
+@import "summernote-custom-theme";
+@import "scaffolds";
+@import "posts";
