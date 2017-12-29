@@ -2,19 +2,27 @@
 
 This gem was built to package the assets used in Summernote, the Super Simple WYSIWYG Editor on Bootstrap, for Ruby on Rails version >= 3.1.
 
-https://github.com/summernote/summernote-rails.
-
-The version of summernote-rails is matched with that of summernote editor.
+The version of summernote-rails is matched with that of original summernote editor.
 
 [![Gem Version](https://badge.fury.io/rb/summernote-rails.png)](http://badge.fury.io/rb/summernote-rails)
 
 ## Installation
 
+Environments:
+- Ruby v2.4.2
+- Rails v5.2.0.beta2
+- Gems :
+  - boostrap v4.0.0.beta2.1
+  - simple_form v3.5.0
+
 Add the following gems to your application's Gemfile:
 
 ```ruby
-gem 'summernote-rails', 'current version number'
-gem 'bootstrap-sass'     # required
+gem 'rails', '~> 5.2.0.beta2'
+gem 'jquery-rails', '~> 4.3.1'
+gem 'bootstrap', '~> 4.0.0.beta2.1'
+gem 'summernote-rails', '~> 0.8.8.0'
+gem 'simple_form', '~> 3.5.0'
 ```
 
 And then execute:
@@ -27,55 +35,37 @@ $ bundle install
 
 In app/assets/stylesheets/application.scss,
 
-```css
+```scss
 @import "bootstrap";
-@import "summernote";
+@import "summernote-bs4";
+@import "summernote-custom-theme";
 ```
 
 In app/assets/javascripts/application.js, you should add as follows:
 
 ```js
-//= require ...
+//= require jquery
+//= require jquery_ujs
+//= require popper
 //= require bootstrap
-//= require summernote
-//= require ...
+//= require summernote/summernote-bs4
+//= require activestorage
+//= require turbolinks
+//= require_tree .
 ```
 
 Basic Example:
 
-```html
-<div id="summernote">Hello Summernote</div>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#summernote').summernote();
-  });
-</script>
-```
-Or, if your want to use javascript with unobtrusive pattern, you can move the javascript script code lines to  app/assets/javascripts/summernote_bootstraped.coffee as follows:
-
-```coffee
-$ ->
-  $('#summernote').summernote()
-```
-
-Ideally, you would do it like this:
-
-```javscript
-# This goes into your main javascript file. Customize as you need.
-
-$('[data-provider="summernote"]').each(function(){
-  $(this).summernote({ });
-})
-```
-
-Or, if you want to code in coffeescript,
+After creating app/assets/javascripts/summernote-init.coffee, you can write codes as follows:
 
 ```coffeescript
-$ ->
+$(document).on 'turbolinks:load', ->
   $('[data-provider="summernote"]').each ->
-    $(this).summernote()
+    $(this).summernote
+      height: 300
 ```
+
+And you should require this file in application.js.
 
 Then, if you are using simple_form, you can use the `:summernote` input type. This type simply adds the `data-provider="summernote"` to the field.
 
@@ -114,24 +104,12 @@ If you use i18n, you have to include language files. In `app/assets/javascripts/
 
 and update summernote option
 
-```html
-<div id="summernote">Hello Summernote</div>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#summernote').summernote({
-      lang: 'ko-KR'
-    });
-  });
-</script>
-```
-
-Also, you can move the above javascript code lines to app/assets/javascripts/summernote_bootstraped.coffee and add as follows:
-
 ```coffee
-$ ->
-  $('#summernote').summernote
-    lang: 'ko-KR'
+$(document).on 'turbolinks:load', ->
+  $('[data-provider="summernote"]').each ->
+    $(this).summernote
+      lang: 'ko-KR'
+      height: 300
 ```
 
 ### Plugin
@@ -145,27 +123,12 @@ If you want to use a plugin, you have to include the corresponding file. In `app
 
 and update summernote option.
 
-```html
-<div id="summernote">Hello Summernote</div>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('#summernote').summernote({
-      toolbar : [
-        ...
-        ['insert', [ 'hello' ]]
-        ...
-      ]
-    });
-  });
-</script>
-```
-
-Also, you can move the above javascript code lines to app/assets/javascripts/summernote_bootstraped.coffee and add as follows:
-
 ```coffee
-  $ ->
-    $('#summernote').summernote
+$(document).on 'turbolinks:load', ->
+  $('[data-provider="summernote"]').each ->
+    $(this).summernote
+      lang: 'ko-KR'
+      height: 300
       toolbar : [
         ...
         [
