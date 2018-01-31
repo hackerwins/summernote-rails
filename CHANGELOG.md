@@ -1,3 +1,9 @@
+## 0.8.8.1 (2018-01-31)
+
+Updates:
+  - Update assets to version 0.8.8
+  - Add summernote-custom-theme.min.css
+
 ## 0.8.3.0 (2017-05-06)
 
 Updates:

@@ -9,10 +9,10 @@ The version of summernote-rails is matched with that of original summernote edit
 ## Installation
 
 Environments:
-- Ruby v2.4.2
+- Ruby v2.5.0
 - Rails v5.2.0.beta2
 - Gems :
-  - boostrap v4.0.0.beta2.1
+  - bootstrap v4.0.0
   - simple_form v3.5.0
 
 Add the following gems to your application's Gemfile:
@@ -20,8 +20,8 @@ Add the following gems to your application's Gemfile:
 ```ruby
 gem 'rails', '~> 5.2.0.beta2'
 gem 'jquery-rails', '~> 4.3.1'
-gem 'bootstrap', '~> 4.0.0.beta2.1'
-gem 'summernote-rails', '~> 0.8.8.0'
+gem 'bootstrap', '~> 4.0.0'
+gem 'summernote-rails', '~> 0.8.8.1'
 gem 'simple_form', '~> 3.5.0'
 ```
 
@@ -38,7 +38,7 @@ In app/assets/stylesheets/application.scss,
 ```scss
 @import "bootstrap";
 @import "summernote-bs4";
-@import "summernote-custom-theme";
+@import "summernote-custom-theme.min";
 ```
 
 In app/assets/javascripts/application.js, you should add as follows:
