@@ -14,8 +14,8 @@
 //= require jquery_ujs
 //= require popper
 //= require bootstrap
-//= require summernote/summernote-bs4
-//= require summernote/locales/ko-KR
+//= require summernote/summernote-bs4.min
+//= require summernote/lang/summernote-ko-KR
 //= require summernote-init
 //= require turbolinks
 //= require_tree .

@@ -13,7 +13,7 @@ sendFile = (file, toSummernote) ->
       img.src = data.url
       console.log data
       img.setAttribute('id', "sn-image-#{data.upload_id}")
-      toSummernote.summernote 'insertNode', img      
+      toSummernote.summernote 'insertNode', img
 
 deleteFile = (file_id) ->
   $.ajax
@@ -33,7 +33,7 @@ $(document).on 'turbolinks:load', ->
           sendFile files[0], $(this)
         onMediaDelete: (target, editor, editable) ->
           upload_id = target[0].id.split('-').slice(-1)[0]
-          console.log upload_id
+          # console.log upload_id
           if !!upload_id
             deleteFile upload_id
           target.remove()

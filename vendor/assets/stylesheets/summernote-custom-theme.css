@@ -2,9 +2,6 @@
   .note-btn {
     background-color: white;
     border-color: #ccc;
-    i::before {
-      margin-top: -4px;
-    }
   }
 
   .help-list-item + label {
@@ -21,6 +18,10 @@
     display: inline-block;
     p:last-child {
       margin-bottom: 0 !important;
+    }
+    .note-btn {
+      background-color: theme-color('primary');
+      border-color: theme-color('primary');
     }
   }
 }

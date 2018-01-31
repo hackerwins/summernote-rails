@@ -21,7 +21,7 @@ Add the following gems to your application's Gemfile:
 gem 'rails', '~> 5.2.0.beta2'
 gem 'jquery-rails', '~> 4.3.1'
 gem 'bootstrap', '~> 4.0.0'
-gem 'summernote-rails', '~> 0.8.8.1'
+gem 'summernote-rails', '~> 0.8.9.0'
 gem 'simple_form', '~> 3.5.0'
 ```
 
@@ -48,7 +48,7 @@ In app/assets/javascripts/application.js, you should add as follows:
 //= require jquery_ujs
 //= require popper
 //= require bootstrap
-//= require summernote/summernote-bs4
+//= require summernote/summernote-bs4.min
 //= require activestorage
 //= require turbolinks
 //= require_tree .
@@ -99,7 +99,7 @@ If you use i18n, you have to include language files. In `app/assets/javascripts/
 // or
 
 // load specific locale(ko-KR)
-//= require summernote/locales/ko-KR
+//= require summernote/lang/summernote-ko-KR
 ```
 
 and update summernote option

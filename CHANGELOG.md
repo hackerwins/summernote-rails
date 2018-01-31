@@ -1,14 +1,22 @@
+## 0.8.9.0 (2018-01-31)
+
+Updates:
+  - Update assets to Summernote v0.8.9
+
+Changes:   
+  - Changed the path of locales to "//= require summernote/lang/summernote-ko-KR"
+
 ## 0.8.8.1 (2018-01-31)
 
 Updates:
-  - Update assets to version 0.8.8
+  - Update assets to Summernote v0.8.8
   - Add summernote-custom-theme.min.css
 
 ## 0.8.3.0 (2017-05-06)
 
 Updates:
 
-  - Update assets to version 0.8.3
+  - Update assets to Summernote v0.8.3
 
 Fixed:
 
@@ -18,7 +26,7 @@ Fixed:
 
 Updates:
 
-  - Update assets to version 0.8.2
+  - Update assets to Summernote v0.8.2
 
 Changes:
 
@@ -28,7 +36,7 @@ Changes:
 
 Updates:
 
-  - summernote asset update to 0.8.1
+  - Update assets to Summernote v0.8.1
 
 Changes:
 

@@ -330,6 +330,10 @@ app/assets/stylesheets/**summernote-custom-theme.scss**,
     p:last-child {
       margin-bottom: 0 !important;
     }
+    .note-btn {
+      background-color: white;
+      border-color: #ccc;
+    }
   }
 }
 ```
@@ -366,7 +370,7 @@ and insert it in **application.js**
 
 ### 8. scaffolding Post model
 
-Using the scaffold generator of Rails, generate Post resource. 
+Using the scaffold generator of Rails, generate Post resource.
 
 ```sh
 $ rails g scaffold Post title content:text
@@ -458,7 +462,7 @@ Let's write codes in app/controllers/uploads/**uploads_controller.rb** as follow
 
 ```ruby
 class UploadsController < ApplicationController
-  
+
   def create
     @upload = Upload.new(upload_params)
     @upload.save
@@ -551,6 +555,3 @@ That's it.
 
 
 > **Source**: https://github.com/luciuschoi/summernote088
-
-
-
