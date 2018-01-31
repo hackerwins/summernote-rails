@@ -295,7 +295,7 @@ Here, there is one point to update. You need to change`btn btn-default` to `btn 
 
 ### 7. install summernote-rails gem
 
-And now, it's time to add summernote-rail gem. Current available version of summernote-rails published in rubygems.org is **0.8.3**. But you can find the edge version **0.8.8** in GitHub repository.
+And now, it's time to add summernote-rail gem. Current available version of summernote-rails published in rubygems.org is **0.8.9.1**.
 
 ```ruby
 gem 'summernote-rails', github: 'summernote/summernote-rails'
@@ -309,42 +309,13 @@ After bundling, in app/assets/stylesheets/**application.scss**, you should impor
 @import "summernote-custom-theme";
 ```
 
-app/assets/stylesheets/**summernote-custom-theme.scss**,
-
-```css
-.note-editor {
-  .note-btn {
-    background-color: white;
-    border-color: #ccc;
-  }
-  .help-list-item + label {
-    display: inline-block;
-  }
-  .modal-header {
-    button.close {
-      font-size: 1.2em;
-    }
-  }
-  .modal-footer {
-    display: inline-block;
-    p:last-child {
-      margin-bottom: 0 !important;
-    }
-    .note-btn {
-      background-color: white;
-      border-color: #ccc;
-    }
-  }
-}
-```
-
 In app/assets/javascripts/**application.js**, you should add as follows:
 
 ```js
 //= require ...
 //= require bootstrap
 //= require summernote/summernote-bs4
-//= require summernote/locales/ko-KR
+//= require summernote/lang/summernote-ko-KR
 //= require ...
 ```
 
@@ -363,7 +334,7 @@ and insert it in **application.js**
 //= require ...
 //= require bootstrap
 //= require summernote/summernote-bs4
-//= require summernote/locales/ko-KR
+//= require summernote/lang/summernote-ko-KR
 //= require summernote-init
 //= require ...
 ```
