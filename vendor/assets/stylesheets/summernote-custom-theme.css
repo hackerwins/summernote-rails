@@ -22,6 +22,7 @@
     .note-btn {
       background-color: theme-color('primary');
       border-color: theme-color('primary');
+      float: right;
     }
   }
 }

@@ -1,3 +1,8 @@
+## 0.8.9.1 (2018-01-31)
+
+  - Reposition close button in the modal foot to right.
+  - Update input focus style in the Insert Image modal form.
+
 ## 0.8.9.0 (2018-01-31)
 
 Updates:

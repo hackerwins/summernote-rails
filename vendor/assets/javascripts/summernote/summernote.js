@@ -3748,7 +3748,7 @@ var Editor = /** @class */ (function () {
             })(idx);
             this.context.memo('help.formatH' + idx, this.lang.help['formatH' + idx]);
         }
-        
+
         this.insertParagraph = this.wrapCommand(function () {
             _this.typing.insertParagraph(_this.editable);
         });
@@ -6088,7 +6088,7 @@ var ImageDialog = /** @class */ (function () {
             ' type="file" name="files" accept="image/*" multiple="multiple" />',
             imageLimitation,
             '</div>',
-            '<div class="form-group note-group-image-url" style="overflow:auto;">',
+            '<div class="form-group note-group-image-url">',
             '<label class="note-form-label">' + this.lang.image.url + '</label>',
             '<input class="note-image-url form-control note-form-control note-input ',
             ' col-md-12" type="text" />',
