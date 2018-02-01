@@ -1,3 +1,7 @@
+## 0.8.9.2 (2018-02-01)
+
+  - Update custom checkbox with Bootstrap 4.0.0 in URL Insert Modal.
+
 ## 0.8.9.1 (2018-01-31)
 
   - Reposition close button in the modal foot to right.

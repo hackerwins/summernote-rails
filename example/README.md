@@ -1,16 +1,12 @@
-# Summernote-rails Update(3)
+# Summernote-rails Update(4)
 
 http://bit.ly/summernote-rails-for-fileupload-1 on Jun. 6, 2015, in Korean
 
 http://bit.ly/summernote-rails-for-fileupload_2 on Jan. 2, 2016, in Korean
 
-In my blog, the posts on summernote-rails gem are always the most frequent in daily visit statistics.
+Rails version is bumped up to **5.2.0.rc1** on January 30, 2018 and ruby **2.5.0**. And Bootstrap has been updated to the official version **4.0.0** on January 18, 2018.
 
-About 22 months were passed since last post on summernote. Official published version of summernote-rails is 0.8.3, as of Nov. 13, 2017.
-
-Rails version is bumped up to 5.1.4 and ruby 2.4.2. And, maybe, Bootstrap will be updated to the official verion 4 as soon as possible. Right now, Bootstrap version is **4.0.0.beta2.1**.
-
-But, the edge version of summernote-rails in GitHub repository is 0.8.8.
+The version of **summernote-rails** in Rubygems.org is `0.8.9.2`.
 
 In this post, I'll update how to use summernote-rails gem and, introduce how to upload and delete image files in the summernote editor.
 
@@ -19,9 +15,9 @@ First of all, my local dev environment is as follows:
 
 ```sh
 $ ruby -v
-ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-darwin16]
+ruby 2.5.0
 $ rails -v
-Rails 5.1.4
+Rails 5.2.0.rc1
 ```
 
 Let's get started.
@@ -31,14 +27,14 @@ Let's get started.
 Open your favorite terminal and create new project called "**summernote088**". Of course, we'll use the default serverless database, sqlite3.
 
 ```sh
-$ rails new summernote088
+$ rails new example
 ```
 
  If you want another database, you can add your favorite database with '-d' option. For example, if you would use mysql or postgresql, you could add an option as follows:
 
 ```sh
-$ rails new summernote088 -d [mysql|postgresql]
-$ cd summernote088
+$ rails new example -d [mysql|postgresql]
+$ cd example
 ```
 
 ### 2. commit initial state
@@ -72,6 +68,10 @@ After bundling Gemfile, you should add the following code line at the top of the
 
 ```js
 //= require jquery3
+//= require jquery_ujs
+//= require activestorage
+//= require turbolinks
+//= require_tree .
 ```
 
 > **Note**: **jquery3** means jquery version 3. You can use **jquery2** or just **jquery**.
@@ -83,7 +83,7 @@ As of November, 2017, the latest version of Bootstrap is `4.0.0.beta2.1`. (https
 Next, add the following code line to Gemfile and bundle install
 
 ```sh
-gem 'bootstrap', '~> 4.0.0.beta2.1'
+gem 'bootstrap', '~> 4.0.0'
 ```
 
 To use Bootstrap fully, you need to rename **application.css** file to **application.scss**. After that, you delete all contents of that file and add the following code line.
@@ -96,8 +96,12 @@ Also, update **application.js** as follows:
 
 ```js
 //= require jquery3
+//= require jquery_ujs
 //= require popper
 //= require bootstrap
+//= require activestorage
+//= require turbolinks
+//= require_tree .
 ```
 
 >  **Note**: In develop mode, you can replace `//= require bootstrap` with `//= require bootstrap-sprockets`  which provides individual Bootstrap components for ease of debugging.
@@ -107,7 +111,7 @@ Also, update **application.js** as follows:
 We'll use 'simple_form' gem.
 
 ```ruby
-gem 'simple_form'
+gem 'simple_form', '~> 3.5.0'
 ```
 
 After running 'bundle install' in terminal, you should install simple_form with '**--bootstrap**' option.
@@ -116,7 +120,7 @@ After running 'bundle install' in terminal, you should install simple_form with 
 $ rails generate simple_form:install --bootstrap
 ```
 
-As of now, Simpe_form v3.5.0, it does not support Bootstrap 4 beta. And so you should fix config/initializers/**simple_form_bootstrap.rb** file as follows:
+As of now, Simpe_form v3.5.0, it does not support Bootstrap 4 beta. And so you should fix config/initializers/**simple_form_bootstrap4.rb** file as follows:
 
 ```ruby
 # Reference - https://github.com/printercu/rails_sf_bs4/blob/master/config/initializers/simple_form_bootstrap.rb
@@ -295,10 +299,10 @@ Here, there is one point to update. You need to change`btn btn-default` to `btn 
 
 ### 7. install summernote-rails gem
 
-And now, it's time to add summernote-rail gem. Current available version of summernote-rails published in rubygems.org is **0.8.9.1**.
+And now, it's time to add summernote-rail gem. Current available version of summernote-rails published in rubygems.org is **0.8.9.2**.
 
 ```ruby
-gem 'summernote-rails', github: 'summernote/summernote-rails'
+gem 'summernote-rails', '~> 0.8.9'
 ```
 
 After bundling, in app/assets/stylesheets/**application.scss**, you should import **summernote** stylesheet for Bootstrap 4. Additionally, you need to customize the editor styles and so to add new "summernote-custom-theme" stylesheet.
@@ -314,7 +318,7 @@ In app/assets/javascripts/**application.js**, you should add as follows:
 ```js
 //= require ...
 //= require bootstrap
-//= require summernote/summernote-bs4
+//= require summernote/summernote-bs4.min
 //= require summernote/lang/summernote-ko-KR
 //= require ...
 ```
@@ -326,6 +330,7 @@ $(document).on 'turbolinks:load', ->
   $('[data-provider="summernote"]').each ->
     $(this).summernote
       lang: 'ko-KR'
+	  height: 300
 ```
 
 and insert it in **application.js**
@@ -386,7 +391,7 @@ Now that you created the first resource, you can set up **root path** in config/
 root "posts#index"
 ```
 
-### 10. Modify posts/_form.html.erb
+### 10. Modify `posts/_form.html.erb`
 
 The most important point is that you should add an option (**as: :summernote**) to the following code line.
 
@@ -408,7 +413,7 @@ In summernote editor, you can insert an image using editor menu icon (picture) o
 gem 'carrierwave'
 ```
 
-Now, you need create Upload model to store uploaded image information. This model has just one attribute called "image". And generate the uploader for this **Upload** model
+Now, you need create Upload model to store uploaded image information. This model has just one attribute called "image". Don't forget to migrate.  And generate the uploader for this **Upload** model
 
 ```sh
 $ rails g model Upload image
@@ -465,10 +470,10 @@ end
 Also, we need to add resource routing for uploads controller in config/**routes.rb**,
 
 ```ruby
-resources 'uploads', only: [:create, :destroy]
+resources :uploads, only: [:create, :destroy]
 ```
 
-You can code **sendFile** and **deleteFile** function and update app/assets/javascripts/**summernote-init.coffee** as the follows:
+You should code **sendFile** and **deleteFile** function and append at the bottom of  app/assets/javascripts/**summernote-init.coffee** as the follows:
 
 ```javascript
 sendFile = (file, toSummernote) ->
@@ -512,7 +517,7 @@ $(document).on 'turbolinks:load', ->
           target.remove()
 ```
 
-Lastly, you need to add raw() method to @post.content to view html code correctly.
+Lastly, you need to add `raw()` method to `@post.content` to view html code correctly.
 
 ```html
 <p>
@@ -522,7 +527,3 @@ Lastly, you need to add raw() method to @post.content to view html code correctl
 ```
 
 That's it.
-
-
-
-> **Source**: https://github.com/luciuschoi/summernote088

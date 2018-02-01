@@ -1,3 +1,10 @@
+$(document).on 'turbolinks:load', ->
+  $('[data-provider="summernote"]').each ->
+    $(this).summernote
+      lang: 'ko-KR'
+      height: 300
+
+
 sendFile = (file, toSummernote) ->
   data = new FormData
   data.append 'upload[image]', file
@@ -33,7 +40,7 @@ $(document).on 'turbolinks:load', ->
           sendFile files[0], $(this)
         onMediaDelete: (target, editor, editable) ->
           upload_id = target[0].id.split('-').slice(-1)[0]
-          # console.log upload_id
+          console.log upload_id
           if !!upload_id
             deleteFile upload_id
           target.remove()

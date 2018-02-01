@@ -1,5 +1,5 @@
 class UploadsController < ApplicationController
-  
+
   def create
     @upload = Upload.new(upload_params)
     @upload.save

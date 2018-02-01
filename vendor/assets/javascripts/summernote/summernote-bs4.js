@@ -168,15 +168,14 @@ var popover = renderer.create([
         $node.find('.arrow').hide();
     }
 });
-var checkbox = renderer.create('<label class="custom-control custom-checkbox"></label>', function ($node, options) {
+var checkbox = renderer.create('<label class="form-check"></label>', function ($node, options) {
     if (options.id) {
         $node.attr('for', options.id);
     }
     $node.html([
-        ' <input type="checkbox" class="custom-control-input"' + (options.id ? ' id="' + options.id + '"' : ''),
+        ' <input type="checkbox" class="form-check-input"' + (options.id ? ' id="' + options.id + '"' : ''),
         (options.checked ? ' checked' : '') + '/>',
-        ' <span class="custom-control-indicator"></span>',
-        ' <span class="custom-control-description">' + (options.text ? options.text : '') + '</span>',
+        ' <span class="form-check-label">' + (options.text ? options.text : '') + '</span>',
         '</label>'
     ].join(''));
 });
