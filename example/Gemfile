@@ -5,7 +5,7 @@ ruby '2.5.0'
 
 gem 'jquery-rails', '~> 4.3.1'
 gem 'bootstrap', '~> 4.0.0'
-gem 'simple_form', '~> 3.5.0'
+gem 'simple_form', '~> 3.5.1'
 gem 'summernote-rails', path: '../'
 gem 'carrierwave', '~> 1.2.1'
 

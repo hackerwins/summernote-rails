@@ -4,16 +4,16 @@ This gem was built to package the assets used in Summernote, the Super Simple WY
 
 The version of summernote-rails is matched with that of original summernote editor.
 
-[![Gem Version](https://badge.fury.io/rb/summernote-rails.png)](http://badge.fury.io/rb/summernote-rails)
+[![Gem Version](https://badge.fury.io/rb/summernote-rails.svg)](https://badge.fury.io/rb/summernote-rails)
 
 ## Installation
 
 Environments:
 - Ruby v2.5.0
-- Rails v5.2.0.rc1
 - Gems :
+  - Rails v5.2.0.rc1
   - bootstrap v4.0.0
-  - simple_form v3.5.0
+  - simple_form v3.5.1
 
 Add the following gems to your application's Gemfile:
 
@@ -22,7 +22,7 @@ gem 'rails', '~> 5.2.0.rc1'
 gem 'jquery-rails', '~> 4.3.1'
 gem 'bootstrap', '~> 4.0.0'
 gem 'summernote-rails', '~> 0.8.10.0'
-gem 'simple_form', '~> 3.5.0'
+gem 'simple_form', '~> 3.5.1'
 ```
 
 And then execute:
@@ -30,6 +30,8 @@ And then execute:
 ```bash
 $ bundle install
 ```
+
+> **Note**: When you use simple_form with bootstrap, you should execute `rails g simple_form --bootstrap` in terminal. Especially, if you want to use Bootstrap version 4, you should create config/initializers/simple_form_bootstrap4.rb which you can reference in the **example** project in this repository.
 
 ## Usage
 
@@ -67,6 +69,18 @@ $(document).on 'turbolinks:load', ->
 
 And you should require this file in application.js.
 
+```js
+//= require jquery
+//= require jquery_ujs
+//= require popper
+//= require bootstrap
+//= require summernote/summernote-bs4.min
+//= require summernote-init
+//= require activestorage
+//= require turbolinks
+//= require_tree .
+```
+
 Then, if you are using simple_form, you can use the `:summernote` input type. This type simply adds the `data-provider="summernote"` to the field.
 
 ```erb
@@ -86,7 +100,7 @@ Or, if you prefer haml-style,
   ...
 ```
 
-If you are not using simple_form, then simply add the `data-provider="summernote"` to the input field yourself.
+> **Note**: If you are not using **simple_form** gem, then simply add the `data-provider="summernote"` to the input field yourself.
 
 ### i18n Support
 
@@ -147,6 +161,7 @@ $(document).on 'turbolinks:load', ->
 ## Sample projects
 
 For an example, take a look at the `example` folder in this repository.
+In this example, you can learn how to insert/delete images in summernote editor.
 
 ## Contributing
 
