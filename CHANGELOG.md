@@ -1,3 +1,8 @@
+## 0.8.10.0 (2018-02-20)
+
+  - Update Bootstrap 4.0.0.beta to Bootstrap 4.0.0
+  - https://github.com/summernote/summernote/releases/tag/v0.8.10
+  
 ## 0.8.9.2 (2018-02-01)
 
   - Update custom checkbox with Bootstrap 4.0.0 in URL Insert Modal.
