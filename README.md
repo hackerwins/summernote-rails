@@ -102,6 +102,32 @@ Or, if you prefer haml-style,
 
 > **Note**: If you are not using **simple_form** gem, then simply add the `data-provider="summernote"` to the input field yourself.
 
+When you use `form_with` helper,
+
+```erb
+<%= form_with(model: post, local: true) do |form| %>
+  ・・・
+  <div class="field">
+    <%= form.label :text %>
+    <%= form.text_area :text, 'data-provider': :summernote %>
+  </div>
+  ・・・
+<% end %>
+```
+
+Or when you use `form_for` helper,
+
+```erb
+<%= form_for(post) do |form| %>
+  ・・・
+  <div class="field">
+    <%= form.label :text %>
+    <%= form.text_area :text, 'data-provider': :summernote %>
+  </div>
+  ・・・
+<% end %>  
+```
+
 ### i18n Support
 
 If you use i18n, you have to include language files. In `app/assets/javascripts/application.js`, you should add the following:
