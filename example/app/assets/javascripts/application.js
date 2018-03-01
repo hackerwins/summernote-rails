@@ -16,7 +16,7 @@
 //= require bootstrap
 //= require summernote/summernote-bs4.min
 //= require summernote/lang/summernote-ko-KR
+//= require diff_match_patch
 //= require summernote-init
 //= require activestorage
 //= require turbolinks
-//= require_tree .
