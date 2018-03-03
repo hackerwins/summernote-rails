@@ -16,6 +16,7 @@ sendFile = (file, toSummernote) ->
       toSummernote.summernote 'insertNode', img
       toSummernote[0].oldValue = $('.note-editable.card-block')[0].innerHTML
       # console.log $('.note-editable.card-block')[0].innerHTML
+
 deleteFile = (file_id) ->
   $.ajax
     type: 'DELETE'
@@ -48,6 +49,7 @@ $(document).on 'turbolinks:load', ->
           console.log upload_id
           if !!upload_id
             deleteFile upload_id
+            @oldValue = $('.note-editable.card-block')[0].innerHTML
           target.remove()
         onKeyup: (e) -> 
           if e.keyCode == 8 || e.keyCode == 46
@@ -67,7 +69,7 @@ $(document).on 'turbolinks:load', ->
               # console.log deletedImages
               for deletedImage in deletedImages  
                 myRegexp = /\/uploads\/upload\/image\/(.+?)\/(.+?)\"/g
-                console.log deletedImage
+                # console.log deletedImage
                 matches = myRegexp.exec deletedImage
                 # console.log matches
                 if confirm("Are you sure?\nYou can't revert if images have been deleted.")
