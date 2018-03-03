@@ -24,6 +24,10 @@ deleteFile = (file_id) ->
     contentType: false
     processData: false
 
+Array::diff = (a) ->
+  @filter (i) ->
+    a.indexOf(i) < 0    
+
 $(document).on 'turbolinks:load', ->
   $('[data-provider="summernote"]').each ->
     $(this).summernote
@@ -34,12 +38,12 @@ $(document).on 'turbolinks:load', ->
           console.log('Summernote is launched');
           @oldValue = this.value
         onImageUpload: (files, e) ->
+          console.log "Files were uploaded: "
           console.log files
-          console.log 'Files were uploaded: {#files}'
           sendFile files[0], $(this)
         onMediaDelete: (target, editor, editable) ->
           console.log target
-          console.log 'File was deleted : #{target}'
+          console.log "File was deleted : #{target}"
           upload_id = target[0].id.split('-').slice(-1)[0]
           console.log upload_id
           if !!upload_id
@@ -48,16 +52,24 @@ $(document).on 'turbolinks:load', ->
         onKeyup: (e) -> 
           if e.keyCode == 8 || e.keyCode == 46
             newValue = e.target.innerHTML
-            dmp = new diff_match_patch()
-            diff = dmp.diff_main(@oldValue, newValue)
-            myRegexp = /\"\/uploads\/upload\/image\/(.+?)\/(.+?)\"/g
-            if diff.length > 0
-              if diff[1][0] == -1
-                target_string = diff[1][1]
-                matches = target_string.match(myRegexp)             
-                for match of matches 
-                  image_id = matches[match].split('/')[4]
-                  if confirm("Are you sure?\nYou can't revert if images have been deleted.")
-                    deleteFile image_id
-                    console.log "* Permanently removed : #{matches[match]}"
+            oldImages = @oldValue.match(/<img\s(?:.+?)>/g)
+            oldImages = if oldImages then oldImages else []
+            newImages = newValue.match(/<img\s(?:.+?)>/g)
+            newImages = if newImages then newImages else []
+            # console.log @oldValue
+            # console.log newValue
+            # console.log oldImages
+            # console.log newImages
             @oldValue = newValue
+            deletedImages = if newImages then oldImages.diff(newImages) else [] 
+            if deletedImages.length > 0
+              # console.log "deleted images :"
+              # console.log deletedImages
+              for deletedImage in deletedImages  
+                myRegexp = /\/uploads\/upload\/image\/(.+?)\/(.+?)\"/g
+                console.log deletedImage
+                matches = myRegexp.exec deletedImage
+                # console.log matches
+                if confirm("Are you sure?\nYou can't revert if images have been deleted.")
+                  deleteFile matches[1]
+                  console.log "* Permanently removed : #{matches[1]}: #{matches[2]}"
