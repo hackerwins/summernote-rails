@@ -41,7 +41,8 @@ $(document).on 'turbolinks:load', ->
         onImageUpload: (files, e) ->
           console.log "Files were uploaded: "
           console.log files
-          sendFile files[0], $(this)
+          for file in files
+            sendFile file, $(this)
         onMediaDelete: (target, editor, editable) ->
           console.log target
           console.log "File was deleted : #{target}"
