@@ -1,21 +1,32 @@
-sendFile = (file, toSummernote) ->
-  data = new FormData
-  data.append 'upload[image]', file
+Array::diff = (a) ->
+  @filter (i) ->
+    a.indexOf(i) < 0    
+
+makeAjaxCall = (url, methodType, data, target, callback) ->
   $.ajax
     data: data
-    type: 'POST'
-    url: '/uploads'
+    type: methodType
+    url: url
     cache: false
     contentType: false
     processData: false
     success: (data) ->
       img = document.createElement('IMG')
       img.src = data.url
-      console.log data
       img.setAttribute('id', "sn-image-#{data.upload_id}")
-      toSummernote.summernote 'insertNode', img
-      toSummernote[0].oldValue = $('.note-editable.card-block')[0].innerHTML
-      # console.log $('.note-editable.card-block')[0].innerHTML
+      target.summernote 'insertNode', img
+      target.oldValue = $('.note-editable.card-block')[0].innerHTML
+
+sendFile = (file, target) ->
+  data = new FormData
+  data.append 'upload[image]', file
+  makeAjaxCall('/uploads', 'POST', data, target).then ((respJson) ->
+    target[0].oldValue = $('.note-editable.card-block')[0].innerHTML   
+    console.log "success! => #{respJson.upload_id} : #{respJson.url}"
+    return
+  ), (reason) ->
+    console.log 'failure!', reason
+    return
 
 deleteFile = (file_id) ->
   $.ajax
@@ -24,10 +35,6 @@ deleteFile = (file_id) ->
     cache: false
     contentType: false
     processData: false
-
-Array::diff = (a) ->
-  @filter (i) ->
-    a.indexOf(i) < 0    
 
 $(document).on 'turbolinks:load', ->
   $('[data-provider="summernote"]').each ->
@@ -39,10 +46,13 @@ $(document).on 'turbolinks:load', ->
           console.log('Summernote is launched');
           @oldValue = this.value
         onImageUpload: (files, e) ->
-          console.log "Files were uploaded: "
-          console.log files
+          # console.log "Files were uploaded: "
+          # console.log files
           for file in files
             sendFile file, $(this)
+          console.log "=> Files uploaded..."
+          @oldValue = $('.note-editable.card-block')[0].innerHTML
+          console.log @oldValue            
         onMediaDelete: (target, editor, editable) ->
           console.log target
           console.log "File was deleted : #{target}"
@@ -59,20 +69,12 @@ $(document).on 'turbolinks:load', ->
             oldImages = if oldImages then oldImages else []
             newImages = newValue.match(/<img\s(?:.+?)>/g)
             newImages = if newImages then newImages else []
-            # console.log @oldValue
-            # console.log newValue
-            # console.log oldImages
-            # console.log newImages
             @oldValue = newValue
             deletedImages = if newImages then oldImages.diff(newImages) else [] 
             if deletedImages.length > 0
-              # console.log "deleted images :"
-              # console.log deletedImages
               for deletedImage in deletedImages  
                 myRegexp = /\/uploads\/upload\/image\/(.+?)\/(.+?)\"/g
-                # console.log deletedImage
                 matches = myRegexp.exec deletedImage
-                # console.log matches
                 if confirm("Are you sure?\nYou can't revert if images have been deleted.")
                   deleteFile matches[1]
                   console.log "* Permanently removed : #{matches[1]}: #{matches[2]}"
