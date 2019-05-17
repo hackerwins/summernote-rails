@@ -27,12 +27,11 @@ deleteFile = (file_id) ->
 
 Array::diff = (a) ->
   @filter (i) ->
-    a.indexOf(i) < 0    
+    a.indexOf(i) < 0
 
 $(document).on 'turbolinks:load', ->
   $('[data-provider="summernote"]').each ->
     $(this).summernote
-      lang: 'ko-KR'
       height: 400
       callbacks:
         onInit: ->
@@ -51,7 +50,7 @@ $(document).on 'turbolinks:load', ->
             deleteFile upload_id
             @oldValue = $('.note-editable.card-block')[0].innerHTML
           target.remove()
-        onKeyup: (e) -> 
+        onKeyup: (e) ->
           if e.keyCode == 8 || e.keyCode == 46
             newValue = e.target.innerHTML
             oldImages = @oldValue.match(/<img\s(?:.+?)>/g)
@@ -63,11 +62,11 @@ $(document).on 'turbolinks:load', ->
             # console.log oldImages
             # console.log newImages
             @oldValue = newValue
-            deletedImages = if newImages then oldImages.diff(newImages) else [] 
+            deletedImages = if newImages then oldImages.diff(newImages) else []
             if deletedImages.length > 0
               # console.log "deleted images :"
               # console.log deletedImages
-              for deletedImage in deletedImages  
+              for deletedImage in deletedImages
                 myRegexp = /\/uploads\/upload\/image\/(.+?)\/(.+?)\"/g
                 # console.log deletedImage
                 matches = myRegexp.exec deletedImage

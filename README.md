@@ -40,7 +40,6 @@ In app/assets/stylesheets/application.scss,
 ```scss
 @import "bootstrap";
 @import "summernote-bs4";
-@import "summernote-custom-theme.min";
 ```
 
 In app/assets/javascripts/application.js, you should add as follows:

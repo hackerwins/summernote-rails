@@ -1,4 +1,5 @@
 require "bundler/gem_tasks"
+require 'open-uri'
 require "json"
 
 def download_release_file
@@ -19,7 +20,7 @@ end
 def clean_assets
   `rm -rf vendor/assets/stylesheets`
   `rm -rf vendor/assets/fonts`
-  `rm -rf vendor/assets/javascripts/locales`
+  `rm -rf vendor/assets/javascripts/lang`
   `rm -rf vendor/assets/javascripts/plugin`
 
   FileUtils.mkdir_p("vendor/assets/stylesheets")
@@ -33,6 +34,8 @@ def copy_assets
 
   `cp tmp/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
   `cp tmp/dist/summernote.css vendor/assets/stylesheets/summernote.css`
+  `cp tmp/dist/summernote-bs4.css vendor/assets/stylesheets/summernote-bs4.css`
+  `cp tmp/dist/summernote-lite.css vendor/assets/stylesheets/summernote-lite.css`
   `cp -R tmp/dist/font/* vendor/assets/fonts`
 
   Dir["tmp/dist/plugin/*"].each do |file|
@@ -40,7 +43,7 @@ def copy_assets
   end
 
   Dir["tmp/dist/lang/*"].each do |file|
-    `cp #{file} vendor/assets/javascripts/summernote/locales/#{File.basename(file).gsub('summernote-', '')}`
+    `cp #{file} vendor/assets/javascripts/summernote/lang/#{File.basename(file)}`
   end
 end
 

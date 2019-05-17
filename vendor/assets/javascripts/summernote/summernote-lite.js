@@ -4282,7 +4282,7 @@ var Editor = /** @class */ (function () {
             })(idx);
             this.context.memo('help.formatH' + idx, this.lang.help['formatH' + idx]);
         }
-        
+
         this.insertParagraph = this.wrapCommand(function () {
             _this.typing.insertParagraph(_this.editable);
         });
@@ -4820,15 +4820,20 @@ var Editor = /** @class */ (function () {
     };
     Editor.prototype.onFormatBlock = function (tagName, $target) {
         // [workaround] for MSIE, IE need `<`
-        tagName = env.isMSIE ? '<' + tagName + '>' : tagName;
-        document.execCommand('FormatBlock', false, tagName);
+        document.execCommand('FormatBlock', false, env.isMSIE ? '<' + tagName + '>' : tagName);
         // support custom class
         if ($target && $target.length) {
-            var className = $target[0].className || '';
-            if (className) {
-                var currentRange = this.createRange();
-                var $parent = $$1([currentRange.sc, currentRange.ec]).closest(tagName);
-                $parent.addClass(className);
+            // find the exact element has given tagName
+            if ($target[0].tagName.toUpperCase() !== tagName.toUpperCase()) {
+                $target = $target.find(tagName);
+            }
+            if ($target && $target.length) {
+                var className = $target[0].className || '';
+                if (className) {
+                    var currentRange = this.createRange();
+                    var $parent = $$1([currentRange.sc, currentRange.ec]).closest(tagName);
+                    $parent.addClass(className);
+                }
             }
         }
     };
@@ -7619,7 +7624,7 @@ $$1.summernote = $$1.extend($$1.summernote, {
         },
         buttons: {},
         lang: 'en-US',
-        followingToolbar: true,
+        followingToolbar: false,
         otherStaticBar: '',
         // toolbar
         toolbar: [
