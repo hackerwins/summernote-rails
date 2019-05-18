@@ -33,6 +33,8 @@ def copy_assets
   clean_assets
 
   `cp tmp/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
+  `cp tmp/dist/summernote-bs4.js vendor/assets/javascripts/summernote/summernote-bs4.js`
+  `cp tmp/dist/summernote-lite.js vendor/assets/javascripts/summernote/summernote-lite.js`
   `cp tmp/dist/summernote.css vendor/assets/stylesheets/summernote.css`
   `cp tmp/dist/summernote-bs4.css vendor/assets/stylesheets/summernote-bs4.css`
   `cp tmp/dist/summernote-lite.css vendor/assets/stylesheets/summernote-lite.css`

@@ -9,10 +9,10 @@ The version of summernote-rails is matched with that of original summernote edit
 ## Installation
 
 Environments:
-- Ruby v2.5.0
+- Ruby v2.5.1
 - Gems :
-  - Rails v5.2.0.rc1
-  - bootstrap v4.0.0
+  - Rails v5.2.3
+  - bootstrap v4.3.1
   - simple_form v3.5.1
 
 Add the following gems to your application's Gemfile:
