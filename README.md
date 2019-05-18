@@ -1,4 +1,4 @@
-# Summernote::Rails
+# Summernote Rails
 
 This gem was built to package the assets used in Summernote, the Super Simple WYSIWYG Editor on Bootstrap, for Ruby on Rails version >= 3.1.
 
