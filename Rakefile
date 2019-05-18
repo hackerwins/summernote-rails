@@ -25,7 +25,7 @@ def clean_assets
 
   FileUtils.mkdir_p("vendor/assets/stylesheets")
   FileUtils.mkdir_p("vendor/assets/fonts")
-  FileUtils.mkdir_p("vendor/assets/javascripts/summernote/locales")
+  FileUtils.mkdir_p("vendor/assets/javascripts/summernote/lang")
   FileUtils.mkdir_p("vendor/assets/javascripts/summernote/plugin")
 end
 
