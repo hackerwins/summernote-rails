@@ -9,20 +9,20 @@ The version of summernote-rails is matched with that of original summernote edit
 ## Installation
 
 Environments:
-- Ruby v2.5.1
+- Ruby 2.5.1
 - Gems :
-  - Rails v5.2.3
-  - bootstrap v4.3.1
-  - simple_form v3.5.1
+  - Rails
+  - Bootstrap
+  - Simple Form
 
 Add the following gems to your application's Gemfile:
 
 ```ruby
-gem 'rails', '~> 5.2.0.rc1'
-gem 'jquery-rails', '~> 4.3.1'
-gem 'bootstrap', '~> 4.0.0'
-gem 'summernote-rails', '~> 0.8.10.0'
-gem 'simple_form', '~> 3.5.1'
+gem 'rails'
+gem 'jquery-rails'
+gem 'bootstrap'
+gem 'simple_form'
+gem 'summernote-rails', '~> 0.8.12.0'
 ```
 
 And then execute:
