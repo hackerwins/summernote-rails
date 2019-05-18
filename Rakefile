@@ -29,6 +29,21 @@ def clean_assets
   FileUtils.mkdir_p("vendor/assets/javascripts/summernote/plugin")
 end
 
+def clean_fonts
+  css_paths = [
+    "vendor/assets/stylesheets/summernote.css",
+    "vendor/assets/stylesheets/summernote-bs4.css",
+    "vendor/assets/stylesheets/summernote-lite.css"
+  ]
+
+  css_paths.each do |css_path|
+    css_file = File.read(css_path)
+    css_file = css_file.gsub(/url\(\"\.\/font\/summernote.([a-z]+)\?[0-9a-f]+(#iefix)*\"\)/, 'url(asset-path("summernote.\1\2"))')
+    css_file = css_file.gsub(/#iefix/, '?\0')
+    File.open(css_path, "w") {|old_css_file| old_css_file.print css_file}
+  end
+end
+
 def copy_assets
   clean_assets
 
@@ -39,6 +54,8 @@ def copy_assets
   `cp tmp/dist/summernote-bs4.css vendor/assets/stylesheets/summernote-bs4.css`
   `cp tmp/dist/summernote-lite.css vendor/assets/stylesheets/summernote-lite.css`
   `cp -R tmp/dist/font/* vendor/assets/fonts`
+
+  clean_fonts
 
   Dir["tmp/dist/plugin/*"].each do |file|
     `cp -R #{file}/ vendor/assets/javascripts/summernote/plugin/#{File.basename(file)}`
