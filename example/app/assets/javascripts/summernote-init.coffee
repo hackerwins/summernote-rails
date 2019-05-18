@@ -32,6 +32,7 @@ Array::diff = (a) ->
 $(document).on 'turbolinks:load', ->
   $('[data-provider="summernote"]').each ->
     $(this).summernote
+      lang: 'fr-FR'
       height: 400
       callbacks:
         onInit: ->
