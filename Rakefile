@@ -48,22 +48,19 @@ def copy_assets
   clean_assets
 
   `cp tmp/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
+  `cp tmp/dist/summernote.min.js vendor/assets/javascripts/summernote/summernote.min.js`
   `cp tmp/dist/summernote-bs4.js vendor/assets/javascripts/summernote/summernote-bs4.js`
+  `cp tmp/dist/summernote-bs4.min.js vendor/assets/javascripts/summernote/summernote-bs4.min.js`
   `cp tmp/dist/summernote-lite.js vendor/assets/javascripts/summernote/summernote-lite.js`
+  `cp tmp/dist/summernote-lite.min.js vendor/assets/javascripts/summernote/summernote-lite.min.js`
   `cp tmp/dist/summernote.css vendor/assets/stylesheets/summernote.css`
   `cp tmp/dist/summernote-bs4.css vendor/assets/stylesheets/summernote-bs4.css`
   `cp tmp/dist/summernote-lite.css vendor/assets/stylesheets/summernote-lite.css`
+  `cp -R tmp/dist/plugin/* vendor/assets/javascripts/summernote/plugin`
+  `cp -R tmp/dist/lang/* vendor/assets/javascripts/summernote/lang`
   `cp -R tmp/dist/font/* vendor/assets/fonts`
-
+  
   clean_fonts
-
-  Dir["tmp/dist/plugin/*"].each do |file|
-    `cp -R #{file}/ vendor/assets/javascripts/summernote/plugin/#{File.basename(file)}`
-  end
-
-  Dir["tmp/dist/lang/*"].each do |file|
-    `cp #{file} vendor/assets/javascripts/summernote/lang/#{File.basename(file)}`
-  end
 end
 
 desc "Update assets"
