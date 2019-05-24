@@ -305,12 +305,11 @@ And now, it's time to add summernote-rail gem. Current available version of summ
 gem 'summernote-rails', '~> 0.8.9'
 ```
 
-After bundling, in app/assets/stylesheets/**application.scss**, you should import **summernote** stylesheet for Bootstrap 4. Additionally, you need to customize the editor styles and so to add new "summernote-custom-theme" stylesheet.
+After bundling, in app/assets/stylesheets/**application.scss**, you should import **summernote** stylesheet for Bootstrap 4.
 
 ```css
 @import "bootstrap";
 @import "summernote-bs4";
-@import "summernote-custom-theme";
 ```
 
 In app/assets/javascripts/**application.js**, you should add as follows:
@@ -378,7 +377,6 @@ And add this stylesheet to application.scss as follows:
 ```css
 @import "bootstrap";
 @import "summernote-bs4";
-@import "summernote-custom-theme";
 @import "scaffolds";
 @import "posts";
 ```

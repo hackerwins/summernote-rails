@@ -1,4 +1,5 @@
 require "bundler/gem_tasks"
+require 'open-uri'
 require "json"
 
 def download_release_file
@@ -19,29 +20,47 @@ end
 def clean_assets
   `rm -rf vendor/assets/stylesheets`
   `rm -rf vendor/assets/fonts`
-  `rm -rf vendor/assets/javascripts/locales`
+  `rm -rf vendor/assets/javascripts/lang`
   `rm -rf vendor/assets/javascripts/plugin`
 
   FileUtils.mkdir_p("vendor/assets/stylesheets")
   FileUtils.mkdir_p("vendor/assets/fonts")
-  FileUtils.mkdir_p("vendor/assets/javascripts/summernote/locales")
+  FileUtils.mkdir_p("vendor/assets/javascripts/summernote/lang")
   FileUtils.mkdir_p("vendor/assets/javascripts/summernote/plugin")
+end
+
+def clean_fonts
+  css_paths = [
+    "vendor/assets/stylesheets/summernote.css",
+    "vendor/assets/stylesheets/summernote-bs4.css",
+    "vendor/assets/stylesheets/summernote-lite.css"
+  ]
+
+  css_paths.each do |css_path|
+    css_file = File.read(css_path)
+    css_file = css_file.gsub(/url\(\"\.\/font\/summernote.([a-z]+)\?[0-9a-f]+(#iefix)*\"\)/, 'url(asset-path("summernote.\1\2"))')
+    css_file = css_file.gsub(/#iefix/, '?\0')
+    File.open(css_path, "w") {|old_css_file| old_css_file.print css_file}
+  end
 end
 
 def copy_assets
   clean_assets
 
   `cp tmp/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
+  `cp tmp/dist/summernote.min.js vendor/assets/javascripts/summernote/summernote.min.js`
+  `cp tmp/dist/summernote-bs4.js vendor/assets/javascripts/summernote/summernote-bs4.js`
+  `cp tmp/dist/summernote-bs4.min.js vendor/assets/javascripts/summernote/summernote-bs4.min.js`
+  `cp tmp/dist/summernote-lite.js vendor/assets/javascripts/summernote/summernote-lite.js`
+  `cp tmp/dist/summernote-lite.min.js vendor/assets/javascripts/summernote/summernote-lite.min.js`
   `cp tmp/dist/summernote.css vendor/assets/stylesheets/summernote.css`
+  `cp tmp/dist/summernote-bs4.css vendor/assets/stylesheets/summernote-bs4.css`
+  `cp tmp/dist/summernote-lite.css vendor/assets/stylesheets/summernote-lite.css`
+  `cp -R tmp/dist/plugin/* vendor/assets/javascripts/summernote/plugin`
+  `cp -R tmp/dist/lang/* vendor/assets/javascripts/summernote/lang`
   `cp -R tmp/dist/font/* vendor/assets/fonts`
-
-  Dir["tmp/dist/plugin/*"].each do |file|
-    `cp -R #{file}/ vendor/assets/javascripts/summernote/plugin/#{File.basename(file)}`
-  end
-
-  Dir["tmp/dist/lang/*"].each do |file|
-    `cp #{file} vendor/assets/javascripts/summernote/locales/#{File.basename(file).gsub('summernote-', '')}`
-  end
+  
+  clean_fonts
 end
 
 desc "Update assets"

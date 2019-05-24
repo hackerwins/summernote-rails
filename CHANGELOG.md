@@ -1,8 +1,15 @@
+## 0.8.12.0 (2019-05-17)
+
+  - Update assets from Summernote 0.8.10 to 0.8.12
+    - https://github.com/summernote/summernote/releases/tag/v0.8.12
+    - https://github.com/summernote/summernote/releases/tag/v0.8.11
+  - Removed summernote-custom-theme.css & summernote-custom-theme.min.css
+
 ## 0.8.10.0 (2018-02-20)
 
   - Update Bootstrap 4.0.0.beta to Bootstrap 4.0.0
   - https://github.com/summernote/summernote/releases/tag/v0.8.10
-  
+
 ## 0.8.9.2 (2018-02-01)
 
   - Update custom checkbox with Bootstrap 4.0.0 in URL Insert Modal.
