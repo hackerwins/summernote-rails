@@ -6,6 +6,8 @@ The version of summernote-rails is matched with that of original summernote edit
 
 [![Gem Version](https://badge.fury.io/rb/summernote-rails.svg)](https://badge.fury.io/rb/summernote-rails)
 
+> Note: From Rails 6+, webpack is used as the default javascript package(or module) bundler. Therefore, without summernote-rails, you can use the summernote javascript package using webpacker gem in Rails 6+. If you want to know about it more, you can visit [here](https://github.com/luciuschoi/welcome_rails6/tree/features/summernote#5-summernote).
+
 ## Installation
 
 Environments:
