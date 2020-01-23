@@ -24,7 +24,7 @@ gem 'rails'
 gem 'jquery-rails'
 gem 'bootstrap'
 gem 'simple_form'
-gem 'summernote-rails', '~> 0.8.12.0'
+gem 'summernote-rails', '~> 0.8.15.0'
 ```
 
 And then execute:
