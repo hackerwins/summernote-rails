@@ -22,6 +22,7 @@ def download_release_file
   puts 'No zip to process. Exiting...' and exit unless File.exists? 'tmp/summernote.zip'
 
   puts 'Unzipping "tmp/summernote.zip"...'
+  FileUtils.rm_rf('tmp/dist')
   `unzip -d tmp tmp/summernote.zip`
 end
 
