@@ -54,7 +54,6 @@ def fix_fonts
   css_paths.each do |css_path|
     css_file = File.read(css_path)
     css_file = css_file.gsub(/url\(font\/(summernote.[a-z0-9#?]+)\)/, 'url(asset-path("\1"))')
-    css_file = css_file.gsub(/#iefix/, '?\0')
     File.open(css_path, "w") {|old_css_file| old_css_file.print css_file}
   end
 end
