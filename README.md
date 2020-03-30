@@ -11,7 +11,7 @@ The version of summernote-rails is matched with that of original summernote edit
 ## Installation
 
 Environments:
-- Ruby 2.5.1
+- Ruby 2.6.5
 - Gems :
   - Rails
   - Bootstrap
