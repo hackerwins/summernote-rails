@@ -23,7 +23,7 @@ def download_release_file
 
   puts 'Unzipping "tmp/summernote.zip"...'
   FileUtils.rm_rf('tmp/dist')
-  `unzip -d tmp tmp/summernote.zip`
+  `unzip -d tmp/dist tmp/summernote.zip`
 end
 
 def clean_assets
@@ -65,10 +65,13 @@ def copy_assets
   puts 'Copying new JS and CSS files...'
   `cp tmp/dist/summernote.js vendor/assets/javascripts/summernote/summernote.js`
   `cp tmp/dist/summernote.min.js vendor/assets/javascripts/summernote/summernote.min.js`
+  `cp tmp/dist/summernote.min.js.map vendor/assets/javascripts/summernote/summernote.min.js.map`
   `cp tmp/dist/summernote-bs4.js vendor/assets/javascripts/summernote/summernote-bs4.js`
   `cp tmp/dist/summernote-bs4.min.js vendor/assets/javascripts/summernote/summernote-bs4.min.js`
+  `cp tmp/dist/summernote-bs4.min.js.map vendor/assets/javascripts/summernote/summernote-bs4.min.js.map`
   `cp tmp/dist/summernote-lite.js vendor/assets/javascripts/summernote/summernote-lite.js`
   `cp tmp/dist/summernote-lite.min.js vendor/assets/javascripts/summernote/summernote-lite.min.js`
+  `cp tmp/dist/summernote-lite.min.js.map vendor/assets/javascripts/summernote/summernote-lite.min.js.map`
   `cp tmp/dist/summernote.css vendor/assets/stylesheets/summernote.css`
   `cp tmp/dist/summernote.min.css vendor/assets/stylesheets/summernote.min.css`
   `cp tmp/dist/summernote-bs4.css vendor/assets/stylesheets/summernote-bs4.css`
