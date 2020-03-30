@@ -1,3 +1,17 @@
+## 0.8.16.0 (2020-03-30)
+
+  - Update assets from Summernote 0.8.15 to 0.8.16
+    - https://github.com/summernote/summernote/releases/tag/v0.8.16
+  - Added source map files for JS assets.
+  - Added langs' licence files.
+
+## 0.8.15.0 (2020-01-23)
+
+  - Update assets from Summernote 0.8.12 to 0.8.15
+    - https://github.com/summernote/summernote/releases/tag/v0.8.15
+    - https://github.com/summernote/summernote/releases/tag/v0.8.14
+  - Added placeholder to example app.
+
 ## 0.8.12.0 (2019-05-17)
 
   - Update assets from Summernote 0.8.10 to 0.8.12
