@@ -34,6 +34,7 @@ $(document).on 'turbolinks:load', ->
     $(this).summernote
       lang: 'fr-FR'
       height: 400
+      inheritPlaceholder: true
       callbacks:
         onInit: ->
           console.log('Summernote is launched');

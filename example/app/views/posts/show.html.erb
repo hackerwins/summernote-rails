@@ -10,13 +10,16 @@
   <%=raw @post.content %>
 </p>
 
-<hr>
+<% images = @post.content.scan(/(<img(?:.+?)>)/).flatten %>
+<% if images.any? %>
+  <hr>
 
-<ul class='pl-4'>
-  <% @post.content.scan(/(<img(?:.+?)>)/).flatten.each do | image | %>
-    <li><%= image %></li>
-  <% end %>
-</ul>
+  <ul class='pl-4'>
+    <% images.each do |image| %>
+      <li><%= image %></li>
+    <% end %>
+  </ul>
+<% end %>
 
 <hr>
 
