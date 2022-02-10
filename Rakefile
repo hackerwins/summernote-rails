@@ -41,13 +41,15 @@ def fix_fonts
     'vendor/assets/stylesheets/summernote.min.css',
     'vendor/assets/stylesheets/summernote-bs4.css',
     'vendor/assets/stylesheets/summernote-bs4.min.css',
+    'vendor/assets/stylesheets/summernote-bs5.css',
+    'vendor/assets/stylesheets/summernote-bs5.min.css',
     'vendor/assets/stylesheets/summernote-lite.css',
     'vendor/assets/stylesheets/summernote-lite.min.css'
   ]
 
   css_paths.each do |css_path|
     css_file = File.read(css_path)
-    css_file = css_file.gsub(/url\(font\/(summernote.[a-z0-9#?]+)\)/, 'url(asset-path("\1"))')
+    css_file = css_file.gsub(/url\(("\.\/)?font\/(summernote.[a-z0-9#?]+)(")?\)/, 'url(asset-path("\2"))')
     File.open(css_path, "w") {|old_css_file| old_css_file.print css_file}
   end
 end
