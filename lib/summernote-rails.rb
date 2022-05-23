@@ -1,7 +1,8 @@
 require 'rails'
-require "summernote-rails/version"
+require 'summernote-rails/version'
 
 autoload :SummernoteInput, 'summernote-rails/simple_form/summernote_input'
+autoload :SummernoteCleaner, 'summernote-rails/cleaner'
 
 module SummernoteRails
   module Rails
