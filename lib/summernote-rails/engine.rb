@@ -13,6 +13,12 @@ module SummernoteRails
         end
       end
 
+      initializer "summernote-rails.attribute" do
+        ActiveSupport.on_load(:active_record) do
+          include SummernoteRails::Rails::Attribute
+        end
+      end
+
       private
 
       def old_sprocket?
