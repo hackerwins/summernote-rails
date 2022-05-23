@@ -2,7 +2,7 @@
 
 This gem was built to package the assets used in Summernote, the Super Simple WYSIWYG Editor, for Ruby on Rails version >= 3.1.
 
-The version of summernote-rails is matched with that of original summernote editor.
+The version of summernote-rails (X.Y.Z) is matched with that of original summernote editor.
 
 [![Gem Version](https://badge.fury.io/rb/summernote-rails.svg)](https://badge.fury.io/rb/summernote-rails)
 
