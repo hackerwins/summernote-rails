@@ -6,6 +6,8 @@ autoload :SummernoteCleaner, 'summernote-rails/cleaner'
 
 module SummernoteRails
   module Rails
+    autoload :Attribute, 'summernote-rails/attribute'
+
     if ::Rails.version.to_s < "3.1"
       require "summernote-rails/railtie"
     else
