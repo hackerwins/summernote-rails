@@ -1,114 +1,61 @@
+require 'nokogiri'
+
 class SummernoteCleaner
   BLOCK_TAGS = [
-    'h1',
-    'h2',
-    'h3',
-    'h4',
-    'h5',
-    'h6',
-    'p',
-    'ul',
-    'ol',
-    'dl'
-  ]
+    'h1'.freeze,
+    'h2'.freeze,
+    'h3'.freeze,
+    'h4'.freeze,
+    'h5'.freeze,
+    'h6'.freeze,
+    'p'.freeze,
+    'ul'.freeze,
+    'ol'.freeze,
+    'dl'.freeze,
+    'div'.freeze
+  ].freeze
+
+  DEFAULT_BLOCK = 'p'.freeze
 
   def self.clean(code)
     new(code).clean
   end
 
   def initialize(code)
-    @code = code
-    @clean_code = ''
-    @current_block_tag = nil
-    @open_block_tag_found = nil
-    @close_block_tag_found = nil
+    @code = code.gsub("<p>\n</p>", "")
+                .gsub("<p></p>", "")
+                .gsub("<p><br></p>", "")
   end
 
   def clean
-    while @code.length > 0 do
-      if starts_with_open_block_tag?
-        log "starts_with_open_block_tag #{@open_block_tag_found}"
-        unless @current_block_tag.nil?
-          log "Opening a block in a block, we need to close the previous one"
-          @clean_code += close(@current_block_tag)
+    fragment = Nokogiri::HTML5::DocumentFragment.parse(@code)
+    not_block_elements_collection = []
+    not_block_elements = []
+    fragment.children.each do |child|
+      if child.class == Nokogiri::XML::Element && BLOCK_TAGS.include?(child.name)
+        # Block
+        if not_block_elements.length > 0
+          not_block_elements_collection << not_block_elements
+          not_block_elements = []
         end
-        log "Move the open block from code to clean code"
-        @clean_code += @code.slice!(0, open_current.length)
-        @current_block_tag = @open_block_tag_found
-        @open_block_tag_found = nil
-      elsif starts_with_close_block_tag?
-        log "starts_with_close_block_tag #{@close_block_tag_found}"
-        if @close_block_tag_found == @current_block_tag
-          log "Everything is logical, we close what was opened"
-          @clean_code += @code.slice!(0, close_current.length)
-        else
-          log "Mismatch, the closing tag is not what it should be. We need to remove it, and add the correct one instead"
-          @code.slice!(0, close(@close_block_tag_found).length)
-          @clean_code += close_current
-        end
-        @current_block_tag = nil
-        @close_block_tag_found = nil
       else
-        if in_block?
-          @clean_code += @code.slice!(0)
-        else
-          log "not in a block, we open a p"
-          @current_block_tag = 'p'
-          @clean_code += open_current
-        end
-      end
-      log @clean_code
-    end
-    if in_block?
-      log "still in a block, we close with a #{@current_block_tag}"
-      @clean_code += close_current
-    end
-    @clean_code
-  end
-
-  protected
-
-  def starts_with_open_block_tag?
-    BLOCK_TAGS.each do |tag|
-      if @code.start_with? open(tag)
-        @open_block_tag_found = tag
-        return true
+        # Not block (text or inline element)
+        not_block_elements << child
       end
     end
-    false
-  end
+    not_block_elements_collection << not_block_elements if not_block_elements.length > 0
 
-  def starts_with_close_block_tag?
-    BLOCK_TAGS.each do |tag|
-      if @code.start_with? close(tag)
-        @close_block_tag_found = tag
-        return true
+    not_block_elements_collection.each do |nodes|
+      first_node = nodes.first
+      new_paragraph = first_node.add_previous_sibling Nokogiri::XML::Node.new(DEFAULT_BLOCK, fragment.document)
+      nodes.each do |node|
+        node.parent = new_paragraph
       end
     end
-    return false
-  end
 
-  def in_block?
-    !@current_block_tag.nil?
-  end
-
-  def open(tag)
-    "<#{tag}>"
-  end
-
-  def close(tag)
-    "</#{tag}>"
-  end
-
-  def open_current
-    open @current_block_tag
-  end
-
-  def close_current
-    close @current_block_tag
-  end
-
-  def log(string)
-    # puts string
+    fragment.to_html
+            .gsub("<p>\n</p>", "")
+            .gsub("<p></p>", "")
+            .gsub("<p><br></p>", "")
   end
 end
