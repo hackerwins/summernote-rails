@@ -1,6 +1,14 @@
 require 'bundler/gem_tasks'
 require 'open-uri'
 require 'json'
+require 'rake/testtask'
+
+Rake::TestTask.new do |t|
+  t.libs << 'test'
+end
+
+desc "Run tests"
+task :default => :test
 
 def download_release_file(tag_name)
   zip_url = "https://github.com/summernote/summernote/archive/refs/tags/#{tag_name}.zip"
