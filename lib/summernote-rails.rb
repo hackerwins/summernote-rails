@@ -1,10 +1,13 @@
-require 'rails'
+require "rails"
 require "summernote-rails/version"
 
-autoload :SummernoteInput, 'summernote-rails/simple_form/summernote_input'
+autoload :SummernoteCleaner,  "summernote-rails/cleaner"
+autoload :SummernoteInput,    "summernote-rails/simple_form/summernote_input"
 
 module SummernoteRails
   module Rails
+    autoload :Attribute, "summernote-rails/attribute"
+
     if ::Rails.version.to_s < "3.1"
       require "summernote-rails/railtie"
     else
