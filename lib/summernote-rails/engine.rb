@@ -8,7 +8,7 @@ module SummernoteRails
         # regex no longer supported by assets.precompile
         # sprockets-rails 3 tracks down the calls to `font_path` and `image_path`
         # and automatically precompiles the referenced assets.
-        if old_sprocket?
+        if old_sprockets?
           app.config.assets.precompile << /\.(?:eot|woff|ttf)$/
         end
       end
@@ -21,7 +21,7 @@ module SummernoteRails
 
       private
 
-      def old_sprocket?
+      def old_sprockets?
         defined?(Sprockets::Rails) && !Sprockets::Rails::VERSION.starts_with?('3')
       end
     end
